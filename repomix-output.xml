@@ -1,0 +1,3213 @@
+tolong perbagus design nya, jika memang perlu gambar, pakai gambar mock dulu saja.
+
+tolong buatkan sesuai dengan yang saya mau.
+tolong lakukan perlahan, bertahap, best practice.
+
+cukup berikan saya kode yang perlu di tambah atau di modifikasi.
+
+
+
+
+<file path=".cursor/agents/fast-reviewer.md">
+---
+name: fast-reviewer
+model: inherit
+description: QA and SEO Specialist. Gunakan untuk mereview UI, konsistensi design system, aksesibilitas, performa, dan SEO dasar website FAST.
+---
+
+Kamu adalah QA & SEO Specialist untuk proyek website FAST.
+Tugasmu adalah melakukan review menyeluruh terhadap kode frontend yang telah dibuat:
+
+1. KONSISTENSI: Validasi penggunaan warna (#FF7300, #ED2D00, dll), spacing, font size, dan reusable component.
+2. RESPONSIVENESS: Analisis struktur kode untuk breakpoint mobile (375px) dan tablet (768px).
+3. AKSESIBILITAS: Pastikan ada alt text pada gambar, aria-label pada icon-only button, dan contrast ratio aman.
+4. PERFORMA: Identifikasi CSS inline yang tidak perlu atau duplikasi asset.
+5. SEO DASAR: Verifikasi keberadaan Meta title, Meta description, dan og:image placeholder untuk famindofast.com.
+
+Output yang diharapkan: Berikan checklist apa yang sudah memenuhi standar dan apa yang kurang beserta rekomendasi perbaikannya.
+</file>
+
+<file path=".cursor/rules/fast-design-system.md">
+---
+description: Aturan utama untuk UI/UX, Design System, dan Arsitektur Komponen website PT. Famindo Alfa Spektrum Teknologi (FAST).
+globs: src/components/**/*.tsx, src/app/**/*.tsx, src/pages/**/*.tsx
+---
+
+# FAST Design System & Architecture
+
+## 1. Color Palette
+
+- Primary Brand: `#FF7300` (Orange terang)
+- Secondary Brand: `#ED2D00` (Merah-oranye gelap)
+- Accent Blue: `#0D84FC` (Biru terang)
+- Dark Blue: `#0047AD` (Biru tua)
+- Text/Logo Navy: `#002B96` (Biru navy/logo text)
+
+## 2. Arsitektur File (Clean Component Approach)
+
+- Pisahkan UI components (`/src/components/ui`) dan Page sections (`/src/components/sections`).
+- Terapkan semantic HTML dan pastikan komponen reusable (Button, Card, Badge) terisolasi dengan baik.
+
+## 3. Komponen Global Wajib
+
+**Header:**
+
+- Navigasi: Beranda | Tentang Kami | Lithium Fire Safety | Kontak
+
+**Footer:**
+
+- Elemen: Newsletter form + Kontak info.
+- Email: support@famindofast.com
+- Telepon: +62 812 9000 3278
+- Teks: "Stay up to date by following our social media!"
+
+## 4. Sumber Konten (Copywriting)
+
+Seluruh teks, deskripsi, tabel regulasi, dan struktur konten untuk setiap halaman WAJIB diambil secara persis dari file `docs/CONTENT.md`. Jangan mengarang teks sendiri (placeholder) kecuali diminta.
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vercel
+.env*.local
+
+
+.env
+</file>
+
+<file path="docs/ARCHITECTURE.md">
+# Arsitektur Proyek — FAST Landing Page
+
+Struktur mengikuti **FAST Design System** (`/.cursor/rules/fast-design-system.md`): pemisahan UI primitives, layout global, section per halaman, dan halaman tipis sebagai composer.
+
+## Struktur folder
+
+```
+src/
+├── App.tsx                 # Root: BrowserRouter + routes
+├── main.tsx                # Entry Vite
+├── index.css               # Tailwind v4 + token warna brand
+├── i18n.ts                 # (opsional) i18n
+│
+├── config/                 # Konstanta teknis & SEO (bukan copy panjang)
+│   ├── site.ts             # Nav, kontak, re-export dari content
+│   └── seo.ts              # Meta title/description per route
+│
+├── content/                # Sumber teks resmi — mirror docs/CONTENT.md
+│   ├── global.ts           # Header, Footer, kontak global
+│   ├── home.ts             # Halaman Beranda (fase berikutnya)
+│   ├── about.ts            # Tentang Kami
+│   ├── lithium-fire-safety.ts
+│   ├── contact.ts
+│   └── index.ts            # Barrel export
+│
+├── routes/
+│   └── index.tsx           # React Router + MainLayout
+│
+├── pages/                  # Composer: SEO + urutan section (tipis)
+│   ├── HomePage.tsx
+│   ├── AboutPage.tsx
+│   ├── LithiumFireSafetyPage.tsx
+│   └── ContactPage.tsx
+│
+└── components/
+    ├── layout/             # Header, Footer, MainLayout
+    ├── ui/                 # Button, ButtonLink, Card, Badge (reusable)
+    ├── seo/                # PageSeo (react-helmet-async)
+    └── sections/           # Blok konten per halaman
+        ├── home/
+        ├── about/
+        ├── contact/
+        ├── lithium-fire-safety/
+        └── shared/         # Section dipakai >1 halaman (mis. lokasi kantor)
+```
+
+## Alur data konten
+
+1. Copywriting resmi ada di `docs/CONTENT.md`.
+2. Implementasi TypeScript di `src/content/*.ts` — **jangan mengarang teks** di komponen.
+3. `src/config/site.ts` mengekspor nav/kontak untuk routing & link (`tel:`, `mailto:`).
+4. Section/page hanya mengimpor dari `content/` + merender UI.
+
+## Routing
+
+| Path                   | Halaman             | Label nav           |
+| ---------------------- | ------------------- | ------------------- |
+| `/`                    | Beranda             | Beranda             |
+| `/about`               | Tentang Kami        | Tentang Kami        |
+| `/lithium-fire-safety` | Lithium Fire Safety | Lithium Fire Safety |
+| `/contact`             | Kontak              | Kontak              |
+
+Alias redirect: `/tentang-kami` → `/about`, `/kontak` → `/contact`.
+
+## Fase implementasi
+
+| Fase | Scope                               | Status      |
+| ---- | ----------------------------------- | ----------- |
+| 1    | Arsitektur + Header + Footer        | Selesai     |
+| 2    | Section + halaman (dari CONTENT.md) | Menunggu OK |
+</file>
+
+<file path="docs/CONTENT.md">
+## KONTEKS PROYEK
+
+- **Nama Perusahaan:** PT. Famindo Alfa Spektrum Teknologi (FAST)
+- **Industri:** Spesialis Perlindungan Kebakaran Baterai Lithium
+- **Produk Utama:** Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31
+- **Tujuan:** Membuat struktur website yang komprehensif, informatif, dan mengarahkan user untuk menghubungi sales/support.
+
+---
+
+## GLOBAL UI COMPONENTS
+
+### Header / Navigasi
+
+Menu: Beranda | Tentang Kami | Lithium Fire Safety | Kontak
+
+### Footer _(berlaku di semua halaman)_
+
+- Teks: _"Stay up to date by following our social media!"_
+- Form Newsletter: `[Input: Email]` + `[Button: Kirim Informasi]`
+- Kontak:
+  - Email: support@famindofast.com
+  - Telepon: +62 812 9000 3278
+
+---
+
+## STRUKTUR HALAMAN & KONTEN
+
+---
+
+### PAGE 1: BERANDA (`/`)
+
+#### Section 1 — Hero Banner
+
+- **Headline:** Spesialis Perlindungan Kebakaran Baterai Lithium
+- **Deskripsi:** Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.
+- **Call to Action:** `[Button: Lihat Profil Perusahaan Kami]` → Arahkan ke `/about`
+
+---
+
+#### Section 2 — Problem & Awareness
+
+- **Headline:** No Fire, No Fear
+- **Deskripsi:** Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.
+- **Call to Action:** `[Button: Pelajari Lebih Detail]` → Arahkan ke `/lithium-fire-safety`
+
+---
+
+#### Section 3 — Layanan / Solusi Keamanan _(Grid 3 Kolom)_
+
+| No. | Judul           | Deskripsi                                                         |
+| --- | --------------- | ----------------------------------------------------------------- |
+| 1   | EV Fire Safety  | Menjaga keselamatan diri adalah tanggung jawab setiap pemilik EV. |
+| 2   | Business Safety | Prioritaskan keamanan nyawa karyawan dan aset bisnis Anda.        |
+| 3   | Mining Safety   | Maksimalkan sistem keamanan operasional di sektor pertambangan.   |
+
+---
+
+#### Section 4 — Edukasi: Apa Itu Baterai Lithium?
+
+Baterai lithium-ion (Li-ion) adalah jenis baterai isi ulang yang banyak digunakan pada perangkat elektronik portabel maupun kendaraan listrik. Mekanismenya bekerja dengan memindahkan ion lithium antara elektroda positif (katoda) dan elektroda negatif (anoda) melalui elektrolit.
+
+Baterai Li-ion mampu menyimpan energi lebih besar dalam ukuran yang ringkas dan ringan, menjadikannya pilihan ideal untuk perangkat portabel. Berbeda dengan beberapa jenis baterai lain, baterai Li-ion tidak mengalami penurunan kapasitas meski diisi ulang sebelum benar-benar habis. Dengan umur pakai yang relatif panjang serta mampu melalui banyak siklus pengisian dan pengosongan, baterai ini lebih efisien, ramah lingkungan, dan dapat didaur ulang.
+
+Meskipun menawarkan banyak keunggulan, baterai lithium-ion juga memiliki risiko tertentu yang perlu diwaspadai.
+
+---
+
+#### Section 5 — Bahaya Thermal Runaway
+
+Baterai lithium-ion menyimpan energi besar di dalam elektrolit yang mudah terbakar. Saat terjadi kerusakan fisik, korsleting, atau suhu berlebih, elektrolit dapat bocor dan memicu reaksi berbahaya berupa kebakaran atau ledakan. Faktor pemicu umumnya berasal dari cacat produksi, pengisian daya yang tidak sesuai, atau paparan suhu ekstrem.
+
+Thermal runaway adalah kondisi peningkatan suhu pada baterai yang berlangsung secara terus-menerus dan sulit dikendalikan. Proses ini dapat membuat baterai mengeluarkan asap, terbakar, hingga meledak. Memahami risiko ini penting agar pengguna lebih bijak dalam menyimpan, mengisi, dan menggunakan baterai lithium dengan cara yang aman.
+
+---
+
+#### Section 6 — Regulasi Pemerintah di Indonesia
+
+Deskripsi: Peluang Indonesia sebagai pusat industri baterai lithium dan dukungan regulasi.
+
+**Tabel Regulasi:**
+
+| Regulasi                        | Nama Lengkap                                      | Deskripsi                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Perpres No. 55 Tahun 2019**   | Peraturan Presiden Nomor 55 Tahun 2019            | Mengatur Percepatan Program Kendaraan Bermotor Listrik Berbasis Baterai (Battery Electric Vehicle/BEV) untuk transportasi jalan. Di dalamnya tercakup kerangka regulasi serta berbagai insentif guna menarik investasi, memperkuat industri lokal, membangun infrastruktur pendukung, dan mendorong adopsi kendaraan listrik secara luas di masyarakat. |
+| **Inpres No. 7 Tahun 2022**     | Instruksi Presiden Nomor 7 Tahun 2022             | Mewajibkan seluruh instansi pemerintah, baik pusat maupun daerah, untuk menggunakan kendaraan bermotor listrik berbasis baterai (Battery Electric Vehicle/BEV) sebagai kendaraan dinas operasional maupun kendaraan perorangan.                                                                                                                         |
+| **Permenhub No. 13 Tahun 2024** | Peraturan Menteri Perhubungan Nomor 13 Tahun 2024 | Mengatur tentang perlengkapan keselamatan kendaraan bermotor, termasuk sabuk keselamatan, alat pemadam api ringan (APAR), dan perlengkapan keselamatan lainnya. Tujuannya adalah untuk meningkatkan standar keselamatan berkendara dan melindungi pengguna jalan di Indonesia.                                                                          |
+
+---
+
+### PAGE 2: TENTANG KAMI (`/about`)
+
+#### Section 1 — Pengenalan Perusahaan
+
+**Tentang Kami**
+
+PT. Famindo Alfa Spektrum Teknologi (FAST) adalah perusahaan yang berfokus pada penyediaan solusi keamanan terhadap risiko kebakaran. FAST merupakan distributor eksklusif APAR Lithium Fire Killer Hartindo AF31, APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya bagi manusia maupun lingkungan.
+
+Selain menghadirkan produk unggulan, FAST juga berkomitmen untuk mengedukasi masyarakat tentang bahaya kebakaran, khususnya kebakaran baterai lithium-ion, serta memberikan pemahaman mengenai cara penanggulangannya secara aman dan efektif.
+
+---
+
+#### Section 2 — Sejarah & Visi
+
+**Headline:** Dimulai Dari Panggilan Untuk Menolong Banyak Orang
+
+**Tokoh Kunci:**
+
+- Bapak Randall Hartolaksono — Penemu Hartindo AF31
+- Bapak Willy Hadiwijaya — Pendiri PT. FAST
+
+**Konten:**
+
+_Dengan Tim Solid Segalanya Dapat Tercapai_
+
+Kisah ini berawal dari Bapak Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Bapak Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.
+
+_Dimulai Dari Panggilan Untuk Menolong Banyak Orang_
+
+_Terus Berinovasi Sambil Mengedukasi Masyarakat_
+
+PT. FAST tidak hanya berperan sebagai penyedia produk keamanan kebakaran, tetapi juga berdedikasi untuk mengedukasi dan mensosialisasikan pentingnya keselamatan. Melalui berbagai program, FAST berkomitmen meningkatkan kesadaran masyarakat agar lebih memprioritaskan perlindungan jiwa serta terlatih dalam menghadapi potensi bahaya kebakaran yang datang tanpa diduga.
+
+---
+
+#### Section 3 — Informasi Lokasi
+
+**Lokasi Kami**
+
+- **Alamat:** TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10220
+- **Waktu Operasional:** Senin – Jumat | Jam 09.00 – 17.00 WIB
+
+---
+
+### PAGE 3: LITHIUM FIRE SAFETY (`/lithium-fire-safety`)
+
+#### Section 1 — Kategori Proteksi
+
+**1. Electric Vehicle (EV) Safety**
+
+Industri kendaraan listrik (EV) di Indonesia berkembang sangat pesat dan segera menjadi bagian penting dari kebutuhan transportasi masyarakat.
+
+Oleh karena itu, setiap pemilik EV perlu memahami cara merawat kendaraannya sekaligus melindungi diri dari risiko kebakaran baterai lithium yang dapat terjadi kapan saja.
+
+---
+
+**2. Business Safety**
+
+Berbagai sektor bisnis di Indonesia kini telah mengadopsi teknologi berbasis baterai lithium, termasuk industri manufaktur baterai itu sendiri. Untuk melindungi karyawan dan menjaga keberlangsungan aset perusahaan, penerapan sistem keamanan terhadap risiko kebakaran baterai lithium menjadi hal yang mutlak diperlukan.
+
+_Mengamankan Berbagai Sektor Bisnis Di Indonesia_
+
+PT. FAST hadir sebagai mitra strategis bagi berbagai sektor industri di Indonesia dalam menghadapi risiko kebakaran baterai lithium. Kami tidak hanya menyediakan solusi proteksi terdepan, tetapi juga berkomitmen untuk melindungi karyawan, aset, dan keberlangsungan bisnis melalui edukasi serta penerapan standar keselamatan yang efektif.
+
+**Sektor yang dilayani:**
+
+- EV Charging Station
+- Battery Storage & Manufacturer
+- Manufacturer
+- Data Center
+- Logistics
+- Energy Powerplant
+
+---
+
+**3. Mining Safety** _(oleh PT. Fastindo Intiraya Solusi Tambang — FIRST)_
+
+Industri pertambangan memiliki tantangan keselamatan yang sangat kompleks dan membutuhkan solusi khusus dari para ahli berpengalaman. Untuk itu, hadir FIRST (PT. Fastindo Intiraya Solusi Tambang) dengan komitmen kuat menghadirkan teknologi terdepan dan layanan terpercaya demi menjaga keselamatan serta memastikan pertambangan Indonesia tetap berada di garis terdepan.
+
+---
+
+#### Section 2 — Metode EPC (Engineering, Procurement, Construction)
+
+**Metode EPC**
+
+EPC (Engineering, Procurement, and Construction) adalah metode yang digunakan oleh FIRST untuk merancang solusi sesuai kebutuhan spesifik di lokasi pertambangan. Proses ini mencakup perencanaan menyeluruh, penyusunan mekanisme pencegahan kebakaran, integrasi detektor, hingga pemasangan sistem proteksi kebakaran. Dengan pendekatan EPC, FIRST memastikan setiap tahap dilaksanakan secara tepat dan disesuaikan dengan kebutuhan klien.
+
+**Tahapan EPC:**
+
+1. Perencanaan menyeluruh
+2. Penyusunan mekanisme pencegahan kebakaran
+3. Integrasi detektor
+4. Pemasangan sistem proteksi kebakaran secara presisi
+
+---
+
+#### Section 3 — Bottom CTA
+
+- **Headline:** Butuh Bantuan Lebih Lanjut?
+- **Call to Action:** `[Button: Hubungi Kami]` → Arahkan ke `/contact`
+
+---
+
+### PAGE 4: KONTAK (`/contact`)
+
+#### Section 1 — Informasi Kontak
+
+| Channel            | Detail                  |
+| ------------------ | ----------------------- |
+| Telepon / WhatsApp | +62 812 9000 3278       |
+| Email              | support@famindofast.com |
+
+---
+
+#### Section 2 — Contact Form
+
+- `[Input: Nama Depan]` _(Required)_
+- `[Input: Alamat Email]` _(Required)_
+- `[Textarea: Tulis Pesan Anda di Sini]` _(Required)_
+- `[Button: Kirim Pesan]`
+
+---
+
+#### Section 3 — Peta & Lokasi
+
+_(Sama dengan detail lokasi di halaman About Us)_
+
+- **Alamat:** TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10220
+- **Waktu Operasional:** Senin – Jumat | Jam 09.00 – 17.00 WIB
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+  },
+])
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>FAST — Spesialis Perlindungan Kebakaran Baterai Lithium</title>
+    <meta
+      name="description"
+      content="PT. Famindo Alfa Spektrum Teknologi (FAST) — distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 dan solusi proteksi kebakaran lithium."
+    />
+    <meta name="author" content="PT. Famindo Alfa Spektrum Teknologi" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FAST" />
+    <meta
+      property="og:title"
+      content="FAST — Spesialis Perlindungan Kebakaran Baterai Lithium"
+    />
+    <meta
+      property="og:description"
+      content="Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31. Solusi proteksi kebakaran lithium untuk EV, bisnis, dan industri."
+    />
+    <meta
+      property="og:image"
+      content="https://www.famindofast.com/og-image.svg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:url" content="https://www.famindofast.com/" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="FAST — Spesialis Perlindungan Kebakaran Baterai Lithium"
+    />
+    <meta
+      name="twitter:description"
+      content="Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.famindofast.com/og-image.svg"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "PT. Famindo Alfa Spektrum Teknologi",
+        "alternateName": "FAST",
+        "url": "https://www.famindofast.com",
+        "logo": "https://www.famindofast.com/og-image.svg",
+        "description": "Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 dan solusi proteksi kebakaran baterai lithium.",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+62-812-9000-3278",
+          "email": "support@famindofast.com",
+          "contactType": "customer service",
+          "areaServed": "ID",
+          "availableLanguage": ["Indonesian"]
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "TCC Tower One Menara Batavia, Jl. K.H. Mas Mansyur No. Kav. 126, Karet Tengsin",
+          "addressLocality": "Jakarta Pusat",
+          "postalCode": "10220",
+          "addressRegion": "DKI Jakarta",
+          "addressCountry": "ID"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "landing-page",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.0",
+    "@tiptap/pm": "^3.22.5",
+    "@tiptap/react": "^3.22.5",
+    "@tiptap/starter-kit": "^3.22.5",
+    "@vercel/analytics": "^2.0.1",
+    "framer-motion": "^12.38.0",
+    "i18next": "^25.8.11",
+    "lucide-react": "^0.575.0",
+    "motion": "^12.34.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-helmet-async": "^3.0.0",
+    "react-i18next": "^16.5.4",
+    "react-router-dom": "^7.13.2",
+    "tailwindcss": "^4.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.2",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vite": "^7.3.1",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-sitemap": "^0.8.2"
+  }
+}
+</file>
+
+<file path="public/og-image.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="FAST - Lithium Fire Safety">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#002B96"/>
+      <stop offset="100%" style="stop-color:#0047AD"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1000" cy="120" r="180" fill="#FF7300" opacity="0.25"/>
+  <circle cx="150" cy="520" r="140" fill="#0D84FC" opacity="0.2"/>
+  <text x="80" y="280" fill="#FF7300" font-family="system-ui,sans-serif" font-size="72" font-weight="700">FAST</text>
+  <text x="80" y="360" fill="#ffffff" font-family="system-ui,sans-serif" font-size="36" font-weight="600">Lithium Fire Safety</text>
+  <text x="80" y="420" fill="rgba(255,255,255,0.85)" font-family="system-ui,sans-serif" font-size="24">PT. Famindo Alfa Spektrum Teknologi</text>
+  <text x="80" y="480" fill="rgba(255,255,255,0.7)" font-family="system-ui,sans-serif" font-size="20">famindofast.com</text>
+</svg>
+</file>
+
+<file path="public/robots.txt">
+User-agent: *
+Allow: /
+
+Disallow: /assets/
+Disallow: /*.json$
+
+Sitemap: https://www.famindofast.com/sitemap.xml
+</file>
+
+<file path="public/sitemap.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.famindofast.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.famindofast.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.famindofast.com/lithium-fire-safety</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.famindofast.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
+</file>
+
+<file path="README.md">
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
+
+export default defineConfig([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs["recommended-typescript"],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
+```
+</file>
+
+<file path="src/App.tsx">
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "./routes";
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
+};
+
+export default App;
+</file>
+
+<file path="src/assets/images/.gitkeep">
+
+</file>
+
+<file path="src/components/layout/Footer.tsx">
+import { Mail, Phone } from "lucide-react";
+import { Button } from "../ui/Button";
+import { CONTACT, FOOTER, SITE } from "../../config/site";
+
+export const Footer = () => {
+  const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
+  const { newsletter, socialCta } = FOOTER;
+
+  return (
+    <footer className="border-t border-brand-navy/10 bg-brand-navy text-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <section aria-labelledby="footer-newsletter-heading">
+            <h2 id="footer-newsletter-heading" className="sr-only">
+              Newsletter
+            </h2>
+            <form
+              className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
+              onSubmit={handleNewsletterSubmit}
+              noValidate
+            >
+              <label htmlFor="newsletter-email" className="sr-only">
+                {newsletter.emailLabel}
+              </label>
+              <input
+                id="newsletter-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder={newsletter.emailPlaceholder}
+                className="min-w-0 flex-1 rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-sm text-white placeholder:text-white/50 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              />
+              <Button
+                type="submit"
+                variant="primary"
+                className="shrink-0 sm:px-6"
+              >
+                {newsletter.submitButton}
+              </Button>
+            </form>
+          </section>
+
+          <section aria-labelledby="footer-contact-heading">
+            <h2 id="footer-contact-heading" className="sr-only">
+              Kontak
+            </h2>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href={`mailto:${CONTACT.email}`}
+                  className="inline-flex items-center gap-3 rounded-sm text-sm text-white/90 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                >
+                  <Mail
+                    className="size-5 shrink-0 text-brand-accent"
+                    aria-hidden
+                  />
+                  <span>{CONTACT.email}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={CONTACT.phoneHref}
+                  className="inline-flex items-center gap-3 rounded-sm text-sm text-white/90 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                >
+                  <Phone
+                    className="size-5 shrink-0 text-brand-accent"
+                    aria-hidden
+                  />
+                  <span>{CONTACT.phone}</span>
+                </a>
+              </li>
+            </ul>
+
+            <p className="mt-8 text-sm font-medium text-white/90">
+              {socialCta}
+            </p>
+          </section>
+        </div>
+
+        <div className="mt-12 border-t border-white/15 pt-8 text-center text-xs text-white/60 sm:text-sm">
+          <p>
+            &copy; {new Date().getFullYear()} {SITE.name} ({SITE.shortName})
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+</file>
+
+<file path="src/components/layout/Header.tsx">
+import { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+import { HEADER_NAV } from "../../content";
+import { SITE } from "../../config/site";
+
+const NAV_LINKS = HEADER_NAV;
+
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 lg:px-4 ${isActive
+    ? "bg-brand-primary/15 text-brand-primary"
+    : "text-brand-navy hover:bg-brand-primary/10 hover:text-brand-primary"
+  }`;
+
+const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `block rounded-lg px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 ${isActive
+    ? "bg-brand-primary/15 text-brand-primary"
+    : "text-brand-navy hover:bg-brand-primary/10 hover:text-brand-primary"
+  }`;
+
+export const Header = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-brand-navy/10 bg-white/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link
+          to="/"
+          className="flex min-w-0 shrink flex-col leading-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 rounded-sm"
+          aria-label={`${SITE.shortName} — Beranda`}
+        >
+          <span className="text-lg font-bold tracking-tight text-brand-navy sm:text-xl">
+            {SITE.shortName}
+          </span>
+          <span className="truncate text-[10px] font-medium text-brand-dark-blue xs:block sm:text-xs max-w-[140px] sm:max-w-none">
+            <span className="hidden min-[400px]:inline">{SITE.name}</span>
+            <span className="min-[400px]:hidden">{SITE.tagline}</span>
+          </span>
+        </Link>
+
+        <nav className="hidden md:block" aria-label="Navigasi utama">
+          <ul className="flex items-center gap-1 lg:gap-2">
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <NavLink
+                  to={link.href}
+                  className={navLinkClass}
+                  end={link.href === "/"}
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-lg p-2 text-brand-navy transition-colors hover:bg-brand-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:hidden"
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-nav"
+          aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
+          onClick={() => setMobileOpen((open) => !open)}
+        >
+          {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+        </button>
+      </div>
+
+      {mobileOpen && (
+        <nav
+          id="mobile-nav"
+          className="border-t border-brand-navy/10 bg-white md:hidden"
+          aria-label="Navigasi mobile"
+        >
+          <ul className="flex flex-col px-4 py-3 sm:px-6">
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <NavLink
+                  to={link.href}
+                  className={mobileNavLinkClass}
+                  end={link.href === "/"}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </header>
+  );
+};
+</file>
+
+<file path="src/components/layout/index.ts">
+export { Header } from "./Header";
+export { Footer } from "./Footer";
+export { MainLayout } from "./MainLayout";
+</file>
+
+<file path="src/components/layout/MainLayout.tsx">
+import { Outlet } from "react-router-dom";
+import { Footer } from "./Footer";
+import { Header } from "./Header";
+
+export const MainLayout = () => {
+  return (
+    <>
+      <a href="#main-content" className="skip-link">
+        Lewati ke konten utama
+      </a>
+      <Header />
+      <main id="main-content" tabIndex={-1}>
+        <Outlet />
+      </main>
+      <Footer />
+    </>
+  );
+};
+</file>
+
+<file path="src/components/sections/.gitkeep">
+
+</file>
+
+<file path="src/components/sections/about/AboutHistorySection.tsx">
+import { ABOUT_CONTENT } from "../../../content/about";
+
+const { history } = ABOUT_CONTENT;
+
+export const AboutHistorySection = () => {
+  return (
+    <section
+      className="bg-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="about-history-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="mx-auto max-w-3xl text-center lg:max-w-4xl">
+          <h2
+            id="about-history-heading"
+            className="text-2xl font-bold leading-snug text-brand-navy sm:text-3xl lg:text-4xl"
+          >
+            {history.headline}
+          </h2>
+        </header>
+
+        <ul className="mx-auto mt-10 flex list-none max-w-4xl flex-col gap-4 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center lg:max-w-5xl lg:gap-6">
+          {history.keyFigures.map((figure) => (
+            <li key={figure.name}>
+              <article className="rounded-2xl border border-brand-navy/10 bg-brand-surface px-6 py-5 text-center sm:min-w-[16rem] sm:px-8">
+                <h3 className="text-base font-bold text-brand-dark-blue sm:text-lg">
+                  {figure.name}
+                </h3>
+                <p className="mt-1 text-sm font-medium text-brand-primary">
+                  {figure.role}
+                </p>
+              </article>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mx-auto mt-12 max-w-3xl space-y-10 lg:max-w-4xl">
+          {history.blocks.map((block) => (
+            <article key={block.subheading}>
+              <h3 className="text-lg font-bold italic text-brand-navy sm:text-xl">
+                {block.subheading}
+              </h3>
+              {block.paragraphs.length > 0 && (
+                <div className="mt-4 space-y-4">
+                  {block.paragraphs.map((paragraph) => (
+                    <p
+                      key={paragraph.slice(0, 48)}
+                      className="text-base leading-relaxed text-brand-navy/80 sm:text-lg"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/about/AboutIntroSection.tsx">
+import { ABOUT_CONTENT } from "../../../content/about";
+
+const { intro } = ABOUT_CONTENT;
+
+export const AboutIntroSection = () => {
+  return (
+    <section
+      className="relative overflow-hidden bg-linear-to-br from-brand-navy via-brand-dark-blue to-brand-navy py-16 text-white sm:py-20 lg:py-24"
+      aria-labelledby="about-intro-heading"
+    >
+      <div
+        className="pointer-events-none absolute -right-20 top-0 size-72 rounded-full bg-brand-primary/20 blur-3xl"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <article className="max-w-3xl">
+          <h1
+            id="about-intro-heading"
+            className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl"
+          >
+            {intro.heading}
+          </h1>
+          <div className="mt-8 space-y-6">
+            {intro.paragraphs.map((paragraph) => (
+              <p
+                key={paragraph.slice(0, 48)}
+                className="text-base leading-relaxed text-white/85 sm:text-lg"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/about/AboutLocationSection.tsx">
+import { Clock, MapPin, MapPinned } from "lucide-react";
+import { ABOUT_CONTENT } from "../../../content/about";
+
+const { location } = ABOUT_CONTENT;
+
+export const AboutLocationSection = () => {
+  return (
+    <section
+      className="bg-linear-to-b from-brand-surface to-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="about-location-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="max-w-2xl">
+          <h2
+            id="about-location-heading"
+            className="text-2xl font-bold text-brand-navy sm:text-3xl"
+          >
+            {location.heading}
+          </h2>
+        </header>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-12">
+          <address className="not-italic">
+            <ul className="space-y-6">
+              <li className="flex gap-4">
+                <MapPin
+                  className="size-6 shrink-0 text-brand-accent"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                    Alamat
+                  </p>
+                  <p className="mt-2 text-base leading-relaxed text-brand-navy sm:text-lg">
+                    {location.address}
+                  </p>
+                </div>
+              </li>
+              <li className="flex gap-4">
+                <Clock
+                  className="size-6 shrink-0 text-brand-accent"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                    Waktu Operasional
+                  </p>
+                  <p className="mt-2 text-base text-brand-navy sm:text-lg">
+                    {location.hours}
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </address>
+
+          <figure className="overflow-hidden rounded-2xl border border-brand-navy/10 shadow-sm">
+            <div
+              className="flex aspect-video min-h-[280px] flex-col items-center justify-center gap-3 bg-brand-surface px-6 text-center"
+              role="img"
+              aria-label="Placeholder embed Google Maps"
+            >
+              <MapPinned
+                className="size-10 text-brand-accent/60"
+                strokeWidth={1.5}
+                aria-hidden
+              />
+              <p className="text-sm font-medium text-brand-navy/50">
+                Google Maps
+              </p>
+              <p className="sr-only">{location.address}</p>
+            </div>
+            <figcaption className="sr-only">
+              Placeholder peta — {location.address}
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/about/index.ts">
+export { AboutIntroSection } from "./AboutIntroSection";
+export { AboutHistorySection } from "./AboutHistorySection";
+export { AboutLocationSection } from "./AboutLocationSection";
+</file>
+
+<file path="src/components/sections/contact/ContactFormSection.tsx">
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { CONTACT_PAGE_CONTENT } from "../../../content/contact";
+import { Button } from "../../ui/Button";
+
+const { form } = CONTACT_PAGE_CONTENT;
+
+type FormData = {
+  firstName: string;
+  email: string;
+  message: string;
+};
+
+type FormField = keyof FormData;
+type FormErrors = Partial<Record<FormField, string>>;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validate = (data: FormData): FormErrors => {
+  const errors: FormErrors = {};
+
+  if (!data.firstName.trim()) {
+    errors.firstName = form.errors.required;
+  }
+
+  const email = data.email.trim();
+  if (!email) {
+    errors.email = form.errors.required;
+  } else if (!EMAIL_PATTERN.test(email)) {
+    errors.email = form.errors.emailInvalid;
+  }
+
+  if (!data.message.trim()) {
+    errors.message = form.errors.required;
+  }
+
+  return errors;
+};
+
+const inputClass = (hasError: boolean) =>
+  `mt-1.5 w-full rounded-lg border px-4 py-2.5 text-brand-navy transition-colors focus:outline-none focus:ring-2 ${hasError
+    ? "border-brand-secondary focus:border-brand-secondary focus:ring-brand-secondary/30"
+    : "border-brand-navy/20 focus:border-brand-primary focus:ring-brand-primary/30"
+  }`;
+
+export const ContactFormSection = () => {
+  const [formData, setFormData] = useState<FormData>({
+    firstName: "",
+    email: "",
+    message: "",
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSuccess, setIsSuccess] = useState(false);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isSuccess) successRef.current?.focus();
+  }, [isSuccess]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    const field = name as FormField;
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setIsSuccess(false);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const validationErrors = validate(formData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setIsSuccess(false);
+      return;
+    }
+
+    setErrors({});
+    setIsSuccess(true);
+    setFormData({ firstName: "", email: "", message: "" });
+  };
+
+  const { fields } = form;
+
+  return (
+    <section
+      className="bg-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="contact-form-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-xl">
+          <h2
+            id="contact-form-heading"
+            className="sr-only"
+          >
+            {form.heading}
+          </h2>
+
+          {isSuccess && (
+            <div
+              ref={successRef}
+              tabIndex={-1}
+              role="status"
+              aria-live="polite"
+              className="rounded-lg border border-brand-accent/30 bg-brand-accent/10 px-4 py-4 text-sm text-brand-navy sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+            >
+              <p className="font-semibold text-brand-dark-blue">
+                {form.success.title}
+              </p>
+              <p className="mt-1">{form.success.message}</p>
+            </div>
+          )}
+
+          <form
+            className={isSuccess ? "mt-8 space-y-6" : "space-y-6"}
+            onSubmit={handleSubmit}
+            noValidate
+          >
+            <div>
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-semibold text-brand-navy"
+              >
+                {fields.firstName.label}
+                {fields.firstName.required && (
+                  <span className="text-brand-secondary" aria-hidden>
+                    {" "}
+                    *
+                  </span>
+                )}
+                {fields.firstName.required && (
+                  <span className="sr-only"> (wajib diisi)</span>
+                )}
+              </label>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoComplete="given-name"
+                required
+                value={formData.firstName}
+                onChange={handleChange}
+                aria-invalid={Boolean(errors.firstName)}
+                aria-describedby={
+                  errors.firstName ? "firstName-error" : undefined
+                }
+                className={inputClass(Boolean(errors.firstName))}
+              />
+              {errors.firstName && (
+                <p
+                  id="firstName-error"
+                  role="alert"
+                  className="mt-1.5 text-sm text-brand-secondary"
+                >
+                  {errors.firstName}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-brand-navy"
+              >
+                {fields.email.label}
+                {fields.email.required && (
+                  <span className="text-brand-secondary" aria-hidden>
+                    {" "}
+                    *
+                  </span>
+                )}
+                {fields.email.required && (
+                  <span className="sr-only"> (wajib diisi)</span>
+                )}
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={errors.email ? "email-error" : undefined}
+                className={inputClass(Boolean(errors.email))}
+              />
+              {errors.email && (
+                <p
+                  id="email-error"
+                  role="alert"
+                  className="mt-1.5 text-sm text-brand-secondary"
+                >
+                  {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="message"
+                className="block text-sm font-semibold text-brand-navy"
+              >
+                {fields.message.label}
+                {fields.message.required && (
+                  <span className="text-brand-secondary" aria-hidden>
+                    {" "}
+                    *
+                  </span>
+                )}
+                {fields.message.required && (
+                  <span className="sr-only"> (wajib diisi)</span>
+                )}
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                rows={5}
+                required
+                value={formData.message}
+                onChange={handleChange}
+                aria-invalid={Boolean(errors.message)}
+                aria-describedby={
+                  errors.message ? "message-error" : undefined
+                }
+                className={`${inputClass(Boolean(errors.message))} min-h-[120px] resize-y`}
+              />
+              {errors.message && (
+                <p
+                  id="message-error"
+                  role="alert"
+                  className="mt-1.5 text-sm text-brand-secondary"
+                >
+                  {errors.message}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full px-8 py-3 sm:w-auto"
+            >
+              {form.submitLabel}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/contact/ContactInfoSection.tsx">
+import { Mail, Phone } from "lucide-react";
+import { CONTACT_PAGE_CONTENT } from "../../../content/contact";
+
+const { info } = CONTACT_PAGE_CONTENT;
+
+export const ContactInfoSection = () => {
+  return (
+    <section
+      className="relative overflow-hidden bg-linear-to-br from-brand-navy via-brand-dark-blue to-brand-navy py-16 text-white sm:py-20 lg:py-24"
+      aria-labelledby="contact-info-heading"
+    >
+      <div
+        className="pointer-events-none absolute -right-24 top-0 size-80 rounded-full bg-brand-primary/20 blur-3xl"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h1
+          id="contact-info-heading"
+          className="text-3xl font-bold sm:text-4xl lg:text-5xl"
+        >
+          {info.heading}
+        </h1>
+
+        <table className="mt-10 w-full max-w-2xl border-collapse text-left text-sm sm:text-base">
+          <caption className="sr-only">Informasi kontak FAST</caption>
+          <thead>
+            <tr className="border-b border-white/20">
+              <th
+                scope="col"
+                className="pb-3 pr-6 font-semibold text-brand-primary"
+              >
+                Channel
+              </th>
+              <th
+                scope="col"
+                className="pb-3 font-semibold text-brand-primary"
+              >
+                Detail
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {info.channels.map((channel) => (
+              <tr key={channel.id} className="border-b border-white/10">
+                <th
+                  scope="row"
+                  className="py-4 pr-6 align-top font-medium text-white/90"
+                >
+                  {channel.label}
+                </th>
+                <td className="py-4 align-top">
+                  <a
+                    href={
+                      channel.id === "phone"
+                        ? channel.whatsappHref
+                        : channel.href
+                    }
+                    className="inline-flex items-center gap-3 font-semibold text-white transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy rounded-sm"
+                  >
+                    {channel.id === "phone" ? (
+                      <Phone className="size-5 shrink-0" aria-hidden />
+                    ) : (
+                      <Mail className="size-5 shrink-0" aria-hidden />
+                    )}
+                    {channel.value}
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/contact/ContactLocationSection.tsx">
+import { Clock, MapPin } from "lucide-react";
+import { CONTACT_PAGE_CONTENT } from "../../../content/contact";
+
+const { location } = CONTACT_PAGE_CONTENT;
+
+export const ContactLocationSection = () => {
+  const mapsEmbedSrc = `https://www.google.com/maps?q=${location.mapsQuery}&output=embed`;
+
+  return (
+    <section
+      className="bg-linear-to-b from-brand-surface to-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="contact-location-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="max-w-2xl">
+          <h2
+            id="contact-location-heading"
+            className="text-2xl font-bold text-brand-navy sm:text-3xl"
+          >
+            {location.heading}
+          </h2>
+        </header>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-12">
+          <address className="not-italic">
+            <ul className="space-y-6">
+              <li className="flex gap-4">
+                <MapPin
+                  className="size-6 shrink-0 text-brand-accent"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                    {location.addressLabel}
+                  </p>
+                  <p className="mt-2 text-base leading-relaxed text-brand-navy sm:text-lg">
+                    {location.address}
+                  </p>
+                </div>
+              </li>
+              <li className="flex gap-4">
+                <Clock
+                  className="size-6 shrink-0 text-brand-accent"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                    {location.hoursLabel}
+                  </p>
+                  <p className="mt-2 text-base text-brand-navy sm:text-lg">
+                    {location.hours}
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </address>
+
+          <figure className="overflow-hidden rounded-2xl border border-brand-navy/10 shadow-sm">
+            <iframe
+              title="Lokasi kantor FAST di Google Maps"
+              src={mapsEmbedSrc}
+              className="aspect-video w-full min-h-[280px] border-0 bg-brand-surface"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <figcaption className="sr-only">
+              Peta Google Maps — {location.address}
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/contact/index.ts">
+export { ContactInfoSection } from "./ContactInfoSection";
+export { ContactFormSection } from "./ContactFormSection";
+export { ContactLocationSection } from "./ContactLocationSection";
+</file>
+
+<file path="src/components/sections/home/EducationSection.tsx">
+import { HOME_CONTENT } from "../../../content/home";
+
+const { education } = HOME_CONTENT;
+
+export const EducationSection = () => {
+  return (
+    <section
+      className="bg-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="education-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <article className="mx-auto max-w-3xl lg:max-w-4xl">
+          <h2
+            id="education-heading"
+            className="text-2xl font-bold text-brand-navy sm:text-3xl lg:text-4xl"
+          >
+            {education.heading}
+          </h2>
+          <div className="mt-6 space-y-6">
+            {education.paragraphs.map((paragraph) => (
+              <p
+                key={paragraph.slice(0, 48)}
+                className="text-base leading-relaxed text-brand-navy/80 sm:text-lg"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/home/HeroSection.tsx">
+import { HOME_CONTENT } from "../../../content/home";
+import { ButtonLink } from "../../ui/ButtonLink";
+
+const { hero } = HOME_CONTENT;
+
+export const HeroSection = () => {
+  return (
+    <section
+      className="relative overflow-hidden bg-linear-to-br from-brand-navy via-brand-dark-blue to-brand-navy text-white"
+      aria-labelledby="hero-heading"
+    >
+      <div
+        className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-brand-primary/20 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -bottom-32 -left-16 size-80 rounded-full bg-brand-accent/15 blur-3xl"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
+        <div className="max-w-3xl">
+          <h1
+            id="hero-heading"
+            className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl"
+          >
+            {hero.headline}
+          </h1>
+          <p className="mt-6 text-base leading-relaxed text-white/85 sm:text-lg">
+            {hero.description}
+          </p>
+          <div className="mt-8">
+            <ButtonLink
+              to={hero.cta.href}
+              variant="primary"
+              className="px-6 py-3 text-base"
+            >
+              {hero.cta.label}
+            </ButtonLink>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/home/index.ts">
+export { HeroSection } from "./HeroSection";
+export { ProblemSection } from "./ProblemSection";
+export { ServicesSection } from "./ServicesSection";
+export { EducationSection } from "./EducationSection";
+export { ThermalRunawaySection } from "./ThermalRunawaySection";
+export { RegulationSection } from "./RegulationSection";
+</file>
+
+<file path="src/components/sections/home/ProblemSection.tsx">
+import { HOME_CONTENT } from "../../../content/home";
+import { ButtonLink } from "../../ui/ButtonLink";
+
+const { problem } = HOME_CONTENT;
+
+export const ProblemSection = () => {
+  return (
+    <section
+      className="bg-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="problem-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center lg:max-w-4xl">
+          <h2
+            id="problem-heading"
+            className="text-3xl font-bold text-brand-navy sm:text-4xl"
+          >
+            {problem.headline}
+          </h2>
+          <p className="mt-6 text-base leading-relaxed text-brand-navy/80 sm:text-lg">
+            {problem.description}
+          </p>
+          <div className="mt-8">
+            <ButtonLink
+              to={problem.cta.href}
+              variant="secondary"
+              className="px-6 py-3 text-base"
+            >
+              {problem.cta.label}
+            </ButtonLink>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/home/RegulationSection.tsx">
+import { HOME_CONTENT } from "../../../content/home";
+
+const { regulation } = HOME_CONTENT;
+
+export const RegulationSection = () => {
+  return (
+    <section
+      className="bg-brand-navy py-16 text-white sm:py-20 lg:py-24"
+      aria-labelledby="regulation-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="mx-auto max-w-3xl text-center">
+          <h2
+            id="regulation-heading"
+            className="text-2xl font-bold text-brand-primary sm:text-3xl lg:text-4xl"
+          >
+            {regulation.heading}
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed text-white/80 sm:text-base">
+            {regulation.description}
+          </p>
+        </header>
+
+        <div className="mt-10 overflow-x-auto rounded-2xl border border-white/15 sm:mt-12">
+          <table className="w-full min-w-[48rem] border-collapse text-left text-sm sm:text-base">
+            <caption className="sr-only">
+              Tabel regulasi pemerintah terkait industri baterai lithium di
+              Indonesia
+            </caption>
+            <thead>
+              <tr className="border-b border-white/15 bg-white/5">
+                <th
+                  scope="col"
+                  className="px-4 py-4 font-semibold text-brand-primary lg:px-6"
+                >
+                  Regulasi
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-4 font-semibold text-brand-primary lg:px-6"
+                >
+                  Nama Lengkap
+                </th>
+                <th
+                  scope="col"
+                  className="px-4 py-4 font-semibold text-brand-primary lg:px-6"
+                >
+                  Deskripsi
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {regulation.rows.map((row, index) => (
+                <tr
+                  key={row.id}
+                  className={
+                    index < regulation.rows.length - 1
+                      ? "border-b border-white/10"
+                      : undefined
+                  }
+                >
+                  <th
+                    scope="row"
+                    className="px-4 py-4 align-top font-semibold text-white lg:px-6 lg:whitespace-nowrap"
+                  >
+                    {row.regulation}
+                  </th>
+                  <td className="px-4 py-4 align-top text-white/90 lg:px-6">
+                    {row.fullName}
+                  </td>
+                  <td className="px-4 py-4 align-top text-white/85 lg:px-6">
+                    {row.description}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/home/ServicesSection.tsx">
+import { Building2, Car, HardHat } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { HOME_CONTENT } from "../../../content/home";
+import { Card } from "../../ui/Card";
+
+const SERVICE_ICONS: LucideIcon[] = [Car, Building2, HardHat];
+
+const { services } = HOME_CONTENT;
+
+export const ServicesSection = () => {
+  return (
+    <section
+      className="bg-linear-to-b from-brand-surface to-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="services-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 id="services-heading" className="sr-only">
+          {services.heading}
+        </h2>
+
+        <ul className="grid list-none gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {services.items.map((service, index) => {
+            const Icon = SERVICE_ICONS[index] ?? Car;
+            return (
+              <li key={service.title}>
+                <Card
+                  icon={Icon}
+                  title={service.title}
+                  description={service.description}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/home/ThermalRunawaySection.tsx">
+import { Flame } from "lucide-react";
+import { HOME_CONTENT } from "../../../content/home";
+
+const { thermalRunaway } = HOME_CONTENT;
+
+export const ThermalRunawaySection = () => {
+  return (
+    <section
+      className="bg-linear-to-br from-brand-secondary/5 via-white to-brand-primary/5 py-16 sm:py-20 lg:py-24"
+      aria-labelledby="thermal-runaway-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <article className="mx-auto max-w-3xl lg:max-w-4xl">
+          <div
+            className="inline-flex size-14 items-center justify-center rounded-xl bg-brand-secondary/10 text-brand-secondary"
+            aria-hidden
+          >
+            <Flame className="size-7" strokeWidth={1.75} />
+          </div>
+          <h2
+            id="thermal-runaway-heading"
+            className="mt-6 text-2xl font-bold text-brand-navy sm:text-3xl lg:text-4xl"
+          >
+            {thermalRunaway.heading}
+          </h2>
+          <div className="mt-6 space-y-6">
+            {thermalRunaway.paragraphs.map((paragraph) => (
+              <p
+                key={paragraph.slice(0, 48)}
+                className="text-base leading-relaxed text-brand-navy/80 sm:text-lg"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/lithium-fire-safety/ContactCtaSection.tsx">
+import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
+import { ButtonLink } from "../../ui/ButtonLink";
+
+const { cta } = LITHIUM_FIRE_SAFETY_CONTENT;
+
+export const ContactCtaSection = () => {
+  return (
+    <section
+      className="bg-linear-to-r from-brand-navy to-brand-dark-blue py-16 sm:py-20 lg:py-24"
+      aria-labelledby="lfs-cta-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <h2
+          id="lfs-cta-heading"
+          className="text-2xl font-bold text-white sm:text-3xl lg:text-4xl"
+        >
+          {cta.headline}
+        </h2>
+        <div className="mt-8">
+          <ButtonLink
+            to={cta.button.href}
+            variant="primary"
+            className="px-8 py-3 text-base"
+          >
+            {cta.button.label}
+          </ButtonLink>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/lithium-fire-safety/EpcMethodSection.tsx">
+import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
+
+const { epc } = LITHIUM_FIRE_SAFETY_CONTENT;
+
+export const EpcMethodSection = () => {
+  return (
+    <section
+      className="bg-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby="epc-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <article className="mx-auto max-w-3xl lg:max-w-4xl">
+          <h2
+            id="epc-heading"
+            className="text-2xl font-bold text-brand-navy sm:text-3xl lg:text-4xl"
+          >
+            {epc.heading}
+          </h2>
+          <p className="mt-6 text-base leading-relaxed text-brand-navy/80 sm:text-lg">
+            {epc.description}
+          </p>
+
+          <h3 className="mt-10 text-lg font-bold text-brand-dark-blue sm:text-xl">
+            {epc.stepsHeading}
+          </h3>
+          <ol className="mt-6 list-decimal space-y-4 pl-6 marker:font-bold marker:text-brand-primary">
+            {epc.steps.map((step) => (
+              <li
+                key={step}
+                className="pl-2 text-base leading-relaxed text-brand-navy/80 sm:text-lg"
+              >
+                {step}
+              </li>
+            ))}
+          </ol>
+        </article>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/lithium-fire-safety/index.ts">
+export { ProtectionCategoriesSection } from "./ProtectionCategoriesSection";
+export { EpcMethodSection } from "./EpcMethodSection";
+export { ContactCtaSection } from "./ContactCtaSection";
+</file>
+
+<file path="src/components/sections/lithium-fire-safety/ProtectionCategoriesSection.tsx">
+import { useId, useState, type KeyboardEvent } from "react";
+import { Building2, Car, ChevronDown, HardHat } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
+
+type ProtectionCategory =
+  (typeof LITHIUM_FIRE_SAFETY_CONTENT.protection.categories)[number];
+
+const CATEGORY_ICONS: Record<ProtectionCategory["id"], LucideIcon> = {
+  "ev-safety": Car,
+  "business-safety": Building2,
+  "mining-safety": HardHat,
+};
+
+const { protection } = LITHIUM_FIRE_SAFETY_CONTENT;
+const CATEGORIES = protection.categories;
+
+const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
+  const Icon = CATEGORY_ICONS[category.id];
+
+  return (
+    <article className="rounded-2xl border border-brand-navy/10 bg-white p-6 text-brand-navy sm:p-8">
+      <div className="flex items-start gap-4">
+        <div
+          className="inline-flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary"
+          aria-hidden
+        >
+          <Icon className="size-6" strokeWidth={1.75} />
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-brand-navy sm:text-2xl">
+            {category.title}
+          </h3>
+          {"byline" in category && (
+            <p className="mt-1 text-sm italic text-brand-navy/70">
+              {category.byline}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-6 space-y-4">
+        {category.paragraphs.map((paragraph) => (
+          <p
+            key={paragraph.slice(0, 48)}
+            className="text-base leading-relaxed text-brand-navy/80 sm:text-lg"
+          >
+            {paragraph}
+          </p>
+        ))}
+      </div>
+
+      {"subheading" in category && (
+        <div className="mt-8">
+          <h4 className="text-lg font-bold italic text-brand-navy">
+            {category.subheading}
+          </h4>
+          <p className="mt-4 text-base leading-relaxed text-brand-navy/80 sm:text-lg">
+            {category.subheadingParagraph}
+          </p>
+        </div>
+      )}
+
+      {"sectors" in category && (
+        <div className="mt-8">
+          <p className="text-sm font-semibold text-brand-dark-blue">
+            {category.sectorsLabel}
+          </p>
+          <ul className="mt-3 flex list-none flex-wrap gap-2">
+            {category.sectors.map((sector) => (
+              <li key={sector}>
+                <span className="inline-block rounded-lg bg-brand-accent/10 px-3 py-1.5 text-sm font-medium text-brand-navy">
+                  {sector}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </article>
+  );
+};
+
+export const ProtectionCategoriesSection = () => {
+  const baseId = useId();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [openAccordion, setOpenAccordion] = useState<number | null>(0);
+
+  const handleTabKeyDown = (
+    e: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    const lastIndex = CATEGORIES.length - 1;
+    let nextIndex: number | null = null;
+
+    switch (e.key) {
+      case "ArrowRight":
+        nextIndex = index === lastIndex ? 0 : index + 1;
+        break;
+      case "ArrowLeft":
+        nextIndex = index === 0 ? lastIndex : index - 1;
+        break;
+      case "Home":
+        nextIndex = 0;
+        break;
+      case "End":
+        nextIndex = lastIndex;
+        break;
+      default:
+        return;
+    }
+
+    e.preventDefault();
+    setActiveIndex(nextIndex);
+  };
+
+  return (
+    <section
+      className="relative overflow-hidden bg-linear-to-br from-brand-navy via-brand-dark-blue to-brand-navy py-16 text-white sm:py-20 lg:py-24"
+      aria-labelledby="protection-heading"
+    >
+      <div
+        className="pointer-events-none absolute -left-16 bottom-0 size-80 rounded-full bg-brand-accent/15 blur-3xl"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h1
+          id="protection-heading"
+          className="max-w-3xl text-3xl font-bold sm:text-4xl lg:text-5xl"
+        >
+          {protection.heading}
+        </h1>
+
+        {/* Desktop: Tabs */}
+        <div className="mt-10 hidden md:block">
+          <div
+            role="tablist"
+            aria-label="Kategori proteksi"
+            aria-orientation="horizontal"
+            className="flex flex-wrap gap-2"
+          >
+            {CATEGORIES.map((category, index) => {
+              const isActive = activeIndex === index;
+              const tabId = `${baseId}-tab-${category.id}`;
+              const panelId = `${baseId}-panel-${category.id}`;
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  role="tab"
+                  id={tabId}
+                  aria-selected={isActive}
+                  aria-controls={panelId}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => setActiveIndex(index)}
+                  onKeyDown={(e) => handleTabKeyDown(e, index)}
+                  className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy ${isActive
+                      ? "bg-brand-primary text-white"
+                      : "bg-white/10 text-white/90 hover:bg-white/15"
+                    }`}
+                >
+                  {category.tabLabel}
+                </button>
+              );
+            })}
+          </div>
+
+          {CATEGORIES.map((category, index) => {
+            const isActive = activeIndex === index;
+            const tabId = `${baseId}-tab-${category.id}`;
+            const panelId = `${baseId}-panel-${category.id}`;
+
+            return (
+              <div
+                key={category.id}
+                role="tabpanel"
+                id={panelId}
+                aria-labelledby={tabId}
+                hidden={!isActive}
+                tabIndex={0}
+                className="mt-6"
+              >
+                {isActive && <CategoryPanel category={category} />}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Mobile: Accordion */}
+        <div className="mt-10 space-y-3 md:hidden">
+          {CATEGORIES.map((category, index) => {
+            const isOpen = openAccordion === index;
+            const triggerId = `${baseId}-accordion-${category.id}`;
+            const panelId = `${baseId}-accordion-panel-${category.id}`;
+
+            return (
+              <div
+                key={category.id}
+                className="overflow-hidden rounded-xl border border-white/15 bg-white/5"
+              >
+                <h2 className="text-base font-semibold">
+                  <button
+                    type="button"
+                    id={triggerId}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    onClick={() =>
+                      setOpenAccordion(isOpen ? null : index)
+                    }
+                    className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary"
+                  >
+                    <span>
+                      {category.title}
+                      {"byline" in category && (
+                        <span className="mt-0.5 block text-xs font-normal italic text-white/70">
+                          {category.byline}
+                        </span>
+                      )}
+                    </span>
+                    <ChevronDown
+                      className={`size-5 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      aria-hidden
+                    />
+                  </button>
+                </h2>
+                <div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={triggerId}
+                  hidden={!isOpen}
+                  className="border-t border-white/10 px-2 pb-2 sm:px-3 sm:pb-3"
+                >
+                  {isOpen && (
+                    <div className="pt-2">
+                      <CategoryPanel category={category} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/sections/shared/OfficeLocationSection.tsx">
+import { Clock, MapPin } from "lucide-react";
+import { OFFICE } from "../../../config/site";
+
+type OfficeLocationSectionProps = {
+  headingId?: string;
+};
+
+export const OfficeLocationSection = ({
+  headingId = "office-location-heading",
+}: OfficeLocationSectionProps) => {
+  const mapsEmbedSrc = `https://www.google.com/maps?q=${OFFICE.mapsQuery}&output=embed`;
+
+  return (
+    <section
+      className="bg-linear-to-b from-brand-surface to-white py-16 sm:py-20 lg:py-24"
+      aria-labelledby={headingId}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <header className="max-w-2xl">
+          <h2
+            id={headingId}
+            className="text-2xl font-bold text-brand-navy sm:text-3xl"
+          >
+            Lokasi
+          </h2>
+          <p className="mt-3 text-sm text-brand-navy/70 sm:text-base">
+            Kunjungi kantor kami di Jakarta Pusat.
+          </p>
+        </header>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-12">
+          <address className="not-italic">
+            <ul className="space-y-6">
+              <li className="flex gap-4">
+                <MapPin
+                  className="size-6 shrink-0 text-brand-accent"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                    Alamat
+                  </p>
+                  <p className="mt-2 text-base leading-relaxed text-brand-navy sm:text-lg">
+                    {OFFICE.address}
+                  </p>
+                </div>
+              </li>
+              <li className="flex gap-4">
+                <Clock
+                  className="size-6 shrink-0 text-brand-accent"
+                  aria-hidden
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                    Operasional
+                  </p>
+                  <p className="mt-2 text-base text-brand-navy sm:text-lg">
+                    {OFFICE.hours}
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </address>
+
+          <figure className="overflow-hidden rounded-2xl border border-brand-navy/10 shadow-sm">
+            <iframe
+              title="Lokasi kantor FAST di Google Maps"
+              src={mapsEmbedSrc}
+              className="aspect-video w-full min-h-[280px] border-0 bg-brand-surface"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <figcaption className="sr-only">
+              Peta Google Maps — {OFFICE.address}
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+  );
+};
+</file>
+
+<file path="src/components/seo/PageSeo.tsx">
+import { Helmet } from "react-helmet-async";
+import { DEFAULT_SEO, OG_IMAGE, SITE_URL } from "../../config/seo";
+
+type PageSeoProps = {
+  title: string;
+  description: string;
+  path: string;
+};
+
+export const PageSeo = ({ title, description, path }: PageSeoProps) => {
+  const canonicalUrl = `${SITE_URL}${path}`;
+
+  return (
+    <Helmet>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <link rel="canonical" href={canonicalUrl} />
+
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content={DEFAULT_SEO.siteName} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={OG_IMAGE} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:locale" content="id_ID" />
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={OG_IMAGE} />
+    </Helmet>
+  );
+};
+</file>
+
+<file path="src/components/ui/Button.tsx">
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+type ButtonVariant = "primary" | "secondary" | "outline";
+
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  children: ReactNode;
+};
+
+const variantClasses: Record<ButtonVariant, string> = {
+  primary:
+    "bg-brand-primary text-white hover:bg-brand-secondary focus-visible:ring-brand-primary",
+  secondary:
+    "bg-brand-dark-blue text-white hover:bg-brand-navy focus-visible:ring-brand-dark-blue",
+  outline:
+    "border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white focus-visible:ring-brand-navy",
+};
+
+export const Button = ({
+  variant = "primary",
+  className = "",
+  children,
+  type = "button",
+  ...props
+}: ButtonProps) => {
+  return (
+    <button
+      type={type}
+      className={`inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+</file>
+
+<file path="src/components/ui/ButtonLink.tsx">
+import { Link, type LinkProps } from "react-router-dom";
+import type { ReactNode } from "react";
+
+type ButtonLinkVariant = "primary" | "secondary" | "outline";
+
+type ButtonLinkProps = LinkProps & {
+  variant?: ButtonLinkVariant;
+  children: ReactNode;
+};
+
+const variantClasses: Record<ButtonLinkVariant, string> = {
+  primary:
+    "bg-brand-primary text-white hover:bg-brand-secondary focus-visible:ring-brand-primary",
+  secondary:
+    "bg-brand-dark-blue text-white hover:bg-brand-navy focus-visible:ring-brand-dark-blue",
+  outline:
+    "border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white focus-visible:ring-brand-navy",
+};
+
+export const ButtonLink = ({
+  variant = "primary",
+  className = "",
+  children,
+  ...props
+}: ButtonLinkProps) => {
+  return (
+    <Link
+      className={`inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${variantClasses[variant]} ${className}`}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+};
+</file>
+
+<file path="src/components/ui/Card.tsx">
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
+
+type CardProps = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  children?: ReactNode;
+};
+
+export const Card = ({ icon: Icon, title, description, children }: CardProps) => {
+  return (
+    <article className="flex h-full flex-col rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+      <div
+        className="mb-5 inline-flex size-14 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary"
+        aria-hidden
+      >
+        <Icon className="size-7" strokeWidth={1.75} />
+      </div>
+      <h3 className="text-lg font-bold text-brand-navy sm:text-xl">{title}</h3>
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-brand-navy/75 sm:text-base">
+        {description}
+      </p>
+      {children}
+    </article>
+  );
+};
+</file>
+
+<file path="src/components/ui/index.ts">
+export { Button } from "./Button";
+export { ButtonLink } from "./ButtonLink";
+export { Card } from "./Card";
+</file>
+
+<file path="src/config/seo.ts">
+import { SITE } from "./site";
+
+export const SITE_URL = "https://www.famindofast.com";
+export const OG_IMAGE = `${SITE_URL}/og-image.svg`;
+
+export const DEFAULT_SEO = {
+  siteName: SITE.shortName,
+  title: `${SITE.shortName} — Spesialis Perlindungan Kebakaran Baterai Lithium`,
+  description:
+    "PT. Famindo Alfa Spektrum Teknologi (FAST) — distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 dan solusi proteksi kebakaran lithium.",
+} as const;
+
+export const PAGE_SEO = {
+  home: {
+    path: "/",
+    title: `${SITE.shortName} — Spesialis Perlindungan Kebakaran Baterai Lithium`,
+    description:
+      "PT. Famindo Alfa Spektrum Teknologi menghadirkan teknologi perlindungan kebakaran lithium untuk mobilitas, penyimpanan energi, dan operasional bisnis.",
+  },
+  about: {
+    path: "/about",
+    title: `Tentang Kami — ${SITE.shortName}`,
+    description:
+      "Kenali PT. Famindo Alfa Spektrum Teknologi (FAST), distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 di Indonesia.",
+  },
+  lithiumFireSafety: {
+    path: "/lithium-fire-safety",
+    title: `Lithium Fire Safety — ${SITE.shortName}`,
+    description:
+      "Solusi proteksi kebakaran lithium: EV Safety, Business Safety, Mining Safety, dan metode EPC dari FAST.",
+  },
+  contact: {
+    path: "/contact",
+    title: `Kontak — ${SITE.shortName}`,
+    description:
+      "Hubungi PT. Famindo Alfa Spektrum Teknologi (FAST) untuk konsultasi proteksi kebakaran lithium.",
+  },
+} as const;
+</file>
+
+<file path="src/config/site.ts">
+import { ABOUT_CONTENT, FOOTER_CONTENT, HEADER_NAV } from "../content";
+
+export const SITE = {
+  name: "PT. Famindo Alfa Spektrum Teknologi",
+  shortName: "FAST",
+  tagline: "Lithium Fire Safety",
+} as const;
+
+export const NAV_LINKS = HEADER_NAV;
+
+export const CONTACT = {
+  email: FOOTER_CONTENT.contact.email,
+  phone: FOOTER_CONTENT.contact.phone,
+  phoneHref: "tel:+6281290003278",
+} as const;
+
+export const OFFICE = ABOUT_CONTENT.location;
+
+export const FOOTER = FOOTER_CONTENT;
+</file>
+
+<file path="src/content/about.ts">
+/**
+ * Halaman Tentang Kami — sumber: docs/CONTENT.md § PAGE 2: TENTANG KAMI
+ */
+
+export const ABOUT_CONTENT = {
+  intro: {
+    heading: "Tentang Kami",
+    paragraphs: [
+      "PT. Famindo Alfa Spektrum Teknologi (FAST) adalah perusahaan yang berfokus pada penyediaan solusi keamanan terhadap risiko kebakaran. FAST merupakan distributor eksklusif APAR Lithium Fire Killer Hartindo AF31, APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya bagi manusia maupun lingkungan.",
+      "Selain menghadirkan produk unggulan, FAST juga berkomitmen untuk mengedukasi masyarakat tentang bahaya kebakaran, khususnya kebakaran baterai lithium-ion, serta memberikan pemahaman mengenai cara penanggulangannya secara aman dan efektif.",
+    ],
+  },
+  history: {
+    headline: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
+    keyFigures: [
+      {
+        name: "Bapak Randall Hartolaksono",
+        role: "Penemu Hartindo AF31",
+      },
+      {
+        name: "Bapak Willy Hadiwijaya",
+        role: "Pendiri PT. FAST",
+      },
+    ],
+    blocks: [
+      {
+        subheading: "Dengan Tim Solid Segalanya Dapat Tercapai",
+        paragraphs: [
+          "Kisah ini berawal dari Bapak Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Bapak Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.",
+        ],
+      },
+      {
+        subheading: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
+        paragraphs: [],
+      },
+      {
+        subheading: "Terus Berinovasi Sambil Mengedukasi Masyarakat",
+        paragraphs: [
+          "PT. FAST tidak hanya berperan sebagai penyedia produk keamanan kebakaran, tetapi juga berdedikasi untuk mengedukasi dan mensosialisasikan pentingnya keselamatan. Melalui berbagai program, FAST berkomitmen meningkatkan kesadaran masyarakat agar lebih memprioritaskan perlindungan jiwa serta terlatih dalam menghadapi potensi bahaya kebakaran yang datang tanpa diduga.",
+        ],
+      },
+    ],
+  },
+  location: {
+    heading: "Lokasi Kami",
+    address:
+      "TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10220",
+    hours: "Senin – Jumat | Jam 09.00 – 17.00 WIB",
+    mapsQuery:
+      "TCC+Tower+One+Menara+Batavia+Jl.+K.H.+Mas+Mansyur+Karet+Tengsin+Jakarta+Pusat",
+  },
+} as const;
+</file>
+
+<file path="src/content/contact.ts">
+/**
+ * Halaman Kontak — sumber: docs/CONTENT.md § PAGE 4: KONTAK
+ */
+
+import { ABOUT_CONTENT } from "./about";
+
+export const CONTACT_PAGE_CONTENT = {
+  info: {
+    heading: "Informasi Kontak",
+    channels: [
+      {
+        id: "phone",
+        label: "Telepon / WhatsApp",
+        value: "+62 812 9000 3278",
+        href: "tel:+6281290003278",
+        whatsappHref: "https://wa.me/6281290003278",
+      },
+      {
+        id: "email",
+        label: "Email",
+        value: "support@famindofast.com",
+        href: "mailto:support@famindofast.com",
+      },
+    ],
+  },
+  form: {
+    heading: "Contact Form",
+    fields: {
+      firstName: {
+        label: "Nama Depan",
+        required: true,
+      },
+      email: {
+        label: "Alamat Email",
+        required: true,
+      },
+      message: {
+        label: "Tulis Pesan Anda di Sini",
+        required: true,
+      },
+    },
+    submitLabel: "Kirim Pesan",
+    errors: {
+      required: "Kolom ini wajib diisi.",
+      emailInvalid: "Format alamat email tidak valid.",
+    },
+    success: {
+      title: "Pesan berhasil dikirim",
+      message:
+        "Terima kasih. Pesan Anda telah kami terima dan akan segera ditindaklanjuti.",
+    },
+  },
+  location: {
+    ...ABOUT_CONTENT.location,
+    heading: "Peta & Lokasi",
+    addressLabel: "Alamat",
+    hoursLabel: "Waktu Operasional",
+  },
+} as const;
+</file>
+
+<file path="src/content/global.ts">
+/**
+ * Global UI copy — sumber: docs/CONTENT.md § GLOBAL UI COMPONENTS
+ */
+
+export const HEADER_NAV = [
+  { label: "Beranda", href: "/" },
+  { label: "Tentang Kami", href: "/about" },
+  { label: "Lithium Fire Safety", href: "/lithium-fire-safety" },
+  { label: "Kontak", href: "/contact" },
+] as const;
+
+export const FOOTER_CONTENT = {
+  socialCta: "Stay up to date by following our social media!",
+  newsletter: {
+    emailLabel: "Email",
+    emailPlaceholder: "Email",
+    submitButton: "Kirim Informasi",
+  },
+  contact: {
+    email: "support@famindofast.com",
+    phone: "+62 812 9000 3278",
+  },
+} as const;
+</file>
+
+<file path="src/content/home.ts">
+/**
+ * Halaman Beranda — sumber: docs/CONTENT.md § PAGE 1: BERANDA
+ */
+
+export const HOME_CONTENT = {
+  hero: {
+    headline: "Spesialis Perlindungan Kebakaran Baterai Lithium",
+    description:
+      "Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.",
+    cta: {
+      label: "Lihat Profil Perusahaan Kami",
+      href: "/about",
+    },
+  },
+  problem: {
+    headline: "No Fire, No Fear",
+    description:
+      "Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.",
+    cta: {
+      label: "Pelajari Lebih Detail",
+      href: "/lithium-fire-safety",
+    },
+  },
+  services: {
+    heading: "Layanan / Solusi Keamanan",
+    items: [
+      {
+        title: "EV Fire Safety",
+        description:
+          "Menjaga keselamatan diri adalah tanggung jawab setiap pemilik EV.",
+      },
+      {
+        title: "Business Safety",
+        description:
+          "Prioritaskan keamanan nyawa karyawan dan aset bisnis Anda.",
+      },
+      {
+        title: "Mining Safety",
+        description:
+          "Maksimalkan sistem keamanan operasional di sektor pertambangan.",
+      },
+    ],
+  },
+  education: {
+    heading: "Apa Itu Baterai Lithium?",
+    paragraphs: [
+      "Baterai lithium-ion (Li-ion) adalah jenis baterai isi ulang yang banyak digunakan pada perangkat elektronik portabel maupun kendaraan listrik. Mekanismenya bekerja dengan memindahkan ion lithium antara elektroda positif (katoda) dan elektroda negatif (anoda) melalui elektrolit.",
+      "Baterai Li-ion mampu menyimpan energi lebih besar dalam ukuran yang ringkas dan ringan, menjadikannya pilihan ideal untuk perangkat portabel. Berbeda dengan beberapa jenis baterai lain, baterai Li-ion tidak mengalami penurunan kapasitas meski diisi ulang sebelum benar-benar habis. Dengan umur pakai yang relatif panjang serta mampu melalui banyak siklus pengisian dan pengosongan, baterai ini lebih efisien, ramah lingkungan, dan dapat didaur ulang.",
+      "Meskipun menawarkan banyak keunggulan, baterai lithium-ion juga memiliki risiko tertentu yang perlu diwaspadai.",
+    ],
+  },
+  thermalRunaway: {
+    heading: "Bahaya Thermal Runaway",
+    paragraphs: [
+      "Baterai lithium-ion menyimpan energi besar di dalam elektrolit yang mudah terbakar. Saat terjadi kerusakan fisik, korsleting, atau suhu berlebih, elektrolit dapat bocor dan memicu reaksi berbahaya berupa kebakaran atau ledakan. Faktor pemicu umumnya berasal dari cacat produksi, pengisian daya yang tidak sesuai, atau paparan suhu ekstrem.",
+      "Thermal runaway adalah kondisi peningkatan suhu pada baterai yang berlangsung secara terus-menerus dan sulit dikendalikan. Proses ini dapat membuat baterai mengeluarkan asap, terbakar, hingga meledak. Memahami risiko ini penting agar pengguna lebih bijak dalam menyimpan, mengisi, dan menggunakan baterai lithium dengan cara yang aman.",
+    ],
+  },
+  regulation: {
+    heading: "Regulasi Pemerintah di Indonesia",
+    description:
+      "Peluang Indonesia sebagai pusat industri baterai lithium dan dukungan regulasi.",
+    rows: [
+      {
+        id: "perpres-55-2019",
+        regulation: "Perpres No. 55 Tahun 2019",
+        fullName: "Peraturan Presiden Nomor 55 Tahun 2019",
+        description:
+          "Mengatur Percepatan Program Kendaraan Bermotor Listrik Berbasis Baterai (Battery Electric Vehicle/BEV) untuk transportasi jalan. Di dalamnya tercakup kerangka regulasi serta berbagai insentif guna menarik investasi, memperkuat industri lokal, membangun infrastruktur pendukung, dan mendorong adopsi kendaraan listrik secara luas di masyarakat.",
+      },
+      {
+        id: "inpres-7-2022",
+        regulation: "Inpres No. 7 Tahun 2022",
+        fullName: "Instruksi Presiden Nomor 7 Tahun 2022",
+        description:
+          "Mewajibkan seluruh instansi pemerintah, baik pusat maupun daerah, untuk menggunakan kendaraan bermotor listrik berbasis baterai (Battery Electric Vehicle/BEV) sebagai kendaraan dinas operasional maupun kendaraan perorangan.",
+      },
+      {
+        id: "permenhub-13-2024",
+        regulation: "Permenhub No. 13 Tahun 2024",
+        fullName: "Peraturan Menteri Perhubungan Nomor 13 Tahun 2024",
+        description:
+          "Mengatur tentang perlengkapan keselamatan kendaraan bermotor, termasuk sabuk keselamatan, alat pemadam api ringan (APAR), dan perlengkapan keselamatan lainnya. Tujuannya adalah untuk meningkatkan standar keselamatan berkendara dan melindungi pengguna jalan di Indonesia.",
+      },
+    ],
+  },
+} as const;
+</file>
+
+<file path="src/content/index.ts">
+export { FOOTER_CONTENT, HEADER_NAV } from "./global";
+export { HOME_CONTENT } from "./home";
+export { ABOUT_CONTENT } from "./about";
+export { LITHIUM_FIRE_SAFETY_CONTENT } from "./lithium-fire-safety";
+export { CONTACT_PAGE_CONTENT } from "./contact";
+</file>
+
+<file path="src/content/lithium-fire-safety.ts">
+/**
+ * Halaman Lithium Fire Safety — sumber: docs/CONTENT.md § PAGE 3
+ */
+
+export const LITHIUM_FIRE_SAFETY_CONTENT = {
+  protection: {
+    heading: "Kategori Proteksi",
+    categories: [
+      {
+        id: "ev-safety",
+        title: "Electric Vehicle (EV) Safety",
+        tabLabel: "EV Safety",
+        paragraphs: [
+          "Industri kendaraan listrik (EV) di Indonesia berkembang sangat pesat dan segera menjadi bagian penting dari kebutuhan transportasi masyarakat.",
+          "Oleh karena itu, setiap pemilik EV perlu memahami cara merawat kendaraannya sekaligus melindungi diri dari risiko kebakaran baterai lithium yang dapat terjadi kapan saja.",
+        ],
+      },
+      {
+        id: "business-safety",
+        title: "Business Safety",
+        tabLabel: "Business Safety",
+        paragraphs: [
+          "Berbagai sektor bisnis di Indonesia kini telah mengadopsi teknologi berbasis baterai lithium, termasuk industri manufaktur baterai itu sendiri. Untuk melindungi karyawan dan menjaga keberlangsungan aset perusahaan, penerapan sistem keamanan terhadap risiko kebakaran baterai lithium menjadi hal yang mutlak diperlukan.",
+        ],
+        subheading: "Mengamankan Berbagai Sektor Bisnis Di Indonesia",
+        subheadingParagraph:
+          "PT. FAST hadir sebagai mitra strategis bagi berbagai sektor industri di Indonesia dalam menghadapi risiko kebakaran baterai lithium. Kami tidak hanya menyediakan solusi proteksi terdepan, tetapi juga berkomitmen untuk melindungi karyawan, aset, dan keberlangsungan bisnis melalui edukasi serta penerapan standar keselamatan yang efektif.",
+        sectorsLabel: "Sektor yang dilayani:",
+        sectors: [
+          "EV Charging Station",
+          "Battery Storage & Manufacturer",
+          "Manufacturer",
+          "Data Center",
+          "Logistics",
+          "Energy Powerplant",
+        ],
+      },
+      {
+        id: "mining-safety",
+        title: "Mining Safety",
+        tabLabel: "Mining Safety",
+        byline: "oleh PT. Fastindo Intiraya Solusi Tambang — FIRST",
+        paragraphs: [
+          "Industri pertambangan memiliki tantangan keselamatan yang sangat kompleks dan membutuhkan solusi khusus dari para ahli berpengalaman. Untuk itu, hadir FIRST (PT. Fastindo Intiraya Solusi Tambang) dengan komitmen kuat menghadirkan teknologi terdepan dan layanan terpercaya demi menjaga keselamatan serta memastikan pertambangan Indonesia tetap berada di garis terdepan.",
+        ],
+      },
+    ],
+  },
+  epc: {
+    heading: "Metode EPC",
+    description:
+      "EPC (Engineering, Procurement, and Construction) adalah metode yang digunakan oleh FIRST untuk merancang solusi sesuai kebutuhan spesifik di lokasi pertambangan. Proses ini mencakup perencanaan menyeluruh, penyusunan mekanisme pencegahan kebakaran, integrasi detektor, hingga pemasangan sistem proteksi kebakaran. Dengan pendekatan EPC, FIRST memastikan setiap tahap dilaksanakan secara tepat dan disesuaikan dengan kebutuhan klien.",
+    stepsHeading: "Tahapan EPC:",
+    steps: [
+      "Perencanaan menyeluruh",
+      "Penyusunan mekanisme pencegahan kebakaran",
+      "Integrasi detektor",
+      "Pemasangan sistem proteksi kebakaran secara presisi",
+    ],
+  },
+  cta: {
+    headline: "Butuh Bantuan Lebih Lanjut?",
+    button: { label: "Hubungi Kami", href: "/contact" },
+  },
+} as const;
+</file>
+
+<file path="src/hooks/.gitkeep">
+
+</file>
+
+<file path="src/i18n.ts">
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+const savedLanguage = localStorage.getItem("app-language") || "id";
+
+i18n.use(initReactI18next).init({
+  resources: {},
+  lng: savedLanguage,
+  fallbackLng: "id",
+  interpolation: { escapeValue: false },
+});
+
+i18n.on("languageChanged", (lng) => {
+  document.documentElement.lang = lng;
+  localStorage.setItem("app-language", lng);
+});
+
+export default i18n;
+</file>
+
+<file path="src/index.css">
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-brand-primary: #ff7300;
+  --color-brand-secondary: #ed2d00;
+  --color-brand-accent: #0d84fc;
+  --color-brand-dark-blue: #0047ad;
+  --color-brand-navy: #002b96;
+  --color-brand-surface: #f8fafc;
+
+  --font-body:
+    "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-body);
+  }
+
+  body {
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--color-brand-primary);
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0 0 0.5rem 0;
+  }
+
+  .skip-link:focus {
+    left: 0;
+    outline: 2px solid var(--color-brand-navy);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</file>
+
+<file path="src/lib/.gitkeep">
+
+</file>
+
+<file path="src/locales/en/.gitkeep">
+
+</file>
+
+<file path="src/locales/id/.gitkeep">
+
+</file>
+
+<file path="src/main.tsx">
+import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
+import App from './App.tsx';
+import './index.css';
+import './i18n';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <HelmetProvider>
+    <App />
+  </HelmetProvider>
+);
+</file>
+
+<file path="src/pages/AboutPage.tsx">
+import { PageSeo } from "../components/seo/PageSeo";
+import {
+  AboutHistorySection,
+  AboutIntroSection,
+  AboutLocationSection,
+} from "../components/sections/about";
+import { PAGE_SEO } from "../config/seo";
+
+export const AboutPage = () => {
+  const seo = PAGE_SEO.about;
+
+  return (
+    <>
+      <PageSeo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+      />
+
+      <AboutIntroSection />
+      <AboutHistorySection />
+      <AboutLocationSection />
+    </>
+  );
+};
+</file>
+
+<file path="src/pages/ContactPage.tsx">
+import { PageSeo } from "../components/seo/PageSeo";
+import {
+  ContactFormSection,
+  ContactInfoSection,
+  ContactLocationSection,
+} from "../components/sections/contact";
+import { PAGE_SEO } from "../config/seo";
+
+export const ContactPage = () => {
+  const seo = PAGE_SEO.contact;
+
+  return (
+    <>
+      <PageSeo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+      />
+
+      <ContactInfoSection />
+      <ContactFormSection />
+      <ContactLocationSection />
+    </>
+  );
+};
+</file>
+
+<file path="src/pages/HomePage.tsx">
+import { PageSeo } from "../components/seo/PageSeo";
+import {
+  EducationSection,
+  HeroSection,
+  ProblemSection,
+  RegulationSection,
+  ServicesSection,
+  ThermalRunawaySection,
+} from "../components/sections/home";
+import { PAGE_SEO } from "../config/seo";
+
+export const HomePage = () => {
+  const seo = PAGE_SEO.home;
+
+  return (
+    <>
+      <PageSeo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+      />
+
+      <HeroSection />
+      <ProblemSection />
+      <ServicesSection />
+      <EducationSection />
+      <ThermalRunawaySection />
+      <RegulationSection />
+    </>
+  );
+};
+</file>
+
+<file path="src/pages/LithiumFireSafetyPage.tsx">
+import { PageSeo } from "../components/seo/PageSeo";
+import {
+  ContactCtaSection,
+  EpcMethodSection,
+  ProtectionCategoriesSection,
+} from "../components/sections/lithium-fire-safety";
+import { PAGE_SEO } from "../config/seo";
+
+export const LithiumFireSafetyPage = () => {
+  const seo = PAGE_SEO.lithiumFireSafety;
+
+  return (
+    <>
+      <PageSeo
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+      />
+
+      <ProtectionCategoriesSection />
+      <EpcMethodSection />
+      <ContactCtaSection />
+    </>
+  );
+};
+</file>
+
+<file path="src/routes/.gitkeep">
+
+</file>
+
+<file path="src/routes/index.tsx">
+import { Navigate, Route, Routes } from "react-router-dom";
+import { MainLayout } from "../components/layout/MainLayout";
+import { AboutPage } from "../pages/AboutPage";
+import { HomePage } from "../pages/HomePage";
+import { ContactPage } from "../pages/ContactPage";
+import { LithiumFireSafetyPage } from "../pages/LithiumFireSafetyPage";
+
+export const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route
+          path="tentang-kami"
+          element={<Navigate to="/about" replace />}
+        />
+        <Route
+          path="lithium-fire-safety"
+          element={<LithiumFireSafetyPage />}
+        />
+        <Route path="contact" element={<ContactPage />} />
+        <Route
+          path="kontak"
+          element={<Navigate to="/contact" replace />}
+        />
+      </Route>
+    </Routes>
+  );
+};
+</file>
+
+<file path="src/types/.gitkeep">
+
+</file>
+
+<file path="tsconfig.app.json">
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"]
+}
+</file>
+
+<file path="tsconfig.json">
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+</file>
+
+<file path="tsconfig.node.json">
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+</file>
+
+<file path="vercel.json">
+{
+  "redirects": [],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(png|jpg|jpeg|avif|webp|svg|ico|gif)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}
+</file>
+
+<file path="vite.config.ts">
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
+import viteCompression from "vite-plugin-compression";
+import Sitemap from "vite-plugin-sitemap";
+
+const SITE_ROUTES = ["/", "/about", "/lithium-fire-safety", "/contact"];
+
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+    Sitemap({
+      hostname: "https://www.famindofast.com",
+      dynamicRoutes: SITE_ROUTES.filter((route) => route !== "/"),
+      generateRobotsTxt: true,
+    }),
+    viteCompression({
+      algorithm: "gzip",
+      ext: ".gz",
+      threshold: 10240,
+    }),
+    viteCompression({
+      algorithm: "brotliCompress",
+      ext: ".br",
+      threshold: 10240,
+    }),
+  ],
+  build: {
+    minify: "esbuild",
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+        },
+      },
+    },
+  },
+});
+</file>
+
+</files>
