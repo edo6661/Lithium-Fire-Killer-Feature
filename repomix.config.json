@@ -1,0 +1,27 @@
+{
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml",
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "topFilesLength": 5,
+    "showLineNumbers": true
+  },
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "repomix-output.xml",
+      "package-lock.json",
+      "public/**",
+      "src/assets/images/**",
+      ".cursor/hooks/**",
+      ".cursor/info/**",
+      ".cursor/objects/**",
+      ".cursor/refs/**",
+      "**/*.png",
+      "**/*.ico",
+      "**/*.webmanifest"
+    ]
+  }
+}
