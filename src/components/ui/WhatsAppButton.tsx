@@ -49,17 +49,22 @@ export const WhatsAppButton = () => {
     <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3 sm:bottom-8 sm:right-8">
       {/* Tooltip */}
       <div
-        className={`pointer-events-none w-[210px] rounded-2xl border border-slate-100/80 bg-white px-4 py-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.10)] transition-all duration-300 ease-out ${showTooltip ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+        className={`pointer-events-none w-[220px] rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.10)] transition-all duration-300 ease-out ${showTooltip ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
           }`}
         role="tooltip"
         aria-hidden={!showTooltip}
       >
+        {/* Green dot */}
+        <div className="mb-2 flex items-center gap-2">
+          <span className="size-2 rounded-full bg-[#25D366]" aria-hidden />
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[#25D366]">Online</p>
+        </div>
         <p className="text-xs font-bold text-brand-navy">Butuh bantuan?</p>
         <p className="mt-1 text-xs font-medium leading-relaxed text-brand-navy/55">
           Konsultasi via WhatsApp bersama tim ahli kami.
         </p>
         {/* Arrow tail */}
-        <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-b border-r border-slate-100/80 bg-white" />
+        <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-b border-r border-slate-100 bg-white" />
       </div>
 
       {/* FAB Button */}
@@ -72,11 +77,11 @@ export const WhatsAppButton = () => {
         onMouseLeave={() => setShowTooltip(false)}
         onFocus={() => setShowTooltip(true)}
         onBlur={() => setShowTooltip(false)}
-        className="group relative flex size-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_20px_rgba(37,211,102,0.40)] transition-all duration-200 ease-out hover:scale-110 hover:shadow-[0_10px_30px_rgba(37,211,102,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 active:scale-100 sm:size-15"
+        className="group relative flex size-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_24px_rgba(37,211,102,0.45)] transition-all duration-200 ease-out hover:scale-110 hover:bg-[#20bd5a] hover:shadow-[0_12px_36px_rgba(37,211,102,0.60)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 active:scale-100 sm:size-15"
       >
         {/* Ping ring */}
         <span
-          className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-20"
+          className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-25"
           style={{ animationDuration: "2.5s" }}
           aria-hidden
         />

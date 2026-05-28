@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { HOME_CONTENT } from "../../../content/home";
 import { ButtonLink } from "../../ui/ButtonLink";
 import { ArrowRight } from "lucide-react";
+import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
 const { hero } = HOME_CONTENT;
 
@@ -136,19 +137,23 @@ export const HeroSection = () => {
             </motion.div>
 
             {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.45, ease: easeOut }}
+            <StaggerChildren
+              staggerDelay={0.15}
               className="mt-14 grid grid-cols-3 gap-4 border-t border-white/[0.08] pt-8"
             >
               {STATS.map((stat, i) => (
-                <div key={stat.label} className={`text-center lg:text-left ${i > 0 ? "border-l border-white/[0.08] pl-4 lg:pl-6" : ""}`}>
-                  <p className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">{stat.value}</p>
-                  <p className="mt-1 text-xs font-medium text-white/45 sm:text-sm leading-snug">{stat.label}</p>
-                </div>
+                <StaggerItem key={stat.label}>
+                  <div className={`text-center lg:text-left ${i > 0 ? "border-l border-white/[0.08] pl-4 lg:pl-6" : ""}`}>
+                    <p className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                      {stat.value}
+                    </p>
+                    <p className="mt-1 text-xs font-medium leading-snug text-white/45 sm:text-sm">
+                      {stat.label}
+                    </p>
+                  </div>
+                </StaggerItem>
               ))}
-            </motion.div>
+            </StaggerChildren>
           </div>
 
           {/* Right: Illustration */}
