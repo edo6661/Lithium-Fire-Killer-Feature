@@ -1,7 +1,7 @@
 import { useId, useState, type KeyboardEvent } from "react";
 import { Building2, Car, ChevronDown, HardHat, CheckCircle2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion"; // Tambahan import
+import { AnimatePresence, motion } from "framer-motion";
 import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
 
 type ProtectionCategory =
@@ -30,6 +30,19 @@ const CATEGORY_COLORS: Record<ProtectionCategory["id"], { icon: string; tab: str
 
 const { protection } = LITHIUM_FIRE_SAFETY_CONTENT;
 const CATEGORIES = protection.categories;
+
+// Mapping fungsi untuk mencocokkan nama sektor di CONTENT.md dengan letak avif
+const getSectorImage = (sector: string) => {
+  const map: Record<string, string> = {
+    "EV Charging Station": "/protection/business-safety/ev-charging-station.avif",
+    "Battery Storage & Manufacturer": "/protection/business-safety/battery-storage-and-manufacturer.avif",
+    "Manufacturer": "/protection/business-safety/manufacturer.avif",
+    "Data Center": "/protection/business-safety/data-center.avif",
+    "Logistics": "/protection/business-safety/logistics.avif",
+    "Energy Powerplant": "/protection/business-safety/energy-powerplant.avif",
+  };
+  return map[sector];
+};
 
 const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
   const Icon = CATEGORY_ICONS[category.id];
@@ -67,6 +80,28 @@ const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
         ))}
       </div>
 
+      {/* Render gambar statis apabila kategori adalah EV Safety */}
+      {category.id === "ev-safety" && (
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6">
+          <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
+            <img
+              src="/protection/ev/1.avif"
+              alt="EV Safety 1"
+              loading="lazy"
+              className="aspect-[4/3] w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
+            <img
+              src="/protection/ev/2.avif"
+              alt="EV Safety 2"
+              loading="lazy"
+              className="aspect-[4/3] w-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+        </div>
+      )}
+
       {"subheading" in category && (
         <div className="mt-8 rounded-xl border border-brand-accent/12 bg-gradient-to-br from-[#f0f7ff] to-white p-6">
           <h4 className="text-base font-extrabold tracking-tight text-brand-navy sm:text-lg">
@@ -80,17 +115,42 @@ const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
 
       {"sectors" in category && (
         <div className="mt-8">
-          <p className="text-xs font-extrabold uppercase tracking-widest text-brand-dark-blue/60">
+          <p className="mb-5 text-xs font-extrabold uppercase tracking-widest text-brand-dark-blue/60">
             {category.sectorsLabel}
           </p>
-          <ul className="mt-4 flex flex-wrap gap-2 list-none">
-            {category.sectors.map((sector) => (
-              <li key={sector} className="flex items-center gap-1.5 rounded-xl border border-brand-accent/15 bg-brand-accent/6 px-3.5 py-2 text-xs font-bold tracking-wide text-brand-navy/80 ring-1 ring-brand-accent/8 transition-all duration-200 hover:border-brand-accent/30 hover:bg-brand-accent/12">
-                <CheckCircle2 className="size-3 text-brand-accent" aria-hidden />
-                {sector}
-              </li>
-            ))}
-          </ul>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {category.sectors.map((sector) => {
+              const imgSrc = getSectorImage(sector);
+              return (
+                <div
+                  key={sector}
+                  className="group relative overflow-hidden rounded-xl border border-brand-accent/15 bg-white shadow-sm ring-1 ring-brand-accent/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:ring-brand-accent/30"
+                >
+                  <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                    {imgSrc ? (
+                      <img
+                        src={imgSrc}
+                        alt={sector}
+                        loading="lazy"
+                        className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      /* Fallback apabila nama sektor tidak masuk ke dalam mapping */
+                      <div className="flex size-full items-center justify-center bg-slate-100">
+                        <CheckCircle2 className="size-6 text-brand-accent/30" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/60 to-transparent p-4 pt-12">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="size-4 text-brand-primary" aria-hidden />
+                      <span className="text-sm font-bold text-white drop-shadow-sm">{sector}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </article>
@@ -133,7 +193,7 @@ export const ProtectionCategoriesSection = () => {
           </span>
           <h1
             id="protection-heading"
-            className="mt-5 text-3xl font-extrabold tracking-tight leading-[1.12] sm:text-4xl lg:text-5xl"
+            className="mt-5 text-3xl font-extrabold leading-[1.12] tracking-tight sm:text-4xl lg:text-5xl"
           >
             {protection.heading}
           </h1>
@@ -165,8 +225,8 @@ export const ProtectionCategoriesSection = () => {
                   onClick={() => setActiveIndex(index)}
                   onKeyDown={(e) => handleTabKeyDown(e, index)}
                   className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold tracking-wide transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy ${isActive
-                      ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/25"
-                      : "bg-white/6 text-white/70 hover:bg-white/10 hover:text-white ring-1 ring-white/8"
+                    ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/25"
+                    : "bg-white/6 text-white/70 hover:bg-white/10 hover:text-white ring-1 ring-white/8"
                     }`}
                 >
                   <Icon className="size-4" strokeWidth={1.75} aria-hidden />
@@ -222,7 +282,7 @@ export const ProtectionCategoriesSection = () => {
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary"
                   >
                     <span className="flex items-center gap-3">
-                      <Icon className="size-4.5 text-white/60 shrink-0" strokeWidth={1.75} aria-hidden />
+                      <Icon className="size-4.5 shrink-0 text-white/60" strokeWidth={1.75} aria-hidden />
                       <span className="tracking-wide">
                         {category.title}
                         {"byline" in category && (
@@ -252,7 +312,7 @@ export const ProtectionCategoriesSection = () => {
                       transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
                       className="overflow-hidden"
                     >
-                      <div className="border-t border-white/8 px-2 pb-2 sm:px-3 sm:pb-3 pt-2">
+                      <div className="border-t border-white/8 px-2 pb-2 pt-2 sm:px-3 sm:pb-3">
                         <CategoryPanel category={category} />
                       </div>
                     </motion.div>

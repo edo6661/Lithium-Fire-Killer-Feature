@@ -1,122 +1,31 @@
-This file is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
-The content has been processed where line numbers have been added.
-
-<file_summary>
-This section contains a summary of this file.
-
-<purpose>
-This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
-It is designed to be easily consumable by AI systems for analysis, code review,
-or other automated processes.
-</purpose>
-
-<file_format>
-The content is organized as follows:
-1. This summary section
-2. Repository information
-3. Directory structure
-4. Repository files (if enabled)
-5. Multiple file entries, each consisting of:
-  - File path as an attribute
-  - Full contents of the file
-</file_format>
-
-<usage_guidelines>
-- This file should be treated as read-only. Any changes should be made to the
-  original repository files, not this packed version.
-- When processing this file, use the file path to distinguish
-  between different files in the repository.
-- Be aware that this file may contain sensitive information. Handle it with
-  the same level of security as you would the original repository.
-</usage_guidelines>
-
-<notes>
-- Some files may have been excluded based on .gitignore rules and Repomix's configuration
-- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Files matching these patterns are excluded: repomix-output.xml, package-lock.json, public/**, src/assets/images/**, .cursor/hooks/**, .cursor/info/**, .cursor/objects/**, .cursor/refs/**, **/*.png, **/*.ico, **/*.webmanifest
-- Files matching patterns in .gitignore are excluded
-- Files matching default ignore patterns are excluded
-- Line numbers have been added to the beginning of each line
-- Files are sorted by Git change count (files with more changes are at the bottom)
-</notes>
-
-</file_summary>
-
-<directory_structure>
-.gitignore
-docs/ARCHITECTURE.md
-docs/CONTENT.md
-eslint.config.js
-index.html
-package.json
-README.md
-repomix.config.json
-src/App.tsx
-src/components/layout/Footer.tsx
-src/components/layout/Header.tsx
-src/components/layout/index.ts
-src/components/layout/MainLayout.tsx
-src/components/sections/.gitkeep
-src/components/sections/about/AboutHistorySection.tsx
-src/components/sections/about/AboutIntroSection.tsx
-src/components/sections/about/AboutLocationSection.tsx
-src/components/sections/about/index.ts
-src/components/sections/contact/ContactFormSection.tsx
-src/components/sections/contact/ContactInfoSection.tsx
-src/components/sections/contact/ContactLocationSection.tsx
-src/components/sections/contact/index.ts
-src/components/sections/home/EducationSection.tsx
-src/components/sections/home/HeroSection.tsx
-src/components/sections/home/index.ts
-src/components/sections/home/ProblemSection.tsx
-src/components/sections/home/RegulationSection.tsx
-src/components/sections/home/ServicesSection.tsx
-src/components/sections/home/ThermalRunawaySection.tsx
-src/components/sections/lithium-fire-safety/ContactCtaSection.tsx
-src/components/sections/lithium-fire-safety/EpcMethodSection.tsx
-src/components/sections/lithium-fire-safety/index.ts
-src/components/sections/lithium-fire-safety/ProtectionCategoriesSection.tsx
-src/components/sections/shared/OfficeLocationSection.tsx
-src/components/seo/PageSeo.tsx
-src/components/ui/AnimateIn.tsx
-src/components/ui/Button.tsx
-src/components/ui/ButtonLink.tsx
-src/components/ui/Card.tsx
-src/components/ui/index.ts
-src/components/ui/StaggerChildren.tsx
-src/components/ui/WhatsAppButton.tsx
-src/config/seo.ts
-src/config/site.ts
-src/content/about.ts
-src/content/contact.ts
-src/content/global.ts
-src/content/home.ts
-src/content/index.ts
-src/content/lithium-fire-safety.ts
-src/hooks/.gitkeep
-src/i18n.ts
-src/index.css
-src/lib/.gitkeep
-src/locales/en/.gitkeep
-src/locales/id/.gitkeep
-src/main.tsx
-src/pages/AboutPage.tsx
-src/pages/ContactPage.tsx
-src/pages/HomePage.tsx
-src/pages/LithiumFireSafetyPage.tsx
-src/routes/.gitkeep
-src/routes/index.tsx
-src/types/.gitkeep
-tsconfig.app.json
-tsconfig.json
-tsconfig.node.json
-vercel.json
-vite.config.ts
-</directory_structure>
-
-<files>
-This section contains the contents of the repository's files.
-
+saya baru saja menambahkan gambar di folder public/protection dan about-us-people-from-lfk.avif, tolong gambarnya di taro di web nya.
+```
+└── 📁public
+    └── 📁favicon
+        ├── android-chrome-192x192.png
+        ├── android-chrome-512x512.png
+        ├── apple-touch-icon.png
+        ├── favicon-16x16.png
+        ├── favicon-32x32.png
+        ├── favicon.ico
+        ├── site.webmanifest
+    └── 📁logo
+        ├── transparent-color.png
+    └── 📁protection
+        └── 📁business-safety
+            ├── battery-storage-and-manufacturer.avif
+            ├── data-center.avif
+            ├── energy-powerplant.avif
+            ├── ev-charging-station.avif
+            ├── logistics.avif
+            ├── manufacturer.avif
+        └── 📁ev
+            ├── 1.avif
+            ├── 2.avif
+    ├── about-us-people-from-lfk.avif
+    ├── robots.txt
+    └── sitemap.xml
+```
 <file path=".gitignore">
  1: # Logs
  2: logs

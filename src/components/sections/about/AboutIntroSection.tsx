@@ -76,8 +76,19 @@ export const AboutIntroSection = () => {
             </div>
           </motion.article>
 
-          {/* Right: Highlight cards (Staggered) */}
+          {/* Right: Highlight cards & Image (Staggered) */}
           <StaggerChildren className="flex flex-col gap-3.5" staggerDelay={0.15}>
+            <StaggerItem>
+              <figure className="mb-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl ring-1 ring-white/10">
+                <img
+                  src="/about-us-people-from-lfk.avif"
+                  alt="Tim LFK Hartindo"
+                  loading="lazy"
+                  className="aspect-[16/9] w-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+              </figure>
+            </StaggerItem>
+
             {HIGHLIGHTS.map(({ Icon, label }) => (
               <StaggerItem key={label}>
                 <div className="group flex items-center gap-4 rounded-2xl border border-white/8 bg-white/5 px-6 py-5 ring-1 ring-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
@@ -92,7 +103,7 @@ export const AboutIntroSection = () => {
             {/* Quote card */}
             <StaggerItem>
               <div className="mt-1 rounded-2xl border border-brand-primary/20 bg-brand-primary/8 px-6 py-5 ring-1 ring-brand-primary/10 transition-colors duration-300 hover:bg-brand-primary/15">
-                <div className="mb-3 text-2xl font-serif text-brand-primary/40 leading-none">"</div>
+                <div className="mb-3 text-2xl font-serif leading-none text-brand-primary/40">"</div>
                 <p className="text-sm italic leading-relaxed text-white/70 sm:text-base">
                   APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya.
                 </p>
