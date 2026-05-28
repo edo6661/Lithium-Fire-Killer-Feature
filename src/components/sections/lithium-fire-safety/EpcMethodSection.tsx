@@ -1,6 +1,7 @@
 import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
 import { CheckCircle2 } from "lucide-react";
 import { AnimateIn } from "../../ui/AnimateIn";
+import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
 const { epc } = LITHIUM_FIRE_SAFETY_CONTENT;
 
@@ -26,7 +27,6 @@ export const EpcMethodSection = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-14 lg:grid-cols-[1fr_460px] lg:items-center lg:gap-16 xl:gap-24">
           <AnimateIn direction="right">
-
             {/* Left: Narrative */}
             <article className="space-y-6">
               <span className="inline-block rounded-full bg-brand-dark-blue/8 px-4 py-1 text-xs font-bold uppercase tracking-widest text-brand-dark-blue">
@@ -42,47 +42,52 @@ export const EpcMethodSection = () => {
                 {epc.description}
               </p>
 
-              {/* EPC Letter badges */}
-              <div className="flex flex-wrap gap-3 pt-2">
+              {/* EPC Letter badges (Staggered) */}
+              <StaggerChildren staggerDelay={0.15} className="flex flex-wrap gap-3 pt-2">
                 {EPC_LETTERS.map(({ letter, word, color }) => (
-                  <div
-                    key={letter}
-                    className={`flex items-center gap-3 rounded-xl border px-4 py-3 ring-1 shadow-sm ${color}`}
-                  >
-                    <span className="text-2xl font-extrabold leading-none">{letter}</span>
-                    <div>
-                      <p className="text-xs font-extrabold uppercase tracking-widest opacity-60">Fase</p>
-                      <p className="text-sm font-bold tracking-wide">{word}</p>
+                  <StaggerItem key={letter}>
+                    <div
+                      className={`flex items-center gap-3 rounded-xl border px-4 py-3 ring-1 shadow-sm transition-transform hover:-translate-y-1 ${color}`}
+                    >
+                      <span className="text-2xl font-extrabold leading-none">{letter}</span>
+                      <div>
+                        <p className="text-xs font-extrabold uppercase tracking-widest opacity-60">Fase</p>
+                        <p className="text-sm font-bold tracking-wide">{word}</p>
+                      </div>
                     </div>
-                  </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerChildren>
             </article>
           </AnimateIn>
-          <AnimateIn direction="left" delay={0.1}>
 
-            {/* Right: Steps */}
+          <AnimateIn direction="left" delay={0.1}>
+            {/* Right: Steps (Staggered) */}
             <div className="rounded-2xl border border-brand-navy/8 bg-white p-7 shadow-[0_8px_40px_rgba(0,43,150,0.05)] sm:p-8">
               <p className="mb-6 text-xs font-extrabold uppercase tracking-widest text-brand-navy/35">
                 {epc.stepsHeading}
               </p>
-              <ol className="space-y-3 list-none" aria-label="Tahapan EPC Tambang">
+
+              <StaggerChildren className="space-y-3 list-none" staggerDelay={0.1} aria-label="Tahapan EPC Tambang">
                 {epc.steps.map((step, idx) => (
-                  <li key={step} className="group flex items-center gap-4">
-                    {/* Step number */}
-                    <div
-                      className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-sm font-extrabold text-white shadow-sm transition-transform duration-200 group-hover:scale-105 ${STEP_GRADIENTS[idx] ?? STEP_GRADIENTS[0]}`}
-                    >
-                      {idx + 1}
-                    </div>
-                    {/* Step content */}
-                    <div className="flex flex-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-5 py-4 transition-all duration-200 group-hover:border-slate-200 group-hover:bg-slate-50">
-                      <CheckCircle2 className="size-4 shrink-0 text-brand-accent/50 transition-colors duration-200 group-hover:text-brand-accent" aria-hidden />
-                      <p className="text-sm font-bold text-brand-navy sm:text-base leading-snug">{step}</p>
-                    </div>
-                  </li>
+                  <StaggerItem key={step}>
+                    <li className="group flex items-center gap-4">
+                      {/* Step number */}
+                      <div
+                        className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-sm font-extrabold text-white shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${STEP_GRADIENTS[idx] ?? STEP_GRADIENTS[0]}`}
+                      >
+                        {idx + 1}
+                      </div>
+                      {/* Step content */}
+                      <div className="flex flex-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-5 py-4 transition-all duration-200 group-hover:border-slate-200 group-hover:bg-slate-50 group-hover:shadow-sm">
+                        <CheckCircle2 className="size-4 shrink-0 text-brand-accent/50 transition-colors duration-200 group-hover:text-brand-accent" aria-hidden />
+                        <p className="text-sm font-bold text-brand-navy sm:text-base leading-snug">{step}</p>
+                      </div>
+                    </li>
+                  </StaggerItem>
                 ))}
-              </ol>
+              </StaggerChildren>
+
             </div>
           </AnimateIn>
         </div>

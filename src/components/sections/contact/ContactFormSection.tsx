@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Send, CheckCircle2, ShieldCheck, Clock, Users } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion"; // Tambahan Framer Motion
 import { CONTACT_PAGE_CONTENT } from "../../../content/contact";
 import { Button } from "../../ui/Button";
 import { AnimateIn } from "../../ui/AnimateIn";
@@ -68,6 +69,12 @@ export const ContactFormSection = () => {
 
   const { fields } = form;
 
+  // Animasi untuk pesan error agar meluncur mulus dari atas ke bawah
+  const errorVariants = {
+    hidden: { opacity: 0, height: 0, marginTop: 0 },
+    visible: { opacity: 1, height: "auto", marginTop: 6 },
+  };
+
   return (
     <section
       className="bg-gradient-to-b from-white to-slate-50/80 py-20 sm:py-24 lg:py-32"
@@ -114,25 +121,32 @@ export const ContactFormSection = () => {
               </div>
             </div>
           </AnimateIn>
-          <AnimateIn direction="left" delay={0.1}>
 
+          <AnimateIn direction="left" delay={0.1}>
             {/* Right: Form Card */}
             <div className="rounded-2xl border border-slate-100 bg-white p-7 shadow-[0_8px_40px_rgba(0,43,150,0.06)] sm:p-8 lg:p-10">
-              {isSuccess && (
-                <div
-                  ref={successRef}
-                  tabIndex={-1}
-                  role="status"
-                  aria-live="polite"
-                  className="mb-6 flex items-start gap-4 rounded-xl border border-brand-accent/20 bg-brand-accent/5 p-4 focus:outline-none"
-                >
-                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand-accent" aria-hidden />
-                  <div className="space-y-1">
-                    <p className="text-sm font-extrabold text-brand-dark-blue">{form.success.title}</p>
-                    <p className="text-sm font-medium leading-relaxed text-brand-navy/65">{form.success.message}</p>
-                  </div>
-                </div>
-              )}
+
+              <AnimatePresence>
+                {isSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    ref={successRef}
+                    tabIndex={-1}
+                    role="status"
+                    aria-live="polite"
+                    className="mb-6 flex items-start gap-4 rounded-xl border border-brand-accent/20 bg-brand-accent/5 p-4 focus:outline-none"
+                  >
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand-accent" aria-hidden />
+                    <div className="space-y-1">
+                      <p className="text-sm font-extrabold text-brand-dark-blue">{form.success.title}</p>
+                      <p className="text-sm font-medium leading-relaxed text-brand-navy/65">{form.success.message}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <form className="space-y-5" onSubmit={handleSubmit} noValidate>
                 {/* Nama Depan */}
@@ -154,11 +168,21 @@ export const ContactFormSection = () => {
                     aria-describedby={errors.firstName ? "firstName-error" : undefined}
                     className={inputClass(Boolean(errors.firstName))}
                   />
-                  {errors.firstName && (
-                    <p id="firstName-error" role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-brand-secondary">
-                      <span aria-hidden>⚠</span> {errors.firstName}
-                    </p>
-                  )}
+                  <AnimatePresence>
+                    {errors.firstName && (
+                      <motion.p
+                        id="firstName-error"
+                        role="alert"
+                        variants={errorVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className="flex items-center gap-1.5 text-xs font-bold text-brand-secondary overflow-hidden"
+                      >
+                        <span aria-hidden>⚠</span> {errors.firstName}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Email */}
@@ -180,11 +204,21 @@ export const ContactFormSection = () => {
                     aria-describedby={errors.email ? "email-error" : undefined}
                     className={inputClass(Boolean(errors.email))}
                   />
-                  {errors.email && (
-                    <p id="email-error" role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-brand-secondary">
-                      <span aria-hidden>⚠</span> {errors.email}
-                    </p>
-                  )}
+                  <AnimatePresence>
+                    {errors.email && (
+                      <motion.p
+                        id="email-error"
+                        role="alert"
+                        variants={errorVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className="flex items-center gap-1.5 text-xs font-bold text-brand-secondary overflow-hidden"
+                      >
+                        <span aria-hidden>⚠</span> {errors.email}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Pesan */}
@@ -205,11 +239,21 @@ export const ContactFormSection = () => {
                     aria-describedby={errors.message ? "message-error" : undefined}
                     className={`${inputClass(Boolean(errors.message))} min-h-[130px] resize-y leading-relaxed`}
                   />
-                  {errors.message && (
-                    <p id="message-error" role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-brand-secondary">
-                      <span aria-hidden>⚠</span> {errors.message}
-                    </p>
-                  )}
+                  <AnimatePresence>
+                    {errors.message && (
+                      <motion.p
+                        id="message-error"
+                        role="alert"
+                        variants={errorVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className="flex items-center gap-1.5 text-xs font-bold text-brand-secondary overflow-hidden"
+                      >
+                        <span aria-hidden>⚠</span> {errors.message}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="pt-1">

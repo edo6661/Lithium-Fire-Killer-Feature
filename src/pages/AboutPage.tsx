@@ -2,7 +2,6 @@ import { PageSeo } from "../components/seo/PageSeo";
 import {
   AboutHistorySection,
   AboutIntroSection,
-  AboutLocationSection,
 } from "../components/sections/about";
 import { PAGE_SEO } from "../config/seo";
 
@@ -19,7 +18,6 @@ export const AboutPage = () => {
 
       <AboutIntroSection />
       <AboutHistorySection />
-      <AboutLocationSection />
     </>
   );
 };

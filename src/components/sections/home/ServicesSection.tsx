@@ -1,5 +1,6 @@
 import { Building2, Car, HardHat, ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { motion } from "framer-motion"; // Tambahan import motion
 import { HOME_CONTENT } from "../../../content/home";
 import { AnimateIn } from "../../ui/AnimateIn";
 import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
@@ -10,19 +11,19 @@ const SERVICE_CONFIG = [
     badge: "bg-brand-primary/10 text-brand-primary",
     icon: "bg-brand-primary/10 text-brand-primary ring-brand-primary/10",
     accent: "from-brand-primary to-[#ff9133]",
-    glow: "group-hover:shadow-[0_20px_48px_rgba(255,115,0,0.10)]",
+    glow: "hover:shadow-[0_24px_56px_rgba(255,115,0,0.15)]", // Efek shadow diperbesar
   },
   {
     badge: "bg-brand-accent/10 text-brand-accent",
     icon: "bg-brand-accent/10 text-brand-accent ring-brand-accent/10",
     accent: "from-brand-accent to-brand-dark-blue",
-    glow: "group-hover:shadow-[0_20px_48px_rgba(13,132,252,0.10)]",
+    glow: "hover:shadow-[0_24px_56px_rgba(13,132,252,0.15)]",
   },
   {
     badge: "bg-brand-dark-blue/10 text-brand-dark-blue",
     icon: "bg-brand-dark-blue/10 text-brand-dark-blue ring-brand-dark-blue/10",
     accent: "from-brand-dark-blue to-brand-navy",
-    glow: "group-hover:shadow-[0_20px_48px_rgba(0,43,150,0.10)]",
+    glow: "hover:shadow-[0_24px_56px_rgba(0,43,150,0.15)]",
   },
 ];
 
@@ -56,21 +57,27 @@ export const ServicesSection = () => {
             const config = SERVICE_CONFIG[index]!;
             return (
               <StaggerItem key={service.title}>
-                <article className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-8 shadow-[0_2px_16px_rgba(0,43,150,0.04)] transition-all duration-300 ease-out hover:-translate-y-2 hover:border-slate-200 ${config.glow}`}>
+                {/* Menggunakan motion.article untuk fisika pegas (spring) */}
+                <motion.article
+                  whileHover={{ y: -8, scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-8 shadow-[0_2px_16px_rgba(0,43,150,0.04)] transition-colors duration-300 hover:border-slate-200 ${config.glow}`}
+                >
                   <div className={`absolute inset-x-0 top-0 h-1 rounded-t-2xl bg-gradient-to-r ${config.accent}`} aria-hidden />
                   <span className={`mb-6 inline-flex size-8 items-center justify-center rounded-full text-xs font-extrabold ${config.badge}`}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <div className={`mb-5 inline-flex size-14 items-center justify-center rounded-xl ring-1 ${config.icon} transition-all duration-300 group-hover:scale-110`} aria-hidden>
+                  <div className={`mb-5 inline-flex size-14 items-center justify-center rounded-xl ring-1 ${config.icon} transition-transform duration-300 group-hover:scale-110`} aria-hidden>
                     <Icon className="size-7" strokeWidth={1.75} />
                   </div>
                   <h3 className="text-lg font-extrabold tracking-tight text-brand-navy sm:text-xl">{service.title}</h3>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-brand-navy/65 sm:text-base">{service.description}</p>
-                  <div className="mt-5 flex items-center gap-1.5 text-xs font-bold text-brand-navy/30 transition-all duration-200 group-hover:text-brand-primary">
+                  <div className="mt-5 flex items-center gap-1.5 text-xs font-bold text-brand-navy/30 transition-colors duration-200 group-hover:text-brand-primary">
                     Pelajari lebih lanjut
                     <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                   </div>
-                </article>
+                </motion.article>
               </StaggerItem>
             );
           })}

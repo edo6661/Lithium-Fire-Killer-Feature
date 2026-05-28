@@ -55,14 +55,15 @@ export const Header = () => {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ease-out ${scrolled
-          ? "border-b border-slate-100/80 bg-white/92 shadow-[0_2px_20px_rgba(0,43,150,0.07)] backdrop-blur-xl"
-          : "border-b border-transparent bg-white/98 backdrop-blur-sm"
+        ? "border-b border-slate-100/80 bg-white/92 shadow-[0_2px_20px_rgba(0,43,150,0.07)] backdrop-blur-xl"
+        : "border-b border-transparent bg-white/98 backdrop-blur-sm"
         }`}
     >
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link
           to="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="flex min-w-0 shrink items-center rounded-xl transition-all duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
           aria-label={`${SITE.shortName} — Beranda`}
         >
@@ -78,7 +79,12 @@ export const Header = () => {
           <ul className="flex items-center gap-0.5">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <NavLink to={link.href} className={navLinkClass} end={link.href === "/"}>
+                <NavLink
+                  to={link.href}
+                  className={navLinkClass}
+                  end={link.href === "/"}
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                >
                   {({ isActive }) => (
                     <>
                       {link.label}
@@ -147,7 +153,10 @@ export const Header = () => {
                       to={link.href}
                       className={mobileNavLinkClass}
                       end={link.href === "/"}
-                      onClick={() => setMobileOpen(false)}
+                      onClick={() => {
+                        setMobileOpen(false);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
                     >
                       <span
                         className="flex size-8 items-center justify-center rounded-lg bg-slate-50 text-base ring-1 ring-slate-100"

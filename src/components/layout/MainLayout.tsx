@@ -1,9 +1,17 @@
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { WhatsAppButton } from "../ui/WhatsAppButton";
 
 export const MainLayout = () => {
+  const { pathname } = useLocation();
+
+  // Memastikan scroll selalu kembali ke atas setiap kali rute (URL) berubah
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <>
       <a href="#main-content" className="skip-link">

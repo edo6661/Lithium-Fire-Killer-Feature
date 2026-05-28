@@ -1,12 +1,13 @@
-import { Mail, Phone, MessageSquare, Clock, ArrowRight } from "lucide-react";
+import { Mail, Phone, MessageSquare, Clock } from "lucide-react";
 import { CONTACT_PAGE_CONTENT } from "../../../content/contact";
+import { AnimateIn } from "../../ui/AnimateIn";
+import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
 const { info } = CONTACT_PAGE_CONTENT;
 
 const CHANNEL_META = {
   phone: {
     Icon: Phone,
-    badge: "Tersedia via WhatsApp",
     badgeColor: "bg-[#25D366]/12 text-[#128C3C] ring-[#25D366]/20",
     iconBg: "bg-[#25D366]/10 text-[#128C3C] ring-[#25D366]/15",
     hoverBorder: "hover:border-[#25D366]/30",
@@ -14,7 +15,6 @@ const CHANNEL_META = {
   },
   email: {
     Icon: Mail,
-    badge: "Respons dalam 1×24 jam",
     badgeColor: "bg-brand-accent/10 text-brand-dark-blue ring-brand-accent/20",
     iconBg: "bg-brand-accent/10 text-brand-accent ring-brand-accent/15",
     hoverBorder: "hover:border-brand-accent/30",
@@ -41,15 +41,13 @@ export const ContactInfoSection = () => {
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Badge */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-primary/25 bg-brand-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-primary">
-          <MessageSquare className="size-3.5" aria-hidden />
-          Siap Membantu Anda
-        </div>
-
         <div className="grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-20">
           {/* Left: heading */}
-          <div>
+          <AnimateIn direction="right">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-primary/25 bg-brand-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-primary">
+              <MessageSquare className="size-3.5" aria-hidden />
+              Siap Membantu Anda
+            </div>
             <h1
               id="contact-info-heading"
               className="text-3xl font-extrabold leading-[1.12] tracking-tight sm:text-4xl lg:text-5xl"
@@ -65,51 +63,43 @@ export const ContactInfoSection = () => {
               <Clock className="size-4 shrink-0 text-white/40" aria-hidden />
               <span>Jam operasional: <span className="font-semibold text-white/75">Senin – Jumat, 09.00 – 17.00 WIB</span></span>
             </div>
-          </div>
+          </AnimateIn>
 
-          {/* Right: Channel cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          {/* Right: Channel cards (Staggered) */}
+          <StaggerChildren staggerDelay={0.15} className="flex flex-col gap-4">
             {info.channels.map((channel) => {
               const meta = CHANNEL_META[channel.id as keyof typeof CHANNEL_META];
               const Icon = meta?.Icon ?? Phone;
               return (
-                <a
-                  key={channel.id}
-                  href={channel.id === "phone" ? channel.whatsappHref : channel.href}
-                  className={`group flex flex-col gap-5 rounded-2xl border border-white/8 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-white/15 hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy ${meta?.hoverBorder ?? ""} ${meta?.hoverGlow ?? ""}`
-                  }
-                  {...(channel.id === "phone" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                >
-                  {/* Icon */}
-                  < div className={`inline-flex size-12 items-center justify-center rounded-xl ring-1 transition-transform duration-200 group-hover:scale-105 ${meta?.iconBg ?? "bg-white/10 text-white ring-white/10"}`}>
-                    <Icon className="size-5.5" strokeWidth={1.75} />
-                  </div>
+                <StaggerItem key={channel.id}>
+                  <a
+                    href={channel.id === "phone" ? channel.whatsappHref : channel.href}
+                    className={`group flex h-full flex-col gap-5 rounded-2xl border border-white/8 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-white/15 hover:bg-white/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy ${meta?.hoverBorder ?? ""} ${meta?.hoverGlow ?? ""}`}
+                    {...(channel.id === "phone" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    {/* Icon */}
+                    <div className={`inline-flex size-12 items-center justify-center rounded-xl ring-1 transition-transform duration-200 group-hover:scale-105 ${meta?.iconBg ?? "bg-white/10 text-white ring-white/10"}`}>
+                      <Icon className="size-5.5" strokeWidth={1.75} />
+                    </div>
 
-                  {/* Label & value */}
-                  <div className="flex-1">
-                    <p className="text-xs font-bold uppercase tracking-widest text-white/40">
-                      {channel.label}
-                    </p>
-                    <p className="mt-1.5 text-lg font-extrabold text-white transition-colors duration-200 group-hover:text-brand-primary sm:text-xl">
-                      {channel.value}
-                    </p>
-                  </div>
+                    {/* Label & value */}
+                    <div className="flex-1">
+                      <p className="text-xs font-bold uppercase tracking-widest text-white/40">
+                        {channel.label}
+                      </p>
+                      <p className="mt-1.5 text-lg font-extrabold text-white transition-colors duration-200 group-hover:text-brand-primary sm:text-xl">
+                        {channel.value}
+                      </p>
+                    </div>
 
-                  {/* Badge + arrow */}
-                  <div className="flex items-center justify-between">
-                    {meta?.badge && (
-                      <span className={`rounded-full px-3 py-1 text-xs font-bold ring-1 ${meta.badgeColor}`}>
-                        {meta.badge}
-                      </span>
-                    )}
-                    <ArrowRight className="size-4 text-white/25 transition-all duration-200 group-hover:translate-x-1 group-hover:text-brand-primary" aria-hidden />
-                  </div>
-                </a>
+
+                  </a>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerChildren>
         </div>
-      </div >
-    </section >
+      </div>
+    </section>
   );
 };

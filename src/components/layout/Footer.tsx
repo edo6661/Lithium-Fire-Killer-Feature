@@ -1,11 +1,26 @@
-import { Mail, Phone, Instagram, Linkedin, Youtube } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, Instagram, Linkedin, Youtube, CheckCircle2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion"; // Tambahan Framer Motion
 import { Button } from "../ui/Button";
 import { CONTACT, FOOTER, SITE } from "../../config/site";
-import { Link } from "react-router-dom";
 
 export const Footer = () => {
+  const [isNewsletterSent, setIsNewsletterSent] = useState(false);
+  const [emailValue, setEmailValue] = useState("");
+
   const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!emailValue) return;
+
+    // Simulasi pengiriman form sukses
+    setIsNewsletterSent(true);
+    setEmailValue("");
+
+    // Reset pesan sukses setelah 5 detik
+    setTimeout(() => {
+      setIsNewsletterSent(false);
+    }, 5000);
   };
 
   const { newsletter, socialCta } = FOOTER;
@@ -135,31 +150,54 @@ export const Footer = () => {
             <p className="text-sm leading-relaxed text-white/50">
               Dapatkan update terbaru seputar keamanan kebakaran baterai lithium.
             </p>
-            <form
-              className="flex flex-col gap-2.5"
-              onSubmit={handleNewsletterSubmit}
-              noValidate
-            >
-              <label htmlFor="footer-newsletter-email" className="sr-only">
-                {newsletter.emailLabel}
-              </label>
-              <input
-                id="footer-newsletter-email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder={newsletter.emailPlaceholder}
-                className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-sm text-white placeholder:text-white/20 transition-all duration-200 focus:border-brand-primary/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-brand-primary/15"
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                className="w-full shadow-[0_4px_16px_rgba(255,115,0,0.20)]"
-              >
-                {newsletter.submitButton}
-              </Button>
-            </form>
+
+            <AnimatePresence mode="wait">
+              {isNewsletterSent ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-center gap-3 rounded-xl border border-[#25D366]/30 bg-[#25D366]/10 px-4 py-3.5"
+                >
+                  <CheckCircle2 className="size-5 text-[#25D366]" aria-hidden />
+                  <p className="text-sm font-bold text-[#25D366]">Berhasil berlangganan!</p>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col gap-2.5"
+                  onSubmit={handleNewsletterSubmit}
+                  noValidate
+                >
+                  <label htmlFor="footer-newsletter-email" className="sr-only">
+                    {newsletter.emailLabel}
+                  </label>
+                  <input
+                    id="footer-newsletter-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={emailValue}
+                    onChange={(e) => setEmailValue(e.target.value)}
+                    placeholder={newsletter.emailPlaceholder}
+                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-sm text-white placeholder:text-white/20 transition-all duration-200 focus:border-brand-primary/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-brand-primary/15"
+                  />
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-full shadow-[0_4px_16px_rgba(255,115,0,0.20)]"
+                  >
+                    {newsletter.submitButton}
+                  </Button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
           </section>
         </div>
 
@@ -176,6 +214,6 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-    </footer >
+    </footer>
   );
 };
