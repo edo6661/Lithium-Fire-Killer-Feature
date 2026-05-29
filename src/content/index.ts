@@ -4,3 +4,4 @@ export { ABOUT_CONTENT } from "./about";
 export { LITHIUM_FIRE_SAFETY_CONTENT } from "./lithium-fire-safety";
 export { CONTACT_PAGE_CONTENT } from "./contact";
 export { LFK_X_ARKIV_CONTENT } from "./lfk-x-arkiv";
+export { PRODUCT_CONTENT } from "./product";

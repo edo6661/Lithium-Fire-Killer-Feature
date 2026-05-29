@@ -11,6 +11,7 @@ const NAV_ICONS: Record<string, string> = {
   "/": "🏠",
   "/about": "🏢",
   "/lithium-fire-safety": "🔥",
+  "/lfk-x-arkiv": "✨",
   "/contact": "📞",
 };
 
@@ -52,12 +53,12 @@ export const Header = () => {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-in-out ${scrolled || mobileOpen
-          ? isArkivPage
-            ? "bg-white/95 backdrop-blur-xl border-b border-slate-200 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
-            : "bg-surface/80 backdrop-blur-xl border-b border-white/10 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-          : isArkivPage
-            ? "bg-white border-b border-transparent py-6" // <--- Ubah di sini (langsung putih solid di awal)
-            : "bg-gradient-to-b from-background/80 to-transparent py-6 border-b border-transparent"
+        ? isArkivPage
+          ? "bg-white/95 backdrop-blur-xl border-b border-slate-200 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+          : "bg-surface/80 backdrop-blur-xl border-b border-white/10 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+        : isArkivPage
+          ? "bg-white border-b border-transparent py-6"
+          : "bg-gradient-to-b from-background/80 to-transparent py-6 border-b border-transparent"
         }`}
     >
       <div className="container mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 md:px-12">
@@ -75,7 +76,7 @@ export const Header = () => {
           />
         </Link>
 
-        {/* Desktop Nav - Gaya baru (tanpa pill, ada underline hover) */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center space-x-8" aria-label="Navigasi utama">
           {NAV_LINKS.map((link) => (
             <NavLink
@@ -136,7 +137,6 @@ export const Header = () => {
       <AnimatePresence>
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -148,7 +148,6 @@ export const Header = () => {
               onClick={() => setMobileOpen(false)}
             />
 
-            {/* Drawer panel */}
             <motion.nav
               id="mobile-nav"
               initial={{ opacity: 0, y: -16, scale: 0.97 }}
@@ -208,7 +207,6 @@ export const Header = () => {
                 ))}
               </ul>
 
-              {/* Bottom contact hint */}
               <div
                 className={`mx-1 mt-3 border-t pt-3 ${isArkivPage ? "border-slate-200" : "border-white/8"
                   }`}

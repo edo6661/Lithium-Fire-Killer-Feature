@@ -3,6 +3,7 @@ import {
   EducationSection,
   HeroSection,
   ProblemSection,
+  ProductSection, // <-- Import dari sini
   RegulationSection,
   ServicesSection,
   ThermalRunawaySection,
@@ -22,6 +23,9 @@ export const HomePage = () => {
 
       <HeroSection />
       <ProblemSection />
+
+      <ProductSection />
+
       <ServicesSection />
       <EducationSection />
       <ThermalRunawaySection />

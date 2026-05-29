@@ -1,408 +1,382 @@
-ingat kode web lfk ini:
-
-<file path="src/components/sections/lfk-x-arkiv/ArkivCtaSection.tsx">
- 1: import { motion } from "framer-motion";
- 2: import { LFK_X_ARKIV_CONTENT } from "../../../content";
- 3: import { AnimateIn } from "../../ui/AnimateIn";
- 4: 
- 5: const { cta } = LFK_X_ARKIV_CONTENT;
- 6: 
- 7: export const ArkivCtaSection = () => {
- 8:   return (
- 9:     <section className="relative z-10 mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:px-8">
-10:       <AnimateIn direction="up">
-11:         <div className="rounded-[2rem] border border-white/60 bg-white/50 p-8 shadow-2xl backdrop-blur-xl sm:p-12">
-12:           <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-13:             {cta.heading}
-14:           </h2>
-15:           <p className="mx-auto mt-4 max-w-lg text-sm font-medium text-slate-600 sm:text-base">
-16:             {cta.description}
-17:           </p>
-18: 
-19:           <form className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
-20:             <input
-21:               type="email"
-22:               placeholder={cta.inputPlaceholder}
-23:               className="flex-1 rounded-full border border-slate-300 bg-white/60 px-5 py-3 text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400"
-24:             />
-25:             <button
-26:               type="submit"
-27:               className="rounded-full bg-slate-900 px-6 py-3 text-sm font-extrabold text-white shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-28:             >
-29:               {cta.button}
-30:             </button>
-31:           </form>
-32:         </div>
-33:       </AnimateIn>
-34:     </section>
-35:   );
-36: };
+tambahin menu lfk-x-arkiv di navbar / dimana.
+<file path="src/components/sections/home/ProductSection.tsx">
+  1: import { useState } from 'react';
+  2: import { CheckCircle2, Download, MessageSquare, ShieldCheck, Weight, Zap, MapPin, X, ShoppingCart } from 'lucide-react';
+  3: import { PRODUCT_CONTENT, type ProductVariant, type ProductPartner } from '../../../content/product';
+  4: import { AnimateIn } from '../../ui/AnimateIn';
+  5: import { StaggerChildren, StaggerItem } from '../../ui/StaggerChildren';
+  6: 
+  7: const VariantCard = ({ variant }: { variant: ProductVariant }) => {
+  8:   const [activeView, setActiveView] = useState<'front' | 'back' | 'left' | 'right'>('front');
+  9: 
+ 10:   return (
+ 11:     <div className="flex flex-col h-full bg-surface/40 border border-white/10 hover:border-accent/30 rounded-3xl p-8 backdrop-blur-md transition-all duration-300 shadow-xl group">
+ 12:       {variant.images ? (
+ 13:         <div className="mb-8 flex flex-col items-center">
+ 14:           <div className="w-full aspect-square max-h-[250px] md:max-h-[300px] relative flex items-center justify-center bg-background/50 rounded-2xl overflow-hidden border border-white/5 mb-4 group/image">
+ 15:             <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent opacity-50"></div>
+ 16:             <img
+ 17:               src={variant.images[activeView]}
+ 18:               alt={`${variant.name} - ${activeView} view`}
+ 19:               className="w-full h-full object-contain p-4 transform transition-all duration-500 group-hover/image:scale-110 drop-shadow-2xl"
+ 20:             />
+ 21:             <span className="absolute top-3 left-3 bg-surface/80 backdrop-blur-md border border-white/10 text-[9px] font-bold px-2 py-1 rounded text-foreground-muted uppercase tracking-wider">
+ 22:               {activeView}
+ 23:             </span>
+ 24:           </div>
+ 25:           <div className="flex justify-center gap-2 w-full">
+ 26:             {(['front', 'back', 'left', 'right'] as const).map((view) => (
+ 27:               <button
+ 28:                 key={view}
+ 29:                 onClick={() => setActiveView(view)}
+ 30:                 className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-300 flex-1 ${activeView === view
+ 31:                   ? 'bg-accent text-white shadow-[0_0_10px_rgba(56,152,212,0.4)] border border-accent'
+ 32:                   : 'bg-background border border-white/10 text-foreground-muted hover:text-white hover:border-white/30'
+ 33:                   }`}
+ 34:               >
+ 35:                 {view}
+ 36:               </button>
+ 37:             ))}
+ 38:           </div>
+ 39:         </div>
+ 40:       ) : (
+ 41:         <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-6 border border-white/5">
+ 42:           <Weight size={24} />
+ 43:         </div>
+ 44:       )}
+ 45: 
+ 46:       <div className="mt-auto">
+ 47:         {variant.weight && (
+ 48:           <span className="block text-xs text-foreground-muted uppercase tracking-wider mb-2">Berat: {variant.weight}</span>
+ 49:         )}
+ 50:         <h4 className="text-xl font-bold text-white/90 mb-3 group-hover:text-accent transition-colors">
+ 51:           {variant.name}
+ 52:         </h4>
+ 53:         {variant.desc && (
+ 54:           <p className="text-sm text-foreground-muted font-light leading-relaxed">
+ 55:             {variant.desc}
+ 56:           </p>
+ 57:         )}
+ 58:       </div>
+ 59:     </div>
+ 60:   );
+ 61: };
+ 62: 
+ 63: export const ProductSection = () => {
+ 64:   const [selectedPartner, setSelectedPartner] = useState<ProductPartner | null>(null);
+ 65:   const product = PRODUCT_CONTENT;
+ 66: 
+ 67:   return (
+ 68:     <section className="relative overflow-hidden bg-background border-y border-white/5 py-20 sm:py-24 lg:py-32" aria-labelledby="product-heading">
+ 69:       {/* Ambient Glow */}
+ 70:       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[150px] pointer-events-none z-0"></div>
+ 71: 
+ 72:       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl">
+ 73:         {/* Header Section */}
+ 74:         <AnimateIn direction="up" className="mb-16">
+ 75:           <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-sm">
+ 76:             <Zap size={16} className="text-accent" />
+ 77:             <span className="text-xs font-bold tracking-widest text-accent uppercase">
+ 78:               Produk Unggulan
+ 79:             </span>
+ 80:           </div>
+ 81:           <h2 id="product-heading" className="text-4xl md:text-5xl font-bold text-white tracking-tight max-w-4xl leading-tight">
+ 82:             {product.title}
+ 83:           </h2>
+ 84:           <p className="text-xl md:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-accent to-cyan-300 font-medium max-w-3xl leading-relaxed mt-4">
+ 85:             {product.tagline}
+ 86:           </p>
+ 87:         </AnimateIn>
+ 88: 
+ 89:         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+ 90:           {/* Left Column - Description & Partners */}
+ 91:           <div className="lg:col-span-7 space-y-12">
+ 92:             <AnimateIn direction="right">
+ 93:               <h3 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
+ 94:                 Ikhtisar Produk
+ 95:                 <div className="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent ml-4"></div>
+ 96:               </h3>
+ 97:               <p className="text-foreground-muted text-lg leading-relaxed font-light mb-8">
+ 98:                 {product.description}
+ 99:               </p>
+100: 
+101:               {product.features && (
+102:                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+103:                   {product.features.map((feature, index) => (
+104:                     <div key={index} className="flex items-center gap-4 p-5 rounded-2xl bg-surface/40 border border-white/5 hover:border-accent/30 transition-all duration-300 group">
+105:                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+106:                         <CheckCircle2 size={18} className="text-accent" />
+107:                       </div>
+108:                       <span className="text-foreground-muted font-light text-sm leading-relaxed group-hover:text-white/90 transition-colors">
+109:                         {feature}
+110:                       </span>
+111:                     </div>
+112:                   ))}
+113:                 </div>
+114:               )}
+115:             </AnimateIn>
+116: 
+117:             {/* Partners */}
+118:             <AnimateIn direction="up">
+119:               <h3 className="text-2xl font-bold mb-8 text-white flex items-center gap-3">
+120:                 Tersedia di Offline Store
+121:                 <div className="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent ml-4"></div>
+122:               </h3>
+123:               <div className="flex flex-wrap gap-6 items-center">
+124:                 {product.partners.map((partner, index) => (
+125:                   <button
+126:                     key={index}
+127:                     onClick={() => partner.locations ? setSelectedPartner(partner as ProductPartner) : undefined}
+128:                     className="bg-gradient-to-br from-accent/10 via-surface to-background border border-white/10 px-6 py-4 rounded-2xl hover:border-accent/30 hover:bg-surface/80 transition-all duration-300 group cursor-pointer focus:outline-none"
+129:                   >
+130:                     <img
+131:                       src={partner.logo}
+132:                       alt={partner.name}
+133:                       className="h-8 sm:h-10 w-auto object-contain filter transition-all duration-300 opacity-80 group-hover:opacity-100"
+134:                     />
+135:                   </button>
+136:                 ))}
+137:               </div>
+138:             </AnimateIn>
+139:           </div>
+140: 
+141:           {/* Right Column - Sticky CTA Card */}
+142:           <div className="lg:col-span-5">
+143:             <AnimateIn direction="left" className="relative overflow-hidden p-8 md:p-10 rounded-3xl bg-surface border border-accent/30 shadow-[0_10px_40px_rgba(56,152,212,0.15)] group lg:sticky lg:top-28">
+144:               <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-surface to-background opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
+145:               <div className="absolute -right-10 -top-10 w-40 h-40 bg-accent/30 blur-3xl rounded-full"></div>
+146: 
+147:               <div className="relative z-10">
+148:                 <div className="w-14 h-14 rounded-2xl bg-background border border-white/10 flex items-center justify-center text-accent mb-6">
+149:                   <ShieldCheck size={28} />
+150:                 </div>
+151:                 <h3 className="text-2xl font-bold text-white mb-3">Keamanan Terjamin</h3>
+152:                 <p className="text-foreground-muted text-sm mb-8 font-light leading-relaxed">
+153:                   Dapatkan produk resmi dengan sertifikasi SNI dan TKDN. Hubungi kami untuk penawaran dan solusi terbaik bagi bisnis Anda.
+154:                 </p>
+155: 
+156:                 <div className="space-y-4">
+157:                   {product.brochureUrl && (
+158:                     <a
+159:                       href={product.brochureUrl}
+160:                       download
+161:                       target="_blank"
+162:                       rel="noopener noreferrer"
+163:                       className="w-full bg-white/5 hover:bg-white/10 border border-white/20 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 group/btn text-sm uppercase tracking-wide"
+164:                     >
+165:                       <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" />
+166:                       Unduh Brosur
+167:                     </a>
+168:                   )}
+169: 
+170:                   {product.tokopediaUrl && (
+171:                     <a
+172:                       href={product.tokopediaUrl}
+173:                       target="_blank"
+174:                       rel="noopener noreferrer"
+175:                       className="w-full bg-[#03AC0E]/10 hover:bg-[#03AC0E]/20 border border-[#03AC0E]/30 text-white font-bold py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_15px_rgba(3,172,14,0.1)] hover:shadow-[0_0_25px_rgba(3,172,14,0.25)] hover:-translate-y-1 text-sm uppercase tracking-wide group/tokped"
+176:                     >
+177:                       <ShoppingCart size={18} className="text-[#03AC0E] group-hover/tokped:scale-110 transition-transform" />
+178:                       Beli di Tokopedia
+179:                     </a>
+180:                   )}
+181: 
+182:                   <a
+183:                     href={`https://wa.me/6281290003278?text=Halo%20tim%20FAST,%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(product.title)}.`}
+184:                     target="_blank"
+185:                     rel="noopener noreferrer"
+186:                     className="w-full bg-accent hover:bg-accent/80 text-white font-bold py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(56,152,212,0.4)] hover:shadow-[0_0_30px_rgba(56,152,212,0.6)] hover:-translate-y-1 text-sm uppercase tracking-wide"
+187:                   >
+188:                     <MessageSquare size={18} />
+189:                     Hubungi Sales
+190:                   </a>
+191:                 </div>
+192:               </div>
+193:             </AnimateIn>
+194:           </div>
+195:         </div>
+196: 
+197:         {/* Variants Section */}
+198:         {product.variants && (
+199:           <div className="pt-20 mt-12 border-t border-white/10">
+200:             <AnimateIn direction="up" className="text-center mb-12">
+201:               <h3 className="text-3xl font-bold text-white mb-4">Varian Produk</h3>
+202:               <p className="text-foreground-muted font-light max-w-2xl mx-auto">
+203:                 Pilih ukuran dan kapasitas silinder yang paling sesuai dengan skala kebutuhan proteksi Anda.
+204:               </p>
+205:             </AnimateIn>
+206: 
+207:             <StaggerChildren staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+208:               {product.variants.map((variant, index) => (
+209:                 <StaggerItem key={index}>
+210:                   <VariantCard variant={variant} />
+211:                 </StaggerItem>
+212:               ))}
+213:             </StaggerChildren>
+214:           </div>
+215:         )}
+216:       </div>
+217: 
+218:       {/* Partner Locations Modal */}
+219:       {selectedPartner && (
+220:         <div
+221:           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+222:           onClick={() => setSelectedPartner(null)}
+223:         >
+224:           <div
+225:             className="bg-surface border border-accent/30 rounded-3xl p-8 max-w-md w-full shadow-[0_10px_40px_rgba(56,152,212,0.15)] relative"
+226:             onClick={e => e.stopPropagation()}
+227:           >
+228:             <button
+229:               onClick={() => setSelectedPartner(null)}
+230:               className="absolute top-4 right-4 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full p-2 transition-colors focus:outline-none"
+231:             >
+232:               <X size={20} />
+233:             </button>
+234: 
+235:             <div className="flex justify-center mb-6 bg-white/5 p-6 rounded-2xl border border-white/5">
+236:               <img
+237:                 src={selectedPartner.logo}
+238:                 alt={selectedPartner.name}
+239:                 className="h-12 object-contain filter opacity-90 scale-125"
+240:               />
+241:             </div>
+242: 
+243:             <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+244:               <MapPin className="text-accent" size={24} />
+245:               Lokasi Tersedia
+246:             </h4>
+247: 
+248:             <ul className="space-y-3 mt-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+249:               {selectedPartner.locations?.map((loc, i) => (
+250:                 <li key={i} className="flex items-center gap-3 text-foreground-muted font-light p-3 rounded-xl bg-background/50 border border-white/5 hover:border-white/10 transition-colors">
+251:                   <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(56,152,212,0.6)] flex-shrink-0"></div>
+252:                   <span>{loc}</span>
+253:                 </li>
+254:               ))}
+255:             </ul>
+256:           </div>
+257:         </div>
+258:       )}
+259:     </section>
+260:   );
+261: };
 </file>
 
-<file path="src/components/sections/lfk-x-arkiv/ArkivHeroSection.tsx">
- 1: import { motion } from "framer-motion";
- 2: import { LFK_X_ARKIV_CONTENT } from "../../../content";
- 3: 
- 4: const { hero } = LFK_X_ARKIV_CONTENT;
- 5: 
- 6: export const ArkivHeroSection = () => {
- 7:   return (
- 8:     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden bg-[#0b1120] text-white">
- 9:       {/* Dark background placeholder (simulating the drawing canvas) */}
-10:       <div className="absolute inset-0 z-0 opacity-40 mix-blend-luminosity">
-11:         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0b1120]/50 to-[#eaeff5]" />
-12:       </div>
-13: 
-14:       <div className="relative z-10 mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-15:         <motion.h1
-16:           initial={{ opacity: 0, y: 20 }}
-17:           animate={{ opacity: 1, y: 0 }}
-18:           transition={{ duration: 0.7, ease: "easeOut" }}
-19:           className="text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-[5rem] leading-[1.05]"
-20:           style={{ textShadow: "0 4px 24px rgba(0,0,0,0.5)" }}
-21:         >
-22:           {hero.headline}
-23:         </motion.h1>
-24: 
-25:         <motion.p
-26:           initial={{ opacity: 0, y: 20 }}
-27:           animate={{ opacity: 1, y: 0 }}
-28:           transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-29:           className="mx-auto mt-6 max-w-2xl text-lg font-medium text-white/80 sm:text-xl"
-30:         >
-31:           {hero.subheadline}
-32:         </motion.p>
-33: 
-34:         <motion.div
-35:           initial={{ opacity: 0, y: 20 }}
-36:           animate={{ opacity: 1, y: 0 }}
-37:           transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-38:           className="mt-10"
-39:         >
-40:           <button className="rounded-full bg-white/20 backdrop-blur-md border border-white/40 px-8 py-3.5 text-sm font-extrabold tracking-widest text-white shadow-xl transition-all hover:bg-white hover:text-[#0b1120] hover:scale-105">
-41:             {hero.cta}
-42:           </button>
-43:         </motion.div>
-44:       </div>
-45:     </section>
-46:   );
-47: };
-</file>
-
-<file path="src/components/sections/lfk-x-arkiv/ArkivProductSection.tsx">
- 1: import { motion } from "framer-motion";
- 2: import { LFK_X_ARKIV_CONTENT } from "../../../content";
- 3: import { AnimateIn } from "../../ui/AnimateIn";
- 4: 
- 5: const { product } = LFK_X_ARKIV_CONTENT;
- 6: 
- 7: export const ArkivProductSection = () => {
- 8:   return (
- 9:     <section className="relative z-10 mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-10: 
-11:       {/* Top Text & Heading */}
-12:       <div className="grid items-end gap-10 lg:grid-cols-2">
-13:         <AnimateIn direction="up">
-14:           <p className="text-xs font-bold leading-relaxed tracking-wider text-slate-600 sm:text-sm uppercase max-w-sm">
-15:             {product.statement}
-16:           </p>
-17:         </AnimateIn>
-18:         <AnimateIn direction="up" delay={0.2}>
-19:           <h2 className="whitespace-pre-line text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-20:             {product.heading}
-21:           </h2>
-22:           <div className="mt-6 flex flex-wrap gap-4">
-23:             {product.tags.map((tag) => (
-24:               <span key={tag} className="text-xs font-bold text-slate-600">
-25:                 {tag}
-26:               </span>
-27:             ))}
-28:           </div>
-29:         </AnimateIn>
-30:       </div>
-31: 
-32:       {/* Extinguisher Image overlapping the table */}
-33:       <div className="relative mt-16 lg:mt-24">
-34:         {/* Table Background */}
-35:         <AnimateIn direction="up" delay={0.3} className="relative z-0 overflow-hidden rounded-[2rem] border border-white/60 bg-white/40 shadow-2xl backdrop-blur-xl lg:w-3/4">
-36:           <div className="w-full overflow-x-auto p-6 sm:p-10">
-37:             <table className="w-full text-left text-sm text-slate-700">
-38:               <tbody>
-39:                 {product.specs.map((row, i) => (
-40:                   <tr key={row.label} className={i !== 0 ? "border-t border-slate-300/30" : ""}>
-41:                     <td className={`py-4 pr-4 align-top ${row.isHeader ? 'font-extrabold text-slate-900' : 'font-bold text-slate-800'}`}>
-42:                       {row.label}
-43:                     </td>
-44:                     <td className={`py-4 whitespace-pre-line ${row.isHeader ? 'font-extrabold text-slate-900' : 'font-medium'}`}>
-45:                       {row.value}
-46:                     </td>
-47:                   </tr>
-48:                 ))}
-49:               </tbody>
-50:             </table>
-51:           </div>
-52:         </AnimateIn>
-53: 
-54:         {/* 3D Extinguisher Render (Absolute on Desktop) */}
-55:         <AnimateIn
-56:           direction="left"
-57:           delay={0.5}
-58:           className="relative mt-10 flex justify-center lg:absolute lg:-bottom-10 lg:right-0 lg:mt-0 lg:w-[45%]"
-59:         >
-60:           {/* Ganti src dengan gambar tabung Saru Anda jika ada, sementara menggunakan dummy 3d shape */}
-61:           <motion.img
-62:             animate={{ y: [0, -15, 0] }}
-63:             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-64:             src="/arkiv/graphic-elements/Blob-2.png"
-65:             alt="Saru Extinguisher Artwork"
-66:             className="w-64 drop-shadow-2xl sm:w-80 lg:w-[400px] z-20"
-67:           />
-68:         </AnimateIn>
-69:       </div>
-70:     </section>
-71:   );
-72: };
-</file>
-
-<file path="src/components/sections/lfk-x-arkiv/ArkivVisionarySection.tsx">
- 1: import { motion } from "framer-motion";
- 2: import { LFK_X_ARKIV_CONTENT } from "../../../content";
- 3: import { AnimateIn } from "../../ui/AnimateIn";
- 4: import { ShieldCheck, Globe, Gavel } from "lucide-react";
- 5: 
- 6: const { visionary } = LFK_X_ARKIV_CONTENT;
- 7: 
- 8: export const ArkivVisionarySection = () => {
- 9:   return (
-10:     <section className="relative z-10 mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
-11:       <div className="rounded-[2rem] border border-white/60 bg-white/40 p-6 shadow-2xl backdrop-blur-xl sm:p-10 lg:p-12">
-12:         <div className="grid items-center gap-10 lg:grid-cols-2">
-13:           <AnimateIn direction="right">
-14:             {/* Placeholder untuk foto Arkiv */}
-15:             <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-300 shadow-inner">
-16:               <img
-17:                 src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop"
-18:                 alt="Arkiv Visionary"
-19:                 className="size-full object-cover grayscale-[30%]"
-20:               />
-21:             </div>
-22:           </AnimateIn>
-23: 
-24:           <AnimateIn direction="left" delay={0.2} className="space-y-6">
-25:             <h2 className="whitespace-pre-line text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-26:               {visionary.heading}
-27:             </h2>
-28:             <p className="text-sm font-medium leading-relaxed text-slate-700 sm:text-base">
-29:               {visionary.description}
-30:             </p>
-31: 
-32:             {/* Badges */}
-33:             <div className="grid grid-cols-3 gap-3 pt-2">
-34:               <div className="flex flex-col items-center justify-center rounded-xl border border-white/50 bg-white/30 p-3 text-center shadow-sm">
-35:                 <ShieldCheck className="mb-2 size-6 text-slate-800" />
-36:                 <p className="text-[10px] font-extrabold uppercase text-slate-900 leading-tight">Partnership</p>
-37:               </div>
-38:               <div className="flex flex-col items-center justify-center rounded-xl border border-white/50 bg-white/30 p-3 text-center shadow-sm">
-39:                 <Globe className="mb-2 size-6 text-slate-800" />
-40:                 <p className="text-[10px] font-extrabold uppercase text-slate-900 leading-tight">Global Brand Projects</p>
-41:               </div>
-42:               <div className="flex flex-col items-center justify-center rounded-xl border border-white/50 bg-white/30 p-3 text-center shadow-sm">
-43:                 <Gavel className="mb-2 size-6 text-slate-800" />
-44:                 <p className="text-[10px] font-extrabold uppercase text-slate-900 leading-tight">Global Art Market</p>
-45:               </div>
-46:             </div>
-47: 
-48:             <div className="border-l-2 border-slate-400 pl-4 pt-2">
-49:               <p className="text-lg font-bold italic text-slate-800">
-50:                 {visionary.quote}
-51:               </p>
-52:               <p className="mt-1 text-sm font-bold text-slate-500">{visionary.quoteAuthor}</p>
-53:             </div>
-54:           </AnimateIn>
-55:         </div>
-56:       </div>
-57:     </section>
-58:   );
-59: };
-</file>
-
-<file path="src/components/sections/lfk-x-arkiv/index.ts">
-1: export { ArkivHeroSection } from "./ArkivHeroSection";
-2: export { ArkivVisionarySection } from "./ArkivVisionarySection";
-3: export { ArkivProductSection } from "./ArkivProductSection";
-4: export { ArkivCtaSection } from "./ArkivCtaSection";
-</file>
-
-<file path="src/components/ui/ScrollProgress.tsx">
- 1: import { motion, useScroll, useSpring } from "framer-motion";
- 2: 
- 3: export const ScrollProgress = () => {
- 4:   const { scrollYProgress } = useScroll();
- 5: 
- 6:   // Spring physics — smooth tracking tanpa lag
- 7:   const scaleX = useSpring(scrollYProgress, {
- 8:     stiffness: 120,
- 9:     damping: 35,
-10:     restDelta: 0.001,
-11:   });
-12: 
-13:   return (
-14:     <>
-15:       {/* Progress bar */}
-16:       <motion.div
-17:         className="fixed inset-x-0 top-0 z-[100] h-[2px] origin-left"
-18:         style={{
-19:           scaleX,
-20:           background: "linear-gradient(90deg, #3898d4 0%, #60a5fa 50%, #22d3ee 100%)",
-21:         }}
-22:         aria-hidden="true"
-23:       />
-24:       {/* Trailing glow dot */}
-25:       <motion.div
-26:         className="fixed top-0 z-[100] h-[2px] w-8 rounded-full blur-sm"
-27:         style={{
-28:           scaleX,
-29:           transformOrigin: "left",
-30:           background: "linear-gradient(90deg, transparent, #3898d4, #22d3ee)",
-31:           opacity: 0.7,
-32:         }}
-33:         aria-hidden="true"
-34:       />
-35:     </>
-36:   );
-37: };
-</file>
-
-<file path="src/content/lfk-x-arkiv.ts">
- 1: export const LFK_X_ARKIV_CONTENT = {
- 2:   hero: {
- 3:     headline: "WHERE MASTERPIECE MEETS PROTECTION.",
- 4:     subheadline:
- 5:       "Lithium Fire Killer × Arkiv: A limited-edition collision of avant-garde art and revolutionary fire safety.",
- 6:     cta: "[ EXPLORE THE COLLECTION ]",
- 7:   },
- 8:   visionary: {
- 9:     heading: "THE CANVAS OF A\nVISIONARY: ARKIV.",
-10:     description:
-11:       "...Born in Bandung, Indonesia... bridges lowbrow art, street culture, and high-end galleries... Arkiv translates critical spatial awareness into avant-garde masterpieces.",
-12:     quote: '"Art shouldn\'t just provoke thought—it should protect life."',
-13:     quoteAuthor: "— Arkiv",
-14:   },
-15:   product: {
-16:     statement:
-17:       "FOR TOO LONG, FIRE SAFETY HAS BEEN HIDDEN AWAY IN DARK CUPBOARDS—UGLY, RED CYLINDERS WE HOPE TO NEVER LOOK AT. WE ARE CHANGING THAT. BY USING ART AS OUR MEDIUM, WE AIM TO EDUCATE, DISRUPT, AND ELEVATE.",
-18:     heading: "MEET SARU:\nREIMAGINED FOR\nYOUR PROTECTION.",
-19:     tags: [
-20:       "Dual-purpose masterpiece",
-21:       "Lithium Fire technology",
-22:       "Exclusive Saru character design",
-23:     ],
-24:     specs: [
-25:       { label: "Feature", value: "Specifications", isHeader: true },
-26:       { label: "Design", value: 'Exclusive "Saru" Artwork by Arkiv' },
-27:       {
-28:         label: "Edition Tiers",
-29:         value: "Ultra-Limited (02/100)\nLegendary (S/100)",
-30:       },
-31:       {
-32:         label: "Fire Class Rating",
-33:         value: "Specialized Lithium-Ion Battery + Multi-Class Protection",
-34:       },
-35:       {
-36:         label: "Placement",
-37:         value:
-38:           "Designed for prominent display in homes, galleries, and private studios",
-39:       },
-40:       {
-41:         label: "Included",
-42:         value: "Physical Certificate of Authenticity co-signed by Arkiv × LFK",
-43:       },
-44:     ],
-45:   },
-46:   cta: {
-47:     heading: "DON'T HIDE YOUR SAFETY. DISPLAY IT.",
-48:     description:
-49:       "Sign up for priority access to the drop. Once these limited-edition pieces are gone, they will never be restocked.",
-50:     inputPlaceholder: "[ Enter your email address... ]",
-51:     button: "[ GET PRIORITY ACCESS ]",
-52:   },
-53: } as const;
-</file>
-
-<file path="src/pages/LfkXArkivPage.tsx">
- 1: import { PageSeo } from "../components/seo/PageSeo";
- 2: import { PAGE_SEO } from "../config/seo";
- 3: import { motion } from "framer-motion";
- 4: import {
- 5:   ArkivHeroSection,
- 6:   ArkivVisionarySection,
- 7:   ArkivProductSection,
- 8:   ArkivCtaSection
- 9: } from "../components/sections/lfk-x-arkiv";
-10: 
-11: const FloatingBlobs = () => (
-12:   <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-13:     <motion.img
-14:       src="/arkiv/graphic-elements/Blob.png"
-15:       animate={{ y: [0, -30, 0], rotate: [0, 10, -5, 0] }}
-16:       transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-17:       className="absolute top-[10%] left-[-5%] w-64 opacity-80 blur-[2px] sm:w-80"
-18:       aria-hidden
-19:     />
-20:     <motion.img
-21:       src="/arkiv/graphic-elements/Blob-2.png"
-22:       animate={{ y: [0, 40, 0], rotate: [0, -10, 5, 0] }}
-23:       transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-24:       className="absolute top-[30%] right-[-10%] w-72 opacity-90 sm:w-96"
-25:       aria-hidden
-26:     />
-27:     <motion.img
-28:       src="/arkiv/graphic-elements/Blob-3.png"
-29:       animate={{ y: [0, -25, 0] }}
-30:       transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-31:       className="absolute bottom-[40%] left-[5%] w-48 opacity-70 blur-[3px]"
-32:       aria-hidden
-33:     />
-34:     <motion.img
-35:       src="/arkiv/graphic-elements/Blob-4.png"
-36:       animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
-37:       transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-38:       className="absolute bottom-[10%] right-[10%] w-56 opacity-85"
-39:       aria-hidden
-40:     />
-41:     <motion.img
-42:       src="/arkiv/graphic-elements/Blob-5.png"
-43:       animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
-44:       transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-45:       className="absolute top-[60%] left-[30%] w-32 opacity-60 blur-[4px]"
-46:       aria-hidden
-47:     />
-48:   </div>
-49: );
-50: 
-51: export const LfkXArkivPage = () => {
-52:   const seo = PAGE_SEO.lfkXArkiv;
-53: 
-54:   return (
-55:     // Override base background to silver/light theme specifically for this page
-56:     <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900">
-57:       <PageSeo
-58:         title={seo.title}
-59:         description={seo.description}
-60:         path={seo.path}
-61:       />
-62: 
-63:       <FloatingBlobs />
-64: 
-65:       <div className="relative z-10">
-66:         <ArkivHeroSection />
-67:         <ArkivVisionarySection />
-68:         <ArkivProductSection />
-69:         <ArkivCtaSection />
-70:       </div>
-71:     </div>
-72:   );
-73: };
+<file path="src/content/product.ts">
+  1: export const PRODUCT_CONTENT = {
+  2:   id: "lithium-fire-killer-hartindo-af31",
+  3:   brochureUrl: "/brochures/lfk-brochure.pdf",
+  4:   tokopediaUrl: "https://www.tokopedia.com/famindofast",
+  5:   slug: "lithium-fire-killer-hartindo-af31",
+  6:   title: "Lithium Fire Killer HARTINDO AF31",
+  7:   tagline: "The First Lithium Fire Extinguisher In The World",
+  8:   categoryId: "protective",
+  9:   description:
+ 10:     "A multi-function, non-toxic, and eco-friendly extinguisher that is capable of handling multiple emergencies. From common paper fires to high-stake lithium battery blazes. Protect your home, fleet, also your life and your loved ones with this specialized fire safety solution.",
+ 11:   image: "/products/lfk.avif",
+ 12:   features: [
+ 13:     "SNI Certified (Standar Nasional Indonesia)",
+ 14:     "Fire Classes: A, B, D, F/K, & L (Lithium)",
+ 15:     "One tool for every emergency",
+ 16:     "Lab-tested & TKDN Certified",
+ 17:     "Eco-friendly & Non-toxic",
+ 18:   ],
+ 19:   partners: [
+ 20:     {
+ 21:       name: "Azko",
+ 22:       logo: "/partners/azko.avif",
+ 23:       locations: [
+ 24:         "Gandaria City",
+ 25:         "Kota Kasablanka",
+ 26:         "Mall Artha Gading",
+ 27:         "Living World Alam Sutera",
+ 28:         "Q-Big BSD",
+ 29:         "Bintaro Sektor 9",
+ 30:       ],
+ 31:     },
+ 32:     {
+ 33:       name: "Motovillage",
+ 34:       logo: "/partners/motovillage.avif",
+ 35:       locations: ["Moto Village Kemang"],
+ 36:     },
+ 37:     {
+ 38:       name: "Blackstone",
+ 39:       logo: "/partners/blackstone.avif",
+ 40:       locations: ["Blackstone Garage Kebayoran"],
+ 41:     },
+ 42:     {
+ 43:       name: "Jaecoo Andalan",
+ 44:       logo: "/partners/jaecoo.avif",
+ 45:       locations: ["Jaecoo Andalan Mampang"],
+ 46:     },
+ 47:   ],
+ 48:   variants: [
+ 49:     {
+ 50:       id: "v1",
+ 51:       weight: "1kg (Portable)",
+ 52:       name: "LFK AF31 Portable - 1 KG",
+ 53:       desc: "Lightweight suppression cylinder ideal for personal electric vehicles and compact areas.",
+ 54:       images: {
+ 55:         front: "/products/LFK/LFK_1_KG_[Font].avif",
+ 56:         back: "/products/LFK/LFK_1_KG_[Back].avif",
+ 57:         left: "/products/LFK/LFK_1_KG_[Left].avif",
+ 58:         right: "/products/LFK/LFK_1_KG_[Right].avif",
+ 59:       },
+ 60:     },
+ 61:     {
+ 62:       id: "v2",
+ 63:       weight: "3kg (Portable)",
+ 64:       name: "LFK AF31 Portable - 3 KG",
+ 65:       desc: "Versatile cylinder for standard EV garages, server rooms, and commercial spaces.",
+ 66:       images: {
+ 67:         front: "/products/LFK/LFK_3_KG_[Font].avif",
+ 68:         back: "/products/LFK/LFK_3_KG_[Back].avif",
+ 69:         left: "/products/LFK/LFK_3_KG_[Left].avif",
+ 70:         right: "/products/LFK/LFK_3_KG_[Right].avif",
+ 71:       },
+ 72:     },
+ 73:     {
+ 74:       id: "v3",
+ 75:       weight: "6kg (Portable)",
+ 76:       name: "LFK AF31 Portable - 6 KG",
+ 77:       desc: "High-capacity portable unit for industrial facilities and larger scale protection.",
+ 78:       images: {
+ 79:         front: "/products/LFK/LFK_6_KG_[Font].avif",
+ 80:         back: "/products/LFK/LFK_6_KG_[Back].avif",
+ 81:         left: "/products/LFK/LFK_6_KG_[Left].avif",
+ 82:         right: "/products/LFK/LFK_6_KG_[Right].avif",
+ 83:       },
+ 84:     },
+ 85:     {
+ 86:       id: "v4",
+ 87:       weight: "25kg (Trolley)",
+ 88:       name: "LFK AF31 Trolley - 25 KG",
+ 89:       desc: "Heavy-duty mobility solution for mining sites, large warehouses, and EV charging stations.",
+ 90:       images: {
+ 91:         front: "/products/LFK/LFK_25_KG_[Font].avif",
+ 92:         back: "/products/LFK/LFK_25_KG_[Back].avif",
+ 93:         left: "/products/LFK/LFK_25_KG_[Left].avif",
+ 94:         right: "/products/LFK/LFK_25_KG_[Right].avif",
+ 95:       },
+ 96:     },
+ 97:     {
+ 98:       id: "v5",
+ 99:       weight: "50kg (Trolley)",
+100:       name: "LFK AF31 Trolley - 50 KG",
+101:       desc: "Maximum capacity suppression system for extreme industrial environments and massive battery banks.",
+102:       images: {
+103:         front: "/products/LFK/LFK_50_KG_[Font].avif",
+104:         back: "/products/LFK/LFK_50_KG_[Back].avif",
+105:         left: "/products/LFK/LFK_50_KG_[Left].avif",
+106:         right: "/products/LFK/LFK_50_KG_[Right].avif",
+107:       },
+108:     },
+109:   ],
+110: } as const;
+111: 
+112: export type ProductPartner = (typeof PRODUCT_CONTENT.partners)[number];
+113: export type ProductVariant = (typeof PRODUCT_CONTENT.variants)[number];
 </file>
 
 <file path=".gitignore">
@@ -1056,12 +1030,1011 @@ ingat kode web lfk ini:
 4: export { EducationSection } from "./EducationSection";
 5: export { ThermalRunawaySection } from "./ThermalRunawaySection";
 6: export { RegulationSection } from "./RegulationSection";
+7: export { ProductSection } from "./ProductSection";
+</file>
+
+<file path="src/components/sections/lfk-x-arkiv/index.ts">
+1: export { ArkivHeroSection } from "./ArkivHeroSection";
+2: export { ArkivVisionarySection } from "./ArkivVisionarySection";
+3: export { ArkivProductSection } from "./ArkivProductSection";
+4: export { ArkivCtaSection } from "./ArkivCtaSection";
 </file>
 
 <file path="src/components/sections/lithium-fire-safety/index.ts">
 1: export { ProtectionCategoriesSection } from "./ProtectionCategoriesSection";
 2: export { EpcMethodSection } from "./EpcMethodSection";
 3: export { ContactCtaSection } from "./ContactCtaSection";
+</file>
+
+<file path="src/components/ui/ScrollProgress.tsx">
+ 1: import { motion, useScroll, useSpring } from "framer-motion";
+ 2: 
+ 3: export const ScrollProgress = () => {
+ 4:   const { scrollYProgress } = useScroll();
+ 5: 
+ 6:   // Spring physics — smooth tracking tanpa lag
+ 7:   const scaleX = useSpring(scrollYProgress, {
+ 8:     stiffness: 120,
+ 9:     damping: 35,
+10:     restDelta: 0.001,
+11:   });
+12: 
+13:   return (
+14:     <>
+15:       {/* Progress bar */}
+16:       <motion.div
+17:         className="fixed inset-x-0 top-0 z-[100] h-[2px] origin-left"
+18:         style={{
+19:           scaleX,
+20:           background: "linear-gradient(90deg, #3898d4 0%, #60a5fa 50%, #22d3ee 100%)",
+21:         }}
+22:         aria-hidden="true"
+23:       />
+24:       {/* Trailing glow dot */}
+25:       <motion.div
+26:         className="fixed top-0 z-[100] h-[2px] w-8 rounded-full blur-sm"
+27:         style={{
+28:           scaleX,
+29:           transformOrigin: "left",
+30:           background: "linear-gradient(90deg, transparent, #3898d4, #22d3ee)",
+31:           opacity: 0.7,
+32:         }}
+33:         aria-hidden="true"
+34:       />
+35:     </>
+36:   );
+37: };
+</file>
+
+<file path="src/config/site.ts">
+ 1: import { ABOUT_CONTENT, FOOTER_CONTENT, HEADER_NAV } from "../content";
+ 2: 
+ 3: export const SITE = {
+ 4:   name: "PT. Famindo Alfa Spektrum Teknologi",
+ 5:   shortName: "FAST",
+ 6:   tagline: "Lithium Fire Safety",
+ 7: } as const;
+ 8: 
+ 9: export const NAV_LINKS = HEADER_NAV;
+10: 
+11: export const CONTACT = {
+12:   email: FOOTER_CONTENT.contact.email,
+13:   phone: FOOTER_CONTENT.contact.phone,
+14:   phoneHref: "tel:+6281290003278",
+15: } as const;
+16: 
+17: export const OFFICE = ABOUT_CONTENT.location;
+18: 
+19: export const FOOTER = FOOTER_CONTENT;
+</file>
+
+<file path="src/content/about.ts">
+ 1: /**
+ 2:  * Halaman Tentang Kami — sumber: docs/CONTENT.md § PAGE 2: TENTANG KAMI
+ 3:  */
+ 4: 
+ 5: export const ABOUT_CONTENT = {
+ 6:   intro: {
+ 7:     heading: "Tentang Kami",
+ 8:     paragraphs: [
+ 9:       "PT. Famindo Alfa Spektrum Teknologi (FAST) adalah perusahaan yang berfokus pada penyediaan solusi keamanan terhadap risiko kebakaran. FAST merupakan distributor eksklusif APAR Lithium Fire Killer Hartindo AF31, APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya bagi manusia maupun lingkungan.",
+10:       "Selain menghadirkan produk unggulan, FAST juga berkomitmen untuk mengedukasi masyarakat tentang bahaya kebakaran, khususnya kebakaran baterai lithium-ion, serta memberikan pemahaman mengenai cara penanggulangannya secara aman dan efektif.",
+11:     ],
+12:   },
+13:   history: {
+14:     headline: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
+15:     keyFigures: [
+16:       {
+17:         name: "Bapak Randall Hartolaksono",
+18:         role: "Penemu Hartindo AF31",
+19:       },
+20:       {
+21:         name: "Bapak Willy Hadiwijaya",
+22:         role: "Pendiri PT. FAST",
+23:       },
+24:     ],
+25:     blocks: [
+26:       {
+27:         subheading: "Dengan Tim Solid Segalanya Dapat Tercapai",
+28:         paragraphs: [
+29:           "Kisah ini berawal dari Bapak Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Bapak Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.",
+30:         ],
+31:       },
+32:       {
+33:         subheading: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
+34:         paragraphs: [],
+35:       },
+36:       {
+37:         subheading: "Terus Berinovasi Sambil Mengedukasi Masyarakat",
+38:         paragraphs: [
+39:           "PT. FAST tidak hanya berperan sebagai penyedia produk keamanan kebakaran, tetapi juga berdedikasi untuk mengedukasi dan mensosialisasikan pentingnya keselamatan. Melalui berbagai program, FAST berkomitmen meningkatkan kesadaran masyarakat agar lebih memprioritaskan perlindungan jiwa serta terlatih dalam menghadapi potensi bahaya kebakaran yang datang tanpa diduga.",
+40:         ],
+41:       },
+42:     ],
+43:   },
+44:   location: {
+45:     heading: "Lokasi Kami",
+46:     address:
+47:       "TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10220",
+48:     hours: "Senin – Jumat | Jam 09.00 – 17.00 WIB",
+49:     mapsQuery:
+50:       "TCC+Tower+One+Menara+Batavia+Jl.+K.H.+Mas+Mansyur+Karet+Tengsin+Jakarta+Pusat",
+51:   },
+52: } as const;
+</file>
+
+<file path="src/content/contact.ts">
+ 1: /**
+ 2:  * Halaman Kontak — sumber: docs/CONTENT.md § PAGE 4: KONTAK
+ 3:  */
+ 4: 
+ 5: import { ABOUT_CONTENT } from "./about";
+ 6: 
+ 7: export const CONTACT_PAGE_CONTENT = {
+ 8:   info: {
+ 9:     heading: "Informasi Kontak",
+10:     channels: [
+11:       {
+12:         id: "phone",
+13:         label: "Telepon / WhatsApp",
+14:         value: "+62 812 9000 3278",
+15:         href: "tel:+6281290003278",
+16:         whatsappHref: "https://wa.me/6281290003278",
+17:       },
+18:       {
+19:         id: "email",
+20:         label: "Email",
+21:         value: "support@famindofast.com",
+22:         href: "mailto:support@famindofast.com",
+23:       },
+24:     ],
+25:   },
+26:   form: {
+27:     heading: "Contact Form",
+28:     fields: {
+29:       firstName: {
+30:         label: "Nama Depan",
+31:         required: true,
+32:       },
+33:       email: {
+34:         label: "Alamat Email",
+35:         required: true,
+36:       },
+37:       message: {
+38:         label: "Tulis Pesan Anda di Sini",
+39:         required: true,
+40:       },
+41:     },
+42:     submitLabel: "Kirim Pesan",
+43:     errors: {
+44:       required: "Kolom ini wajib diisi.",
+45:       emailInvalid: "Format alamat email tidak valid.",
+46:     },
+47:     success: {
+48:       title: "Pesan berhasil dikirim",
+49:       message:
+50:         "Terima kasih. Pesan Anda telah kami terima dan akan segera ditindaklanjuti.",
+51:     },
+52:   },
+53:   location: {
+54:     ...ABOUT_CONTENT.location,
+55:     heading: "Peta & Lokasi",
+56:     addressLabel: "Alamat",
+57:     hoursLabel: "Waktu Operasional",
+58:   },
+59: } as const;
+</file>
+
+<file path="src/content/global.ts">
+ 1: /**
+ 2:  * Global UI copy — sumber: docs/CONTENT.md § GLOBAL UI COMPONENTS
+ 3:  */
+ 4: 
+ 5: export const HEADER_NAV = [
+ 6:   { label: "Beranda", href: "/" },
+ 7:   { label: "Tentang Kami", href: "/about" },
+ 8:   { label: "Lithium Fire Safety", href: "/lithium-fire-safety" },
+ 9:   { label: "Kontak", href: "/contact" },
+10: ] as const;
+11: 
+12: export const FOOTER_CONTENT = {
+13:   socialCta: "Stay up to date by following our social media!",
+14:   newsletter: {
+15:     emailLabel: "Email",
+16:     emailPlaceholder: "Email",
+17:     submitButton: "Kirim Informasi",
+18:   },
+19:   contact: {
+20:     email: "support@famindofast.com",
+21:     phone: "+62 812 9000 3278",
+22:   },
+23: } as const;
+</file>
+
+<file path="src/content/home.ts">
+ 1: /**
+ 2:  * Halaman Beranda — sumber: docs/CONTENT.md § PAGE 1: BERANDA
+ 3:  */
+ 4: 
+ 5: export const HOME_CONTENT = {
+ 6:   hero: {
+ 7:     headline: "Spesialis Perlindungan Kebakaran Baterai Lithium",
+ 8:     description:
+ 9:       "Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.",
+10:     cta: {
+11:       label: "Lihat Profil Perusahaan Kami",
+12:       href: "/about",
+13:     },
+14:   },
+15:   problem: {
+16:     headline: "No Fire, No Fear",
+17:     description:
+18:       "Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.",
+19:     cta: {
+20:       label: "Pelajari Lebih Detail",
+21:       href: "/lithium-fire-safety",
+22:     },
+23:   },
+24:   services: {
+25:     heading: "Layanan / Solusi Keamanan",
+26:     items: [
+27:       {
+28:         title: "EV Fire Safety",
+29:         description:
+30:           "Menjaga keselamatan diri adalah tanggung jawab setiap pemilik EV.",
+31:       },
+32:       {
+33:         title: "Business Safety",
+34:         description:
+35:           "Prioritaskan keamanan nyawa karyawan dan aset bisnis Anda.",
+36:       },
+37:       {
+38:         title: "Mining Safety",
+39:         description:
+40:           "Maksimalkan sistem keamanan operasional di sektor pertambangan.",
+41:       },
+42:     ],
+43:   },
+44:   education: {
+45:     heading: "Apa Itu Baterai Lithium?",
+46:     paragraphs: [
+47:       "Baterai lithium-ion (Li-ion) adalah jenis baterai isi ulang yang banyak digunakan pada perangkat elektronik portabel maupun kendaraan listrik. Mekanismenya bekerja dengan memindahkan ion lithium antara elektroda positif (katoda) dan elektroda negatif (anoda) melalui elektrolit.",
+48:       "Baterai Li-ion mampu menyimpan energi lebih besar dalam ukuran yang ringkas dan ringan, menjadikannya pilihan ideal untuk perangkat portabel. Berbeda dengan beberapa jenis baterai lain, baterai Li-ion tidak mengalami penurunan kapasitas meski diisi ulang sebelum benar-benar habis. Dengan umur pakai yang relatif panjang serta mampu melalui banyak siklus pengisian dan pengosongan, baterai ini lebih efisien, ramah lingkungan, dan dapat didaur ulang.",
+49:       "Meskipun menawarkan banyak keunggulan, baterai lithium-ion juga memiliki risiko tertentu yang perlu diwaspadai.",
+50:     ],
+51:   },
+52:   thermalRunaway: {
+53:     heading: "Bahaya Thermal Runaway",
+54:     paragraphs: [
+55:       "Baterai lithium-ion menyimpan energi besar di dalam elektrolit yang mudah terbakar. Saat terjadi kerusakan fisik, korsleting, atau suhu berlebih, elektrolit dapat bocor dan memicu reaksi berbahaya berupa kebakaran atau ledakan. Faktor pemicu umumnya berasal dari cacat produksi, pengisian daya yang tidak sesuai, atau paparan suhu ekstrem.",
+56:       "Thermal runaway adalah kondisi peningkatan suhu pada baterai yang berlangsung secara terus-menerus dan sulit dikendalikan. Proses ini dapat membuat baterai mengeluarkan asap, terbakar, hingga meledak. Memahami risiko ini penting agar pengguna lebih bijak dalam menyimpan, mengisi, dan menggunakan baterai lithium dengan cara yang aman.",
+57:     ],
+58:   },
+59:   regulation: {
+60:     heading: "Regulasi Pemerintah di Indonesia",
+61:     description:
+62:       "Peluang Indonesia sebagai pusat industri baterai lithium dan dukungan regulasi.",
+63:     rows: [
+64:       {
+65:         id: "perpres-55-2019",
+66:         regulation: "Perpres No. 55 Tahun 2019",
+67:         fullName: "Peraturan Presiden Nomor 55 Tahun 2019",
+68:         description:
+69:           "Mengatur Percepatan Program Kendaraan Bermotor Listrik Berbasis Baterai (Battery Electric Vehicle/BEV) untuk transportasi jalan. Di dalamnya tercakup kerangka regulasi serta berbagai insentif guna menarik investasi, memperkuat industri lokal, membangun infrastruktur pendukung, dan mendorong adopsi kendaraan listrik secara luas di masyarakat.",
+70:       },
+71:       {
+72:         id: "inpres-7-2022",
+73:         regulation: "Inpres No. 7 Tahun 2022",
+74:         fullName: "Instruksi Presiden Nomor 7 Tahun 2022",
+75:         description:
+76:           "Mewajibkan seluruh instansi pemerintah, baik pusat maupun daerah, untuk menggunakan kendaraan bermotor listrik berbasis baterai (Battery Electric Vehicle/BEV) sebagai kendaraan dinas operasional maupun kendaraan perorangan.",
+77:       },
+78:       {
+79:         id: "permenhub-13-2024",
+80:         regulation: "Permenhub No. 13 Tahun 2024",
+81:         fullName: "Peraturan Menteri Perhubungan Nomor 13 Tahun 2024",
+82:         description:
+83:           "Mengatur tentang perlengkapan keselamatan kendaraan bermotor, termasuk sabuk keselamatan, alat pemadam api ringan (APAR), dan perlengkapan keselamatan lainnya. Tujuannya adalah untuk meningkatkan standar keselamatan berkendara dan melindungi pengguna jalan di Indonesia.",
+84:       },
+85:     ],
+86:   },
+87: } as const;
+</file>
+
+<file path="src/content/lfk-x-arkiv.ts">
+ 1: export const LFK_X_ARKIV_CONTENT = {
+ 2:   hero: {
+ 3:     headline: "WHERE MASTERPIECE MEETS PROTECTION.",
+ 4:     subheadline:
+ 5:       "Lithium Fire Killer × Arkiv: A limited-edition collision of avant-garde art and revolutionary fire safety.",
+ 6:     cta: "[ EXPLORE THE COLLECTION ]",
+ 7:   },
+ 8:   visionary: {
+ 9:     heading: "THE CANVAS OF A\nVISIONARY: ARKIV.",
+10:     description:
+11:       "...Born in Bandung, Indonesia... bridges lowbrow art, street culture, and high-end galleries... Arkiv translates critical spatial awareness into avant-garde masterpieces.",
+12:     quote: '"Art shouldn\'t just provoke thought—it should protect life."',
+13:     quoteAuthor: "— Arkiv",
+14:   },
+15:   product: {
+16:     statement:
+17:       "FOR TOO LONG, FIRE SAFETY HAS BEEN HIDDEN AWAY IN DARK CUPBOARDS—UGLY, RED CYLINDERS WE HOPE TO NEVER LOOK AT. WE ARE CHANGING THAT. BY USING ART AS OUR MEDIUM, WE AIM TO EDUCATE, DISRUPT, AND ELEVATE.",
+18:     heading: "MEET SARU:\nREIMAGINED FOR\nYOUR PROTECTION.",
+19:     tags: [
+20:       "Dual-purpose masterpiece",
+21:       "Lithium Fire technology",
+22:       "Exclusive Saru character design",
+23:     ],
+24:     specs: [
+25:       { label: "Feature", value: "Specifications", isHeader: true },
+26:       { label: "Design", value: 'Exclusive "Saru" Artwork by Arkiv' },
+27:       {
+28:         label: "Edition Tiers",
+29:         value: "Ultra-Limited (02/100)\nLegendary (S/100)",
+30:       },
+31:       {
+32:         label: "Fire Class Rating",
+33:         value: "Specialized Lithium-Ion Battery + Multi-Class Protection",
+34:       },
+35:       {
+36:         label: "Placement",
+37:         value:
+38:           "Designed for prominent display in homes, galleries, and private studios",
+39:       },
+40:       {
+41:         label: "Included",
+42:         value: "Physical Certificate of Authenticity co-signed by Arkiv × LFK",
+43:       },
+44:     ],
+45:   },
+46:   cta: {
+47:     heading: "DON'T HIDE YOUR SAFETY. DISPLAY IT.",
+48:     description:
+49:       "Sign up for priority access to the drop. Once these limited-edition pieces are gone, they will never be restocked.",
+50:     inputPlaceholder: "[ Enter your email address... ]",
+51:     button: "[ GET PRIORITY ACCESS ]",
+52:   },
+53: } as const;
+</file>
+
+<file path="src/content/lithium-fire-safety.ts">
+ 1: /**
+ 2:  * Halaman Lithium Fire Safety — sumber: docs/CONTENT.md § PAGE 3
+ 3:  */
+ 4: 
+ 5: export const LITHIUM_FIRE_SAFETY_CONTENT = {
+ 6:   protection: {
+ 7:     heading: "Kategori Proteksi",
+ 8:     categories: [
+ 9:       {
+10:         id: "ev-safety",
+11:         title: "Electric Vehicle (EV) Safety",
+12:         tabLabel: "EV Safety",
+13:         paragraphs: [
+14:           "Industri kendaraan listrik (EV) di Indonesia berkembang sangat pesat dan segera menjadi bagian penting dari kebutuhan transportasi masyarakat.",
+15:           "Oleh karena itu, setiap pemilik EV perlu memahami cara merawat kendaraannya sekaligus melindungi diri dari risiko kebakaran baterai lithium yang dapat terjadi kapan saja.",
+16:         ],
+17:       },
+18:       {
+19:         id: "business-safety",
+20:         title: "Business Safety",
+21:         tabLabel: "Business Safety",
+22:         paragraphs: [
+23:           "Berbagai sektor bisnis di Indonesia kini telah mengadopsi teknologi berbasis baterai lithium, termasuk industri manufaktur baterai itu sendiri. Untuk melindungi karyawan dan menjaga keberlangsungan aset perusahaan, penerapan sistem keamanan terhadap risiko kebakaran baterai lithium menjadi hal yang mutlak diperlukan.",
+24:         ],
+25:         subheading: "Mengamankan Berbagai Sektor Bisnis Di Indonesia",
+26:         subheadingParagraph:
+27:           "PT. FAST hadir sebagai mitra strategis bagi berbagai sektor industri di Indonesia dalam menghadapi risiko kebakaran baterai lithium. Kami tidak hanya menyediakan solusi proteksi terdepan, tetapi juga berkomitmen untuk melindungi karyawan, aset, dan keberlangsungan bisnis melalui edukasi serta penerapan standar keselamatan yang efektif.",
+28:         sectorsLabel: "Sektor yang dilayani:",
+29:         sectors: [
+30:           "EV Charging Station",
+31:           "Battery Storage & Manufacturer",
+32:           "Manufacturer",
+33:           "Data Center",
+34:           "Logistics",
+35:           "Energy Powerplant",
+36:         ],
+37:       },
+38:       {
+39:         id: "mining-safety",
+40:         title: "Mining Safety",
+41:         tabLabel: "Mining Safety",
+42:         byline: "oleh PT. Fastindo Intiraya Solusi Tambang — FIRST",
+43:         paragraphs: [
+44:           "Industri pertambangan memiliki tantangan keselamatan yang sangat kompleks dan membutuhkan solusi khusus dari para ahli berpengalaman. Untuk itu, hadir FIRST (PT. Fastindo Intiraya Solusi Tambang) dengan komitmen kuat menghadirkan teknologi terdepan dan layanan terpercaya demi menjaga keselamatan serta memastikan pertambangan Indonesia tetap berada di garis terdepan.",
+45:         ],
+46:       },
+47:     ],
+48:   },
+49:   epc: {
+50:     heading: "Metode EPC",
+51:     description:
+52:       "EPC (Engineering, Procurement, and Construction) adalah metode yang digunakan oleh FIRST untuk merancang solusi sesuai kebutuhan spesifik di lokasi pertambangan. Proses ini mencakup perencanaan menyeluruh, penyusunan mekanisme pencegahan kebakaran, integrasi detektor, hingga pemasangan sistem proteksi kebakaran. Dengan pendekatan EPC, FIRST memastikan setiap tahap dilaksanakan secara tepat dan disesuaikan dengan kebutuhan klien.",
+53:     stepsHeading: "Tahapan EPC:",
+54:     steps: [
+55:       "Perencanaan menyeluruh",
+56:       "Penyusunan mekanisme pencegahan kebakaran",
+57:       "Integrasi detektor",
+58:       "Pemasangan sistem proteksi kebakaran secara presisi",
+59:     ],
+60:   },
+61:   cta: {
+62:     headline: "Butuh Bantuan Lebih Lanjut?",
+63:     button: { label: "Hubungi Kami", href: "/contact" },
+64:   },
+65: } as const;
+</file>
+
+<file path="src/hooks/.gitkeep">
+1: 
+</file>
+
+<file path="src/i18n.ts">
+ 1: import i18n from "i18next";
+ 2: import { initReactI18next } from "react-i18next";
+ 3: 
+ 4: const savedLanguage = localStorage.getItem("app-language") || "id";
+ 5: 
+ 6: i18n.use(initReactI18next).init({
+ 7:   resources: {},
+ 8:   lng: savedLanguage,
+ 9:   fallbackLng: "id",
+10:   interpolation: { escapeValue: false },
+11: });
+12: 
+13: i18n.on("languageChanged", (lng) => {
+14:   document.documentElement.lang = lng;
+15:   localStorage.setItem("app-language", lng);
+16: });
+17: 
+18: export default i18n;
+</file>
+
+<file path="src/lib/.gitkeep">
+1: 
+</file>
+
+<file path="src/locales/en/.gitkeep">
+1: 
+</file>
+
+<file path="src/locales/id/.gitkeep">
+1: 
+</file>
+
+<file path="src/pages/ContactPage.tsx">
+ 1: import { PageSeo } from "../components/seo/PageSeo";
+ 2: import {
+ 3:   ContactFormSection,
+ 4:   ContactInfoSection,
+ 5:   ContactLocationSection,
+ 6: } from "../components/sections/contact";
+ 7: import { PAGE_SEO } from "../config/seo";
+ 8: 
+ 9: export const ContactPage = () => {
+10:   const seo = PAGE_SEO.contact;
+11: 
+12:   return (
+13:     <>
+14:       <PageSeo
+15:         title={seo.title}
+16:         description={seo.description}
+17:         path={seo.path}
+18:       />
+19: 
+20:       <ContactInfoSection />
+21:       <ContactFormSection />
+22:       <ContactLocationSection />
+23:     </>
+24:   );
+25: };
+</file>
+
+<file path="src/pages/HomePage.tsx">
+ 1: import { PageSeo } from "../components/seo/PageSeo";
+ 2: import {
+ 3:   EducationSection,
+ 4:   HeroSection,
+ 5:   ProblemSection,
+ 6:   ProductSection, // <-- Import dari sini
+ 7:   RegulationSection,
+ 8:   ServicesSection,
+ 9:   ThermalRunawaySection,
+10: } from "../components/sections/home";
+11: import { PAGE_SEO } from "../config/seo";
+12: 
+13: export const HomePage = () => {
+14:   const seo = PAGE_SEO.home;
+15: 
+16:   return (
+17:     <>
+18:       <PageSeo
+19:         title={seo.title}
+20:         description={seo.description}
+21:         path={seo.path}
+22:       />
+23: 
+24:       <HeroSection />
+25:       <ProblemSection />
+26: 
+27:       <ProductSection />
+28: 
+29:       <ServicesSection />
+30:       <EducationSection />
+31:       <ThermalRunawaySection />
+32:       <RegulationSection />
+33:     </>
+34:   );
+35: };
+</file>
+
+<file path="src/pages/LithiumFireSafetyPage.tsx">
+ 1: import { PageSeo } from "../components/seo/PageSeo";
+ 2: import {
+ 3:   ContactCtaSection,
+ 4:   EpcMethodSection,
+ 5:   ProtectionCategoriesSection,
+ 6: } from "../components/sections/lithium-fire-safety";
+ 7: import { PAGE_SEO } from "../config/seo";
+ 8: 
+ 9: export const LithiumFireSafetyPage = () => {
+10:   const seo = PAGE_SEO.lithiumFireSafety;
+11: 
+12:   return (
+13:     <>
+14:       <PageSeo
+15:         title={seo.title}
+16:         description={seo.description}
+17:         path={seo.path}
+18:       />
+19: 
+20:       <ProtectionCategoriesSection />
+21:       <EpcMethodSection />
+22:       <ContactCtaSection />
+23:     </>
+24:   );
+25: };
+</file>
+
+<file path="src/routes/.gitkeep">
+1: 
+</file>
+
+<file path="src/types/.gitkeep">
+1: 
+</file>
+
+<file path="tsconfig.app.json">
+ 1: {
+ 2:   "compilerOptions": {
+ 3:     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+ 4:     "target": "ES2022",
+ 5:     "useDefineForClassFields": true,
+ 6:     "lib": ["ES2022", "DOM", "DOM.Iterable"],
+ 7:     "module": "ESNext",
+ 8:     "types": ["vite/client"],
+ 9:     "skipLibCheck": true,
+10: 
+11:     /* Bundler mode */
+12:     "moduleResolution": "bundler",
+13:     "allowImportingTsExtensions": true,
+14:     "verbatimModuleSyntax": true,
+15:     "moduleDetection": "force",
+16:     "noEmit": true,
+17:     "jsx": "react-jsx",
+18: 
+19:     /* Linting */
+20:     "strict": true,
+21:     "noUnusedLocals": true,
+22:     "noUnusedParameters": true,
+23:     "erasableSyntaxOnly": true,
+24:     "noFallthroughCasesInSwitch": true,
+25:     "noUncheckedSideEffectImports": true
+26:   },
+27:   "include": ["src"]
+28: }
+</file>
+
+<file path="tsconfig.json">
+1: {
+2:   "files": [],
+3:   "references": [
+4:     { "path": "./tsconfig.app.json" },
+5:     { "path": "./tsconfig.node.json" }
+6:   ]
+7: }
+</file>
+
+<file path="tsconfig.node.json">
+ 1: {
+ 2:   "compilerOptions": {
+ 3:     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+ 4:     "target": "ES2023",
+ 5:     "lib": ["ES2023"],
+ 6:     "module": "ESNext",
+ 7:     "types": ["node"],
+ 8:     "skipLibCheck": true,
+ 9: 
+10:     /* Bundler mode */
+11:     "moduleResolution": "bundler",
+12:     "allowImportingTsExtensions": true,
+13:     "verbatimModuleSyntax": true,
+14:     "moduleDetection": "force",
+15:     "noEmit": true,
+16: 
+17:     /* Linting */
+18:     "strict": true,
+19:     "noUnusedLocals": true,
+20:     "noUnusedParameters": true,
+21:     "erasableSyntaxOnly": true,
+22:     "noFallthroughCasesInSwitch": true,
+23:     "noUncheckedSideEffectImports": true
+24:   },
+25:   "include": ["vite.config.ts"]
+26: }
+</file>
+
+<file path="vercel.json">
+ 1: {
+ 2:   "redirects": [],
+ 3:   "rewrites": [
+ 4:     {
+ 5:       "source": "/(.*)",
+ 6:       "destination": "/index.html"
+ 7:     }
+ 8:   ],
+ 9:   "headers": [
+10:     {
+11:       "source": "/assets/(.*)",
+12:       "headers": [
+13:         {
+14:           "key": "Cache-Control",
+15:           "value": "public, max-age=31536000, immutable"
+16:         }
+17:       ]
+18:     },
+19:     {
+20:       "source": "/(.*)\\.(png|jpg|jpeg|avif|webp|svg|ico|gif)",
+21:       "headers": [
+22:         {
+23:           "key": "Cache-Control",
+24:           "value": "public, max-age=31536000, immutable"
+25:         }
+26:       ]
+27:     }
+28:   ]
+29: }
+</file>
+
+<file path="vite.config.ts">
+ 1: import { defineConfig } from "vite";
+ 2: import react from "@vitejs/plugin-react-swc";
+ 3: import tailwindcss from "@tailwindcss/vite";
+ 4: import viteCompression from "vite-plugin-compression";
+ 5: import Sitemap from "vite-plugin-sitemap";
+ 6: 
+ 7: const SITE_ROUTES = ["/", "/about", "/lithium-fire-safety", "/contact"];
+ 8: 
+ 9: export default defineConfig({
+10:   plugins: [
+11:     react(),
+12:     tailwindcss(),
+13:     Sitemap({
+14:       hostname: "https://www.famindofast.com",
+15:       dynamicRoutes: SITE_ROUTES.filter((route) => route !== "/"),
+16:       generateRobotsTxt: true,
+17:     }),
+18:     viteCompression({
+19:       algorithm: "gzip",
+20:       ext: ".gz",
+21:       threshold: 10240,
+22:     }),
+23:     viteCompression({
+24:       algorithm: "brotliCompress",
+25:       ext: ".br",
+26:       threshold: 10240,
+27:     }),
+28:   ],
+29:   build: {
+30:     minify: "esbuild",
+31:     cssMinify: true,
+32:     rollupOptions: {
+33:       output: {
+34:         manualChunks: {
+35:           vendor: ["react", "react-dom", "react-router-dom"],
+36:         },
+37:       },
+38:     },
+39:   },
+40: });
+</file>
+
+<file path="src/components/sections/lfk-x-arkiv/ArkivCtaSection.tsx">
+ 1: import { LFK_X_ARKIV_CONTENT } from "../../../content";
+ 2: import { AnimateIn } from "../../ui/AnimateIn";
+ 3: import { Mail, ArrowRight } from "lucide-react";
+ 4: 
+ 5: const { cta } = LFK_X_ARKIV_CONTENT;
+ 6: 
+ 7: export const ArkivCtaSection = () => {
+ 8:   return (
+ 9:     <section className="relative z-10 mx-auto max-w-5xl px-4 py-32 text-center sm:px-6 lg:px-8">
+10:       <AnimateIn direction="up">
+11:         <div className="relative overflow-hidden rounded-[3rem] bg-slate-900 p-10 shadow-2xl sm:p-16 lg:p-20">
+12: 
+13:           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2)_0%,transparent_60%)]" />
+14:           <div className="bg-noise absolute inset-0 opacity-10" />
+15: 
+16:           <div className="relative z-10 flex flex-col items-center">
+17:             <div className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 backdrop-blur-md shadow-xl">
+18:               <Mail className="size-8 text-white" />
+19:             </div>
+20: 
+21:             <h2 className="text-3xl font-black tracking-tighter text-white sm:text-4xl lg:text-5xl max-w-2xl leading-tight">
+22:               {cta.heading}
+23:             </h2>
+24: 
+25:             <p className="mx-auto mt-6 max-w-xl text-sm font-medium leading-relaxed text-slate-400 sm:text-base">
+26:               {cta.description}
+27:             </p>
+28: 
+29:             <form className="mx-auto mt-10 w-full max-w-lg relative" onSubmit={(e) => e.preventDefault()}>
+30:               <input
+31:                 type="email"
+32:                 placeholder={cta.inputPlaceholder}
+33:                 className="w-full rounded-full border border-white/20 bg-white/5 py-4 pl-6 pr-36 sm:pr-40 text-sm font-bold text-white placeholder:text-slate-500 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 backdrop-blur-md transition-all"
+34:               />
+35:               <button
+36:                 type="submit"
+37:                 className="absolute right-1.5 top-1.5 bottom-1.5 flex items-center gap-2 rounded-full bg-white px-5 sm:px-6 text-sm font-extrabold text-slate-900 transition-transform hover:scale-105 active:scale-95"
+38:               >
+39:                 Join List
+40:                 <ArrowRight className="size-4" />
+41:               </button>
+42:             </form>
+43: 
+44:             <p className="mt-8 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+45:               Limited Edition • Exclusive Drop
+46:             </p>
+47:           </div>
+48:         </div>
+49:       </AnimateIn>
+50:     </section>
+51:   );
+52: };
+</file>
+
+<file path="src/components/sections/lfk-x-arkiv/ArkivHeroSection.tsx">
+ 1: import { motion } from "framer-motion";
+ 2: import { LFK_X_ARKIV_CONTENT } from "../../../content";
+ 3: import { Sparkles } from "lucide-react";
+ 4: 
+ 5: const { hero } = LFK_X_ARKIV_CONTENT;
+ 6: 
+ 7: export const ArkivHeroSection = () => {
+ 8:   return (
+ 9:     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden pt-20">
+10:       <div className="absolute inset-0 z-0 bg-slate-50 flex items-center justify-center">
+11:         <img
+12:           src="/hero-lfk-x-arkiv.jpeg"
+13:           alt="LFK x Arkiv"
+14:           className="block h-full w-full object-cover"
+15:         />
+16:       </div>
+17: 
+18:       <div className="bg-noise absolute inset-0 opacity-[0.04] mix-blend-multiply" />
+19: 
+20:       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
+21: 
+22:         <motion.div
+23:           initial={{ opacity: 0, scale: 0.9 }}
+24:           animate={{ opacity: 1, scale: 1 }}
+25:           transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+26:           className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/70 px-5 py-2 text-xs font-bold uppercase tracking-widest text-[#1A80C1] backdrop-blur-md shadow-sm"
+27:         >
+28:           <Sparkles className="size-4 text-[#FFCFCF]" />
+29:           Exclusive Collaboration
+30:         </motion.div>
+31: 
+32:         <motion.h1
+33:           initial={{ opacity: 0, y: 30 }}
+34:           animate={{ opacity: 1, y: 0 }}
+35:           transition={{ duration: 0.9, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
+36:           className="text-5xl font-black tracking-tighter sm:text-7xl lg:text-[6.5rem] leading-[1.05]"
+37:         >
+38:           {/* Menghapus text-transparent agar teks putihnya muncul sempurna */}
+39:           <span className="text-white drop-shadow-md">
+40:             WHERE MASTERPIECE
+41:           </span>
+42:           <br />
+43:           <span className="text-white drop-shadow-md">
+44:             MEETS PROTECTION.
+45:           </span>
+46:         </motion.h1>
+47: 
+48:         <motion.p
+49:           initial={{ opacity: 0, y: 20 }}
+50:           animate={{ opacity: 1, y: 0 }}
+51:           transition={{ duration: 0.8, delay: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
+52:           className="mx-auto mt-8 max-w-2xl rounded-2xl bg-gradient-to-r from-[#FFCFCF]/50 to-[#1A80C1]/50 px-6 py-4 text-lg font-bold leading-relaxed text-white backdrop-blur-xs sm:text-xl border border-white/10"
+53:         >
+54:           {hero.subheadline}
+55:         </motion.p>
+56: 
+57:       </div>
+58:     </section>
+59:   );
+60: };
+</file>
+
+<file path="src/components/sections/lfk-x-arkiv/ArkivProductSection.tsx">
+ 1: import { motion } from "framer-motion";
+ 2: import { LFK_X_ARKIV_CONTENT } from "../../../content";
+ 3: import { AnimateIn } from "../../ui/AnimateIn";
+ 4: import { Shield, Sparkles } from "lucide-react";
+ 5: 
+ 6: const { product } = LFK_X_ARKIV_CONTENT;
+ 7: 
+ 8: export const ArkivProductSection = () => {
+ 9:   return (
+10:     <section className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+11: 
+12:       {/* Top Text & Heading */}
+13:       <div className="grid items-end gap-12 lg:grid-cols-2 mb-20">
+14:         <AnimateIn direction="up">
+15:           <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white mb-6">
+16:             <Shield className="size-4" />
+17:             The Masterpiece
+18:           </div>
+19:           <h2 className="whitespace-pre-line text-4xl font-black tracking-tighter text-slate-900 sm:text-5xl lg:text-6xl leading-[1.1]">
+20:             {product.heading}
+21:           </h2>
+22:         </AnimateIn>
+23: 
+24:         <AnimateIn direction="up" delay={0.2} className="lg:justify-self-end">
+25:           <p className="text-sm font-bold leading-relaxed tracking-wider text-slate-600 sm:text-base uppercase max-w-md border-l-2 border-slate-900 pl-6">
+26:             {product.statement}
+27:           </p>
+28:         </AnimateIn>
+29:       </div>
+30: 
+31:       <div className="flex flex-wrap gap-4 mb-12">
+32:         {product.tags.map((tag, idx) => (
+33:           <AnimateIn direction="up" delay={0.3 + (idx * 0.1)} key={tag}>
+34:             <span className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white/50 px-4 py-2 text-sm font-bold text-slate-700 backdrop-blur-md shadow-sm">
+35:               <Sparkles className="size-4 text-slate-400" />
+36:               {tag}
+37:             </span>
+38:           </AnimateIn>
+39:         ))}
+40:       </div>
+41: 
+42:       {/* Extinguisher Image & Specs Grid */}
+43:       <div className="relative mt-8 flex flex-col lg:flex-row items-center lg:items-stretch gap-10">
+44: 
+45:         {/* 3D Render Image Container */}
+46:         <AnimateIn
+47:           direction="right"
+48:           delay={0.4}
+49:           className="relative w-full lg:w-1/2 flex items-center justify-center rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-12 shadow-2xl overflow-hidden"
+50:         >
+51:           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.05)_0%,transparent_70%)]" />
+52:           <motion.img
+53:             animate={{ y: [0, -20, 0], rotate: [0, 2, -2, 0] }}
+54:             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+55:             src="/arkiv/graphic-elements/Blob-2.png"
+56:             alt="Saru Extinguisher Artwork"
+57:             className="relative z-20 w-64 drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] sm:w-80 lg:w-[400px]"
+58:           />
+59:         </AnimateIn>
+60: 
+61:         {/* Table Background */}
+62:         <AnimateIn direction="left" delay={0.5} className="w-full lg:w-1/2 flex flex-col">
+63:           <div className="flex-1 overflow-hidden rounded-[3rem] border border-white/60 bg-white/60 shadow-2xl backdrop-blur-xl p-8 sm:p-12">
+64:             <h3 className="text-2xl font-black text-slate-900 mb-8 border-b border-slate-300 pb-4">
+65:               Collection Specs
+66:             </h3>
+67:             <table className="w-full text-left text-sm sm:text-base text-slate-700 border-collapse">
+68:               <tbody>
+69:                 {product.specs.map((row) => {
+70:                   if ('isHeader' in row && row.isHeader) return null;
+71:                   return (
+72:                     <tr key={row.label} className="border-b border-slate-200 last:border-0 group hover:bg-white/40 transition-colors">
+73:                       <td className="py-5 pr-4 align-top font-bold text-slate-500 w-1/3 group-hover:text-slate-900 transition-colors">
+74:                         {row.label}
+75:                       </td>
+76:                       <td className="py-5 align-top font-bold text-slate-900 whitespace-pre-line">
+77:                         {row.value}
+78:                       </td>
+79:                     </tr>
+80:                   )
+81:                 })}
+82:               </tbody>
+83:             </table>
+84:           </div>
+85:         </AnimateIn>
+86:       </div>
+87:     </section>
+88:   );
+89: };
+</file>
+
+<file path="src/components/sections/lfk-x-arkiv/ArkivVisionarySection.tsx">
+ 1: import { LFK_X_ARKIV_CONTENT } from "../../../content";
+ 2: import { AnimateIn } from "../../ui/AnimateIn";
+ 3: import { ShieldCheck, Globe, Gavel, Sparkles } from "lucide-react";
+ 4: 
+ 5: const { visionary } = LFK_X_ARKIV_CONTENT;
+ 6: 
+ 7: export const ArkivVisionarySection = () => {
+ 8:   return (
+ 9:     <section className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+10:       <div className="grid items-center gap-16 lg:grid-cols-12">
+11:         {/* Kolom Gambar */}
+12:         <div className="lg:col-span-5 relative">
+13:           <AnimateIn direction="right">
+14:             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2.5rem] bg-slate-200 shadow-2xl">
+15:               <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/20 to-transparent z-10" />
+16:               <img
+17:                 src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop"
+18:                 alt="Arkiv Visionary"
+19:                 className="size-full object-cover grayscale-[40%] transition-transform duration-700 hover:scale-105"
+20:               />
+21:               {/* Badge Dekoratif di gambar */}
+22:               <div className="absolute -bottom-6 -right-6 size-32 rounded-full border border-white/40 bg-white/20 backdrop-blur-xl z-20 flex items-center justify-center shadow-xl">
+23:                 <Sparkles className="size-10 text-slate-800" />
+24:               </div>
+25:             </div>
+26:           </AnimateIn>
+27:         </div>
+28: 
+29:         {/* Kolom Teks Konten */}
+30:         <div className="lg:col-span-7">
+31:           <AnimateIn direction="left" delay={0.2} className="space-y-10">
+32:             <div>
+33:               <h2 className="whitespace-pre-line text-4xl font-black tracking-tighter text-slate-900 sm:text-5xl lg:text-6xl leading-[1.1]">
+34:                 {visionary.heading}
+35:               </h2>
+36:               <div className="mt-8 h-1 w-24 bg-slate-900" />
+37:             </div>
+38: 
+39:             <p className="text-base font-medium leading-relaxed text-slate-700 sm:text-lg max-w-2xl">
+40:               {visionary.description}
+41:             </p>
+42: 
+43:             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-y border-slate-300/50 py-8">
+44:               {[
+45:                 { icon: ShieldCheck, label: "Partnership", desc: "Exclusive Collab" },
+46:                 { icon: Globe, label: "Global Brand", desc: "Worldwide Projects" },
+47:                 { icon: Gavel, label: "Art Market", desc: "High-end Galleries" },
+48:               ].map((item, idx) => (
+49:                 <div key={idx} className="flex flex-col gap-3">
+50:                   <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
+51:                     <item.icon className="size-5" />
+52:                   </div>
+53:                   <div>
+54:                     <p className="text-sm font-black uppercase tracking-widest text-slate-900">{item.label}</p>
+55:                     <p className="text-xs font-semibold text-slate-500">{item.desc}</p>
+56:                   </div>
+57:                 </div>
+58:               ))}
+59:             </div>
+60: 
+61:             <div className="relative pl-8 pt-4">
+62:               <span className="absolute left-0 top-0 text-6xl text-slate-300 font-serif leading-none">"</span>
+63:               <p className="text-xl font-bold italic leading-relaxed text-slate-800 relative z-10">
+64:                 {visionary.quote.replace(/"/g, '')}
+65:               </p>
+66:               <p className="mt-4 text-sm font-extrabold tracking-widest text-slate-500 uppercase">
+67:                 {visionary.quoteAuthor}
+68:               </p>
+69:             </div>
+70:           </AnimateIn>
+71:         </div>
+72:       </div>
+73:     </section>
+74:   );
+75: };
 </file>
 
 <file path="src/components/sections/shared/OfficeLocationSection.tsx">
@@ -1402,261 +2375,6 @@ ingat kode web lfk ini:
 44: } as const;
 </file>
 
-<file path="src/config/site.ts">
- 1: import { ABOUT_CONTENT, FOOTER_CONTENT, HEADER_NAV } from "../content";
- 2: 
- 3: export const SITE = {
- 4:   name: "PT. Famindo Alfa Spektrum Teknologi",
- 5:   shortName: "FAST",
- 6:   tagline: "Lithium Fire Safety",
- 7: } as const;
- 8: 
- 9: export const NAV_LINKS = HEADER_NAV;
-10: 
-11: export const CONTACT = {
-12:   email: FOOTER_CONTENT.contact.email,
-13:   phone: FOOTER_CONTENT.contact.phone,
-14:   phoneHref: "tel:+6281290003278",
-15: } as const;
-16: 
-17: export const OFFICE = ABOUT_CONTENT.location;
-18: 
-19: export const FOOTER = FOOTER_CONTENT;
-</file>
-
-<file path="src/content/about.ts">
- 1: /**
- 2:  * Halaman Tentang Kami — sumber: docs/CONTENT.md § PAGE 2: TENTANG KAMI
- 3:  */
- 4: 
- 5: export const ABOUT_CONTENT = {
- 6:   intro: {
- 7:     heading: "Tentang Kami",
- 8:     paragraphs: [
- 9:       "PT. Famindo Alfa Spektrum Teknologi (FAST) adalah perusahaan yang berfokus pada penyediaan solusi keamanan terhadap risiko kebakaran. FAST merupakan distributor eksklusif APAR Lithium Fire Killer Hartindo AF31, APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya bagi manusia maupun lingkungan.",
-10:       "Selain menghadirkan produk unggulan, FAST juga berkomitmen untuk mengedukasi masyarakat tentang bahaya kebakaran, khususnya kebakaran baterai lithium-ion, serta memberikan pemahaman mengenai cara penanggulangannya secara aman dan efektif.",
-11:     ],
-12:   },
-13:   history: {
-14:     headline: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
-15:     keyFigures: [
-16:       {
-17:         name: "Bapak Randall Hartolaksono",
-18:         role: "Penemu Hartindo AF31",
-19:       },
-20:       {
-21:         name: "Bapak Willy Hadiwijaya",
-22:         role: "Pendiri PT. FAST",
-23:       },
-24:     ],
-25:     blocks: [
-26:       {
-27:         subheading: "Dengan Tim Solid Segalanya Dapat Tercapai",
-28:         paragraphs: [
-29:           "Kisah ini berawal dari Bapak Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Bapak Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.",
-30:         ],
-31:       },
-32:       {
-33:         subheading: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
-34:         paragraphs: [],
-35:       },
-36:       {
-37:         subheading: "Terus Berinovasi Sambil Mengedukasi Masyarakat",
-38:         paragraphs: [
-39:           "PT. FAST tidak hanya berperan sebagai penyedia produk keamanan kebakaran, tetapi juga berdedikasi untuk mengedukasi dan mensosialisasikan pentingnya keselamatan. Melalui berbagai program, FAST berkomitmen meningkatkan kesadaran masyarakat agar lebih memprioritaskan perlindungan jiwa serta terlatih dalam menghadapi potensi bahaya kebakaran yang datang tanpa diduga.",
-40:         ],
-41:       },
-42:     ],
-43:   },
-44:   location: {
-45:     heading: "Lokasi Kami",
-46:     address:
-47:       "TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Kecamatan Tanah Abang, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10220",
-48:     hours: "Senin – Jumat | Jam 09.00 – 17.00 WIB",
-49:     mapsQuery:
-50:       "TCC+Tower+One+Menara+Batavia+Jl.+K.H.+Mas+Mansyur+Karet+Tengsin+Jakarta+Pusat",
-51:   },
-52: } as const;
-</file>
-
-<file path="src/content/contact.ts">
- 1: /**
- 2:  * Halaman Kontak — sumber: docs/CONTENT.md § PAGE 4: KONTAK
- 3:  */
- 4: 
- 5: import { ABOUT_CONTENT } from "./about";
- 6: 
- 7: export const CONTACT_PAGE_CONTENT = {
- 8:   info: {
- 9:     heading: "Informasi Kontak",
-10:     channels: [
-11:       {
-12:         id: "phone",
-13:         label: "Telepon / WhatsApp",
-14:         value: "+62 812 9000 3278",
-15:         href: "tel:+6281290003278",
-16:         whatsappHref: "https://wa.me/6281290003278",
-17:       },
-18:       {
-19:         id: "email",
-20:         label: "Email",
-21:         value: "support@famindofast.com",
-22:         href: "mailto:support@famindofast.com",
-23:       },
-24:     ],
-25:   },
-26:   form: {
-27:     heading: "Contact Form",
-28:     fields: {
-29:       firstName: {
-30:         label: "Nama Depan",
-31:         required: true,
-32:       },
-33:       email: {
-34:         label: "Alamat Email",
-35:         required: true,
-36:       },
-37:       message: {
-38:         label: "Tulis Pesan Anda di Sini",
-39:         required: true,
-40:       },
-41:     },
-42:     submitLabel: "Kirim Pesan",
-43:     errors: {
-44:       required: "Kolom ini wajib diisi.",
-45:       emailInvalid: "Format alamat email tidak valid.",
-46:     },
-47:     success: {
-48:       title: "Pesan berhasil dikirim",
-49:       message:
-50:         "Terima kasih. Pesan Anda telah kami terima dan akan segera ditindaklanjuti.",
-51:     },
-52:   },
-53:   location: {
-54:     ...ABOUT_CONTENT.location,
-55:     heading: "Peta & Lokasi",
-56:     addressLabel: "Alamat",
-57:     hoursLabel: "Waktu Operasional",
-58:   },
-59: } as const;
-</file>
-
-<file path="src/content/global.ts">
- 1: /**
- 2:  * Global UI copy — sumber: docs/CONTENT.md § GLOBAL UI COMPONENTS
- 3:  */
- 4: 
- 5: export const HEADER_NAV = [
- 6:   { label: "Beranda", href: "/" },
- 7:   { label: "Tentang Kami", href: "/about" },
- 8:   { label: "Lithium Fire Safety", href: "/lithium-fire-safety" },
- 9:   { label: "Kontak", href: "/contact" },
-10: ] as const;
-11: 
-12: export const FOOTER_CONTENT = {
-13:   socialCta: "Stay up to date by following our social media!",
-14:   newsletter: {
-15:     emailLabel: "Email",
-16:     emailPlaceholder: "Email",
-17:     submitButton: "Kirim Informasi",
-18:   },
-19:   contact: {
-20:     email: "support@famindofast.com",
-21:     phone: "+62 812 9000 3278",
-22:   },
-23: } as const;
-</file>
-
-<file path="src/content/home.ts">
- 1: /**
- 2:  * Halaman Beranda — sumber: docs/CONTENT.md § PAGE 1: BERANDA
- 3:  */
- 4: 
- 5: export const HOME_CONTENT = {
- 6:   hero: {
- 7:     headline: "Spesialis Perlindungan Kebakaran Baterai Lithium",
- 8:     description:
- 9:       "Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.",
-10:     cta: {
-11:       label: "Lihat Profil Perusahaan Kami",
-12:       href: "/about",
-13:     },
-14:   },
-15:   problem: {
-16:     headline: "No Fire, No Fear",
-17:     description:
-18:       "Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.",
-19:     cta: {
-20:       label: "Pelajari Lebih Detail",
-21:       href: "/lithium-fire-safety",
-22:     },
-23:   },
-24:   services: {
-25:     heading: "Layanan / Solusi Keamanan",
-26:     items: [
-27:       {
-28:         title: "EV Fire Safety",
-29:         description:
-30:           "Menjaga keselamatan diri adalah tanggung jawab setiap pemilik EV.",
-31:       },
-32:       {
-33:         title: "Business Safety",
-34:         description:
-35:           "Prioritaskan keamanan nyawa karyawan dan aset bisnis Anda.",
-36:       },
-37:       {
-38:         title: "Mining Safety",
-39:         description:
-40:           "Maksimalkan sistem keamanan operasional di sektor pertambangan.",
-41:       },
-42:     ],
-43:   },
-44:   education: {
-45:     heading: "Apa Itu Baterai Lithium?",
-46:     paragraphs: [
-47:       "Baterai lithium-ion (Li-ion) adalah jenis baterai isi ulang yang banyak digunakan pada perangkat elektronik portabel maupun kendaraan listrik. Mekanismenya bekerja dengan memindahkan ion lithium antara elektroda positif (katoda) dan elektroda negatif (anoda) melalui elektrolit.",
-48:       "Baterai Li-ion mampu menyimpan energi lebih besar dalam ukuran yang ringkas dan ringan, menjadikannya pilihan ideal untuk perangkat portabel. Berbeda dengan beberapa jenis baterai lain, baterai Li-ion tidak mengalami penurunan kapasitas meski diisi ulang sebelum benar-benar habis. Dengan umur pakai yang relatif panjang serta mampu melalui banyak siklus pengisian dan pengosongan, baterai ini lebih efisien, ramah lingkungan, dan dapat didaur ulang.",
-49:       "Meskipun menawarkan banyak keunggulan, baterai lithium-ion juga memiliki risiko tertentu yang perlu diwaspadai.",
-50:     ],
-51:   },
-52:   thermalRunaway: {
-53:     heading: "Bahaya Thermal Runaway",
-54:     paragraphs: [
-55:       "Baterai lithium-ion menyimpan energi besar di dalam elektrolit yang mudah terbakar. Saat terjadi kerusakan fisik, korsleting, atau suhu berlebih, elektrolit dapat bocor dan memicu reaksi berbahaya berupa kebakaran atau ledakan. Faktor pemicu umumnya berasal dari cacat produksi, pengisian daya yang tidak sesuai, atau paparan suhu ekstrem.",
-56:       "Thermal runaway adalah kondisi peningkatan suhu pada baterai yang berlangsung secara terus-menerus dan sulit dikendalikan. Proses ini dapat membuat baterai mengeluarkan asap, terbakar, hingga meledak. Memahami risiko ini penting agar pengguna lebih bijak dalam menyimpan, mengisi, dan menggunakan baterai lithium dengan cara yang aman.",
-57:     ],
-58:   },
-59:   regulation: {
-60:     heading: "Regulasi Pemerintah di Indonesia",
-61:     description:
-62:       "Peluang Indonesia sebagai pusat industri baterai lithium dan dukungan regulasi.",
-63:     rows: [
-64:       {
-65:         id: "perpres-55-2019",
-66:         regulation: "Perpres No. 55 Tahun 2019",
-67:         fullName: "Peraturan Presiden Nomor 55 Tahun 2019",
-68:         description:
-69:           "Mengatur Percepatan Program Kendaraan Bermotor Listrik Berbasis Baterai (Battery Electric Vehicle/BEV) untuk transportasi jalan. Di dalamnya tercakup kerangka regulasi serta berbagai insentif guna menarik investasi, memperkuat industri lokal, membangun infrastruktur pendukung, dan mendorong adopsi kendaraan listrik secara luas di masyarakat.",
-70:       },
-71:       {
-72:         id: "inpres-7-2022",
-73:         regulation: "Inpres No. 7 Tahun 2022",
-74:         fullName: "Instruksi Presiden Nomor 7 Tahun 2022",
-75:         description:
-76:           "Mewajibkan seluruh instansi pemerintah, baik pusat maupun daerah, untuk menggunakan kendaraan bermotor listrik berbasis baterai (Battery Electric Vehicle/BEV) sebagai kendaraan dinas operasional maupun kendaraan perorangan.",
-77:       },
-78:       {
-79:         id: "permenhub-13-2024",
-80:         regulation: "Permenhub No. 13 Tahun 2024",
-81:         fullName: "Peraturan Menteri Perhubungan Nomor 13 Tahun 2024",
-82:         description:
-83:           "Mengatur tentang perlengkapan keselamatan kendaraan bermotor, termasuk sabuk keselamatan, alat pemadam api ringan (APAR), dan perlengkapan keselamatan lainnya. Tujuannya adalah untuk meningkatkan standar keselamatan berkendara dan melindungi pengguna jalan di Indonesia.",
-84:       },
-85:     ],
-86:   },
-87: } as const;
-</file>
-
 <file path="src/content/index.ts">
 1: export { FOOTER_CONTENT, HEADER_NAV } from "./global";
 2: export { HOME_CONTENT } from "./home";
@@ -1664,111 +2382,7 @@ ingat kode web lfk ini:
 4: export { LITHIUM_FIRE_SAFETY_CONTENT } from "./lithium-fire-safety";
 5: export { CONTACT_PAGE_CONTENT } from "./contact";
 6: export { LFK_X_ARKIV_CONTENT } from "./lfk-x-arkiv";
-</file>
-
-<file path="src/content/lithium-fire-safety.ts">
- 1: /**
- 2:  * Halaman Lithium Fire Safety — sumber: docs/CONTENT.md § PAGE 3
- 3:  */
- 4: 
- 5: export const LITHIUM_FIRE_SAFETY_CONTENT = {
- 6:   protection: {
- 7:     heading: "Kategori Proteksi",
- 8:     categories: [
- 9:       {
-10:         id: "ev-safety",
-11:         title: "Electric Vehicle (EV) Safety",
-12:         tabLabel: "EV Safety",
-13:         paragraphs: [
-14:           "Industri kendaraan listrik (EV) di Indonesia berkembang sangat pesat dan segera menjadi bagian penting dari kebutuhan transportasi masyarakat.",
-15:           "Oleh karena itu, setiap pemilik EV perlu memahami cara merawat kendaraannya sekaligus melindungi diri dari risiko kebakaran baterai lithium yang dapat terjadi kapan saja.",
-16:         ],
-17:       },
-18:       {
-19:         id: "business-safety",
-20:         title: "Business Safety",
-21:         tabLabel: "Business Safety",
-22:         paragraphs: [
-23:           "Berbagai sektor bisnis di Indonesia kini telah mengadopsi teknologi berbasis baterai lithium, termasuk industri manufaktur baterai itu sendiri. Untuk melindungi karyawan dan menjaga keberlangsungan aset perusahaan, penerapan sistem keamanan terhadap risiko kebakaran baterai lithium menjadi hal yang mutlak diperlukan.",
-24:         ],
-25:         subheading: "Mengamankan Berbagai Sektor Bisnis Di Indonesia",
-26:         subheadingParagraph:
-27:           "PT. FAST hadir sebagai mitra strategis bagi berbagai sektor industri di Indonesia dalam menghadapi risiko kebakaran baterai lithium. Kami tidak hanya menyediakan solusi proteksi terdepan, tetapi juga berkomitmen untuk melindungi karyawan, aset, dan keberlangsungan bisnis melalui edukasi serta penerapan standar keselamatan yang efektif.",
-28:         sectorsLabel: "Sektor yang dilayani:",
-29:         sectors: [
-30:           "EV Charging Station",
-31:           "Battery Storage & Manufacturer",
-32:           "Manufacturer",
-33:           "Data Center",
-34:           "Logistics",
-35:           "Energy Powerplant",
-36:         ],
-37:       },
-38:       {
-39:         id: "mining-safety",
-40:         title: "Mining Safety",
-41:         tabLabel: "Mining Safety",
-42:         byline: "oleh PT. Fastindo Intiraya Solusi Tambang — FIRST",
-43:         paragraphs: [
-44:           "Industri pertambangan memiliki tantangan keselamatan yang sangat kompleks dan membutuhkan solusi khusus dari para ahli berpengalaman. Untuk itu, hadir FIRST (PT. Fastindo Intiraya Solusi Tambang) dengan komitmen kuat menghadirkan teknologi terdepan dan layanan terpercaya demi menjaga keselamatan serta memastikan pertambangan Indonesia tetap berada di garis terdepan.",
-45:         ],
-46:       },
-47:     ],
-48:   },
-49:   epc: {
-50:     heading: "Metode EPC",
-51:     description:
-52:       "EPC (Engineering, Procurement, and Construction) adalah metode yang digunakan oleh FIRST untuk merancang solusi sesuai kebutuhan spesifik di lokasi pertambangan. Proses ini mencakup perencanaan menyeluruh, penyusunan mekanisme pencegahan kebakaran, integrasi detektor, hingga pemasangan sistem proteksi kebakaran. Dengan pendekatan EPC, FIRST memastikan setiap tahap dilaksanakan secara tepat dan disesuaikan dengan kebutuhan klien.",
-53:     stepsHeading: "Tahapan EPC:",
-54:     steps: [
-55:       "Perencanaan menyeluruh",
-56:       "Penyusunan mekanisme pencegahan kebakaran",
-57:       "Integrasi detektor",
-58:       "Pemasangan sistem proteksi kebakaran secara presisi",
-59:     ],
-60:   },
-61:   cta: {
-62:     headline: "Butuh Bantuan Lebih Lanjut?",
-63:     button: { label: "Hubungi Kami", href: "/contact" },
-64:   },
-65: } as const;
-</file>
-
-<file path="src/hooks/.gitkeep">
-1: 
-</file>
-
-<file path="src/i18n.ts">
- 1: import i18n from "i18next";
- 2: import { initReactI18next } from "react-i18next";
- 3: 
- 4: const savedLanguage = localStorage.getItem("app-language") || "id";
- 5: 
- 6: i18n.use(initReactI18next).init({
- 7:   resources: {},
- 8:   lng: savedLanguage,
- 9:   fallbackLng: "id",
-10:   interpolation: { escapeValue: false },
-11: });
-12: 
-13: i18n.on("languageChanged", (lng) => {
-14:   document.documentElement.lang = lng;
-15:   localStorage.setItem("app-language", lng);
-16: });
-17: 
-18: export default i18n;
-</file>
-
-<file path="src/lib/.gitkeep">
-1: 
-</file>
-
-<file path="src/locales/en/.gitkeep">
-1: 
-</file>
-
-<file path="src/locales/id/.gitkeep">
-1: 
+7: export { PRODUCT_CONTENT } from "./product";
 </file>
 
 <file path="src/main.tsx">
@@ -1794,98 +2408,106 @@ ingat kode web lfk ini:
 20: }
 </file>
 
-<file path="src/pages/ContactPage.tsx">
+<file path="src/pages/AboutPage.tsx">
  1: import { PageSeo } from "../components/seo/PageSeo";
  2: import {
- 3:   ContactFormSection,
- 4:   ContactInfoSection,
- 5:   ContactLocationSection,
- 6: } from "../components/sections/contact";
- 7: import { PAGE_SEO } from "../config/seo";
- 8: 
- 9: export const ContactPage = () => {
-10:   const seo = PAGE_SEO.contact;
-11: 
-12:   return (
-13:     <>
-14:       <PageSeo
-15:         title={seo.title}
-16:         description={seo.description}
-17:         path={seo.path}
-18:       />
-19: 
-20:       <ContactInfoSection />
-21:       <ContactFormSection />
-22:       <ContactLocationSection />
-23:     </>
-24:   );
-25: };
+ 3:   AboutHistorySection,
+ 4:   AboutIntroSection,
+ 5: } from "../components/sections/about";
+ 6: import { PAGE_SEO } from "../config/seo";
+ 7: 
+ 8: export const AboutPage = () => {
+ 9:   const seo = PAGE_SEO.about;
+10: 
+11:   return (
+12:     <>
+13:       <PageSeo
+14:         title={seo.title}
+15:         description={seo.description}
+16:         path={seo.path}
+17:       />
+18: 
+19:       <AboutIntroSection />
+20:       <AboutHistorySection />
+21:     </>
+22:   );
+23: };
 </file>
 
-<file path="src/pages/HomePage.tsx">
+<file path="src/pages/LfkXArkivPage.tsx">
  1: import { PageSeo } from "../components/seo/PageSeo";
- 2: import {
- 3:   EducationSection,
- 4:   HeroSection,
- 5:   ProblemSection,
- 6:   RegulationSection,
- 7:   ServicesSection,
- 8:   ThermalRunawaySection,
- 9: } from "../components/sections/home";
-10: import { PAGE_SEO } from "../config/seo";
-11: 
-12: export const HomePage = () => {
-13:   const seo = PAGE_SEO.home;
-14: 
-15:   return (
-16:     <>
-17:       <PageSeo
-18:         title={seo.title}
-19:         description={seo.description}
-20:         path={seo.path}
-21:       />
-22: 
-23:       <HeroSection />
-24:       <ProblemSection />
-25:       <ServicesSection />
-26:       <EducationSection />
-27:       <ThermalRunawaySection />
-28:       <RegulationSection />
-29:     </>
-30:   );
-31: };
-</file>
-
-<file path="src/pages/LithiumFireSafetyPage.tsx">
- 1: import { PageSeo } from "../components/seo/PageSeo";
- 2: import {
- 3:   ContactCtaSection,
- 4:   EpcMethodSection,
- 5:   ProtectionCategoriesSection,
- 6: } from "../components/sections/lithium-fire-safety";
- 7: import { PAGE_SEO } from "../config/seo";
- 8: 
- 9: export const LithiumFireSafetyPage = () => {
-10:   const seo = PAGE_SEO.lithiumFireSafety;
-11: 
-12:   return (
-13:     <>
-14:       <PageSeo
-15:         title={seo.title}
-16:         description={seo.description}
-17:         path={seo.path}
-18:       />
-19: 
-20:       <ProtectionCategoriesSection />
-21:       <EpcMethodSection />
-22:       <ContactCtaSection />
-23:     </>
-24:   );
-25: };
-</file>
-
-<file path="src/routes/.gitkeep">
-1: 
+ 2: import { PAGE_SEO } from "../config/seo";
+ 3: import { motion } from "framer-motion";
+ 4: import {
+ 5:   ArkivHeroSection,
+ 6:   ArkivVisionarySection,
+ 7:   ArkivProductSection,
+ 8:   ArkivCtaSection
+ 9: } from "../components/sections/lfk-x-arkiv";
+10: 
+11: const FloatingBlobs = () => (
+12:   <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+13:     <motion.img
+14:       src="/arkiv/graphic-elements/Blob.png"
+15:       animate={{ y: [0, -30, 0], rotate: [0, 10, -5, 0] }}
+16:       transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+17:       className="absolute top-[10%] left-[-5%] w-64 opacity-80 blur-[2px] sm:w-80"
+18:       aria-hidden
+19:     />
+20:     <motion.img
+21:       src="/arkiv/graphic-elements/Blob-2.png"
+22:       animate={{ y: [0, 40, 0], rotate: [0, -10, 5, 0] }}
+23:       transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+24:       className="absolute top-[30%] right-[-10%] w-72 opacity-90 sm:w-96"
+25:       aria-hidden
+26:     />
+27:     <motion.img
+28:       src="/arkiv/graphic-elements/Blob-3.png"
+29:       animate={{ y: [0, -25, 0] }}
+30:       transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+31:       className="absolute bottom-[40%] left-[5%] w-48 opacity-70 blur-[3px]"
+32:       aria-hidden
+33:     />
+34:     <motion.img
+35:       src="/arkiv/graphic-elements/Blob-4.png"
+36:       animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
+37:       transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+38:       className="absolute bottom-[10%] right-[10%] w-56 opacity-85"
+39:       aria-hidden
+40:     />
+41:     <motion.img
+42:       src="/arkiv/graphic-elements/Blob-5.png"
+43:       animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+44:       transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+45:       className="absolute top-[60%] left-[30%] w-32 opacity-60 blur-[4px]"
+46:       aria-hidden
+47:     />
+48:   </div>
+49: );
+50: 
+51: export const LfkXArkivPage = () => {
+52:   const seo = PAGE_SEO.lfkXArkiv;
+53: 
+54:   return (
+55:     // Tambahkan -mt-[72px] pt-[72px] agar background menutupi celah MainLayout
+56:     <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900 -mt-[72px] pt-[72px]">
+57:       <PageSeo
+58:         title={seo.title}
+59:         description={seo.description}
+60:         path={seo.path}
+61:       />
+62: 
+63:       <FloatingBlobs />
+64: 
+65:       <div className="relative z-10">
+66:         <ArkivHeroSection />
+67:         <ArkivVisionarySection />
+68:         <ArkivProductSection />
+69:         <ArkivCtaSection />
+70:       </div>
+71:     </div>
+72:   );
+73: };
 </file>
 
 <file path="src/routes/index.tsx">
@@ -1924,155 +2546,6 @@ ingat kode web lfk ini:
 33:     </Routes>
 34:   );
 35: };
-</file>
-
-<file path="src/types/.gitkeep">
-1: 
-</file>
-
-<file path="tsconfig.app.json">
- 1: {
- 2:   "compilerOptions": {
- 3:     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
- 4:     "target": "ES2022",
- 5:     "useDefineForClassFields": true,
- 6:     "lib": ["ES2022", "DOM", "DOM.Iterable"],
- 7:     "module": "ESNext",
- 8:     "types": ["vite/client"],
- 9:     "skipLibCheck": true,
-10: 
-11:     /* Bundler mode */
-12:     "moduleResolution": "bundler",
-13:     "allowImportingTsExtensions": true,
-14:     "verbatimModuleSyntax": true,
-15:     "moduleDetection": "force",
-16:     "noEmit": true,
-17:     "jsx": "react-jsx",
-18: 
-19:     /* Linting */
-20:     "strict": true,
-21:     "noUnusedLocals": true,
-22:     "noUnusedParameters": true,
-23:     "erasableSyntaxOnly": true,
-24:     "noFallthroughCasesInSwitch": true,
-25:     "noUncheckedSideEffectImports": true
-26:   },
-27:   "include": ["src"]
-28: }
-</file>
-
-<file path="tsconfig.json">
-1: {
-2:   "files": [],
-3:   "references": [
-4:     { "path": "./tsconfig.app.json" },
-5:     { "path": "./tsconfig.node.json" }
-6:   ]
-7: }
-</file>
-
-<file path="tsconfig.node.json">
- 1: {
- 2:   "compilerOptions": {
- 3:     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
- 4:     "target": "ES2023",
- 5:     "lib": ["ES2023"],
- 6:     "module": "ESNext",
- 7:     "types": ["node"],
- 8:     "skipLibCheck": true,
- 9: 
-10:     /* Bundler mode */
-11:     "moduleResolution": "bundler",
-12:     "allowImportingTsExtensions": true,
-13:     "verbatimModuleSyntax": true,
-14:     "moduleDetection": "force",
-15:     "noEmit": true,
-16: 
-17:     /* Linting */
-18:     "strict": true,
-19:     "noUnusedLocals": true,
-20:     "noUnusedParameters": true,
-21:     "erasableSyntaxOnly": true,
-22:     "noFallthroughCasesInSwitch": true,
-23:     "noUncheckedSideEffectImports": true
-24:   },
-25:   "include": ["vite.config.ts"]
-26: }
-</file>
-
-<file path="vercel.json">
- 1: {
- 2:   "redirects": [],
- 3:   "rewrites": [
- 4:     {
- 5:       "source": "/(.*)",
- 6:       "destination": "/index.html"
- 7:     }
- 8:   ],
- 9:   "headers": [
-10:     {
-11:       "source": "/assets/(.*)",
-12:       "headers": [
-13:         {
-14:           "key": "Cache-Control",
-15:           "value": "public, max-age=31536000, immutable"
-16:         }
-17:       ]
-18:     },
-19:     {
-20:       "source": "/(.*)\\.(png|jpg|jpeg|avif|webp|svg|ico|gif)",
-21:       "headers": [
-22:         {
-23:           "key": "Cache-Control",
-24:           "value": "public, max-age=31536000, immutable"
-25:         }
-26:       ]
-27:     }
-28:   ]
-29: }
-</file>
-
-<file path="vite.config.ts">
- 1: import { defineConfig } from "vite";
- 2: import react from "@vitejs/plugin-react-swc";
- 3: import tailwindcss from "@tailwindcss/vite";
- 4: import viteCompression from "vite-plugin-compression";
- 5: import Sitemap from "vite-plugin-sitemap";
- 6: 
- 7: const SITE_ROUTES = ["/", "/about", "/lithium-fire-safety", "/contact"];
- 8: 
- 9: export default defineConfig({
-10:   plugins: [
-11:     react(),
-12:     tailwindcss(),
-13:     Sitemap({
-14:       hostname: "https://www.famindofast.com",
-15:       dynamicRoutes: SITE_ROUTES.filter((route) => route !== "/"),
-16:       generateRobotsTxt: true,
-17:     }),
-18:     viteCompression({
-19:       algorithm: "gzip",
-20:       ext: ".gz",
-21:       threshold: 10240,
-22:     }),
-23:     viteCompression({
-24:       algorithm: "brotliCompress",
-25:       ext: ".br",
-26:       threshold: 10240,
-27:     }),
-28:   ],
-29:   build: {
-30:     minify: "esbuild",
-31:     cssMinify: true,
-32:     rollupOptions: {
-33:       output: {
-34:         manualChunks: {
-35:           vendor: ["react", "react-dom", "react-router-dom"],
-36:         },
-37:       },
-38:     },
-39:   },
-40: });
 </file>
 
 <file path="src/components/sections/about/AboutLocationSection.tsx">
@@ -3090,32 +3563,6 @@ ingat kode web lfk ini:
 324:     transform: none !important;
 325:   }
 326: }
-</file>
-
-<file path="src/pages/AboutPage.tsx">
- 1: import { PageSeo } from "../components/seo/PageSeo";
- 2: import {
- 3:   AboutHistorySection,
- 4:   AboutIntroSection,
- 5: } from "../components/sections/about";
- 6: import { PAGE_SEO } from "../config/seo";
- 7: 
- 8: export const AboutPage = () => {
- 9:   const seo = PAGE_SEO.about;
-10: 
-11:   return (
-12:     <>
-13:       <PageSeo
-14:         title={seo.title}
-15:         description={seo.description}
-16:         path={seo.path}
-17:       />
-18: 
-19:       <AboutIntroSection />
-20:       <AboutHistorySection />
-21:     </>
-22:   );
-23: };
 </file>
 
 <file path="src/components/layout/MainLayout.tsx">
@@ -4775,220 +5222,6 @@ ingat kode web lfk ini:
 220: };
 </file>
 
-<file path="src/components/layout/Header.tsx">
-  1: import { useEffect, useState } from "react";
-  2: import { Link, NavLink } from "react-router-dom";
-  3: import { Menu, X } from "lucide-react";
-  4: import { AnimatePresence, motion } from "framer-motion";
-  5: import { HEADER_NAV } from "../../content";
-  6: import { SITE } from "../../config/site";
-  7: 
-  8: const NAV_LINKS = HEADER_NAV;
-  9: 
- 10: const NAV_ICONS: Record<string, string> = {
- 11:   "/": "🏠",
- 12:   "/about": "🏢",
- 13:   "/lithium-fire-safety": "🔥",
- 14:   "/contact": "📞",
- 15: };
- 16: 
- 17: export const Header = () => {
- 18:   const [mobileOpen, setMobileOpen] = useState(false);
- 19:   const [scrolled, setScrolled] = useState(false);
- 20: 
- 21:   // Scroll for header bg
- 22:   useEffect(() => {
- 23:     const onScroll = () => setScrolled(window.scrollY > 20);
- 24:     window.addEventListener("scroll", onScroll, { passive: true });
- 25:     return () => window.removeEventListener("scroll", onScroll);
- 26:   }, []);
- 27: 
- 28:   // Escape key closes mobile menu
- 29:   useEffect(() => {
- 30:     if (!mobileOpen) return;
- 31:     const handleKeyDown = (e: KeyboardEvent) => {
- 32:       if (e.key === "Escape") setMobileOpen(false);
- 33:     };
- 34:     document.addEventListener("keydown", handleKeyDown);
- 35:     return () => document.removeEventListener("keydown", handleKeyDown);
- 36:   }, [mobileOpen]);
- 37: 
- 38:   // Lock scroll when mobile open
- 39:   useEffect(() => {
- 40:     document.body.style.overflow = mobileOpen ? "hidden" : "";
- 41:     return () => { document.body.style.overflow = ""; };
- 42:   }, [mobileOpen]);
- 43: 
- 44:   return (
- 45:     <header
- 46:       className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-out ${scrolled
- 47:         ? "border-b border-white/5 bg-background/75 shadow-[0_4px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl py-1"
- 48:         : "border-b border-transparent bg-gradient-to-b from-background/80 to-transparent py-3"
- 49:         }`}
- 50:     >
- 51:       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
- 52: 
- 53:         {/* Logo */}
- 54:         <Link
- 55:           to="/"
- 56:           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
- 57:           className="group flex min-w-0 shrink items-center rounded-xl transition-all duration-300 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
- 58:           aria-label={`${SITE.shortName} — Beranda`}
- 59:         >
- 60:           <motion.img
- 61:             src="/logo/transparent-color.png"
- 62:             alt="FAST Logo"
- 63:             whileHover={{ scale: 1.05 }}
- 64:             transition={{ type: "spring", stiffness: 400, damping: 22 }}
- 65:             className="h-11 w-auto object-contain"
- 66:           />
- 67:         </Link>
- 68: 
- 69:         {/* Desktop Nav */}
- 70:         <nav className="hidden md:block" aria-label="Navigasi utama">
- 71:           <ul className="flex items-center gap-1 rounded-2xl border border-white/5 bg-surface/40 px-2 py-1.5 backdrop-blur-md shadow-sm">
- 72:             {NAV_LINKS.map((link) => (
- 73:               <li key={link.href}>
- 74:                 <NavLink
- 75:                   to={link.href}
- 76:                   end={link.href === "/"}
- 77:                   onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
- 78:                   className="relative block rounded-xl px-4 py-2 text-sm font-bold tracking-wide transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
- 79:                 >
- 80:                   {({ isActive }) => (
- 81:                     <>
- 82:                       {/* Active pill — layoutId for smooth cross-link morphing */}
- 83:                       {isActive && (
- 84:                         <motion.span
- 85:                           layoutId="desktop-nav-pill"
- 86:                           className="absolute inset-0 z-0 rounded-xl bg-white/10 border border-white/10"
- 87:                           transition={{ type: "spring", stiffness: 380, damping: 32 }}
- 88:                           aria-hidden
- 89:                         />
- 90:                       )}
- 91:                       <span
- 92:                         className={`relative z-10 transition-colors duration-200 ${isActive ? "text-white" : "text-foreground-muted hover:text-white"
- 93:                           }`}
- 94:                       >
- 95:                         {link.label}
- 96:                       </span>
- 97:                     </>
- 98:                   )}
- 99:                 </NavLink>
-100:               </li>
-101:             ))}
-102:           </ul>
-103:         </nav>
-104: 
-105:         {/* Mobile toggle */}
-106:         <motion.button
-107:           type="button"
-108:           whileTap={{ scale: 0.92 }}
-109:           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-110:           className="relative inline-flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-surface/50 text-white transition-colors duration-200 hover:bg-surface hover:border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:hidden"
-111:           aria-expanded={mobileOpen}
-112:           aria-controls="mobile-nav"
-113:           aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
-114:           onClick={() => setMobileOpen((o) => !o)}
-115:         >
-116:           <AnimatePresence mode="wait" initial={false}>
-117:             <motion.span
-118:               key={mobileOpen ? "close" : "open"}
-119:               initial={{ opacity: 0, rotate: -90, scale: 0.7 }}
-120:               animate={{ opacity: 1, rotate: 0, scale: 1 }}
-121:               exit={{ opacity: 0, rotate: 90, scale: 0.7 }}
-122:               transition={{ duration: 0.18 }}
-123:               className="flex items-center justify-center"
-124:             >
-125:               {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-126:             </motion.span>
-127:           </AnimatePresence>
-128:         </motion.button>
-129:       </div>
-130: 
-131:       {/* Mobile drawer */}
-132:       <AnimatePresence>
-133:         {mobileOpen && (
-134:           <>
-135:             {/* Backdrop */}
-136:             <motion.div
-137:               initial={{ opacity: 0 }}
-138:               animate={{ opacity: 1 }}
-139:               exit={{ opacity: 0 }}
-140:               transition={{ duration: 0.25 }}
-141:               className="fixed inset-0 top-[88px] z-40 bg-background/80 backdrop-blur-lg md:hidden"
-142:               aria-hidden
-143:               onClick={() => setMobileOpen(false)}
-144:             />
-145: 
-146:             {/* Drawer panel */}
-147:             <motion.nav
-148:               id="mobile-nav"
-149:               initial={{ opacity: 0, y: -16, scale: 0.97 }}
-150:               animate={{ opacity: 1, y: 0, scale: 1 }}
-151:               exit={{ opacity: 0, y: -12, scale: 0.97 }}
-152:               transition={{ duration: 0.28, ease: [0.21, 0.47, 0.32, 0.98] }}
-153:               className="absolute inset-x-4 top-[88px] z-50 origin-top rounded-3xl border border-white/10 bg-surface/95 p-3 shadow-2xl backdrop-blur-xl md:hidden"
-154:               aria-label="Navigasi mobile"
-155:             >
-156:               <ul className="flex flex-col gap-1.5">
-157:                 {NAV_LINKS.map((link, i) => (
-158:                   <motion.li
-159:                     key={link.href}
-160:                     initial={{ opacity: 0, x: -12 }}
-161:                     animate={{ opacity: 1, x: 0 }}
-162:                     transition={{ delay: 0.06 + i * 0.05, duration: 0.28 }}
-163:                   >
-164:                     <NavLink
-165:                       to={link.href}
-166:                       end={link.href === "/"}
-167:                       onClick={() => {
-168:                         setMobileOpen(false);
-169:                         window.scrollTo({ top: 0, behavior: "smooth" });
-170:                       }}
-171:                       className={({ isActive }) =>
-172:                         `flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive
-173:                           ? "bg-accent/10 text-accent border border-accent/20"
-174:                           : "bg-transparent text-foreground-muted border border-transparent hover:bg-surface hover:text-white hover:border-white/8"
-175:                         }`
-176:                       }
-177:                     >
-178:                       <span
-179:                         className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-background/60 text-base border border-white/5"
-180:                         aria-hidden
-181:                       >
-182:                         {NAV_ICONS[link.href]}
-183:                       </span>
-184:                       {link.label}
-185:                     </NavLink>
-186:                   </motion.li>
-187:                 ))}
-188:               </ul>
-189: 
-190:               {/* Bottom contact hint */}
-191:               <div className="mt-3 border-t border-white/8 pt-3 px-1">
-192:                 <a
-193:                   href="https://wa.me/6281290003278"
-194:                   target="_blank"
-195:                   rel="noopener noreferrer"
-196:                   className="flex items-center gap-3 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 px-4 py-3 text-sm font-bold text-[#25D366] transition-colors duration-200 hover:bg-[#25D366]/15"
-197:                   onClick={() => setMobileOpen(false)}
-198:                 >
-199:                   <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#25D366]/15 text-base" aria-hidden>
-200:                     💬
-201:                   </span>
-202:                   Hubungi via WhatsApp
-203:                 </a>
-204:               </div>
-205:             </motion.nav>
-206:           </>
-207:         )}
-208:       </AnimatePresence>
-209:     </header>
-210:   );
-211: };
-</file>
-
 <file path="src/components/sections/about/AboutIntroSection.tsx">
  1: import { ShieldCheck, Award, Users } from "lucide-react";
  2: import { motion } from "framer-motion";
@@ -5447,6 +5680,247 @@ ingat kode web lfk ini:
 354:     </section>
 355:   );
 356: };
+</file>
+
+<file path="src/components/layout/Header.tsx">
+  1: import { useEffect, useState } from "react";
+  2: import { Link, NavLink, useLocation } from "react-router-dom";
+  3: import { Menu, X } from "lucide-react";
+  4: import { AnimatePresence, motion } from "framer-motion";
+  5: import { HEADER_NAV } from "../../content";
+  6: import { SITE } from "../../config/site";
+  7: 
+  8: const NAV_LINKS = HEADER_NAV;
+  9: 
+ 10: const NAV_ICONS: Record<string, string> = {
+ 11:   "/": "🏠",
+ 12:   "/about": "🏢",
+ 13:   "/lithium-fire-safety": "🔥",
+ 14:   "/contact": "📞",
+ 15: };
+ 16: 
+ 17: export const Header = () => {
+ 18:   const [mobileOpen, setMobileOpen] = useState(false);
+ 19:   const [scrolled, setScrolled] = useState(false);
+ 20:   const location = useLocation();
+ 21: 
+ 22:   // Cek apakah user sedang berada di halaman eksklusif Arkiv
+ 23:   const isArkivPage = location.pathname === "/lfk-x-arkiv";
+ 24: 
+ 25:   // Scroll for header bg
+ 26:   useEffect(() => {
+ 27:     const handleScroll = () => {
+ 28:       setScrolled(window.scrollY > 20);
+ 29:     };
+ 30:     window.addEventListener("scroll", handleScroll, { passive: true });
+ 31:     return () => window.removeEventListener("scroll", handleScroll);
+ 32:   }, []);
+ 33: 
+ 34:   // Escape key closes mobile menu
+ 35:   useEffect(() => {
+ 36:     if (!mobileOpen) return;
+ 37:     const handleKeyDown = (e: KeyboardEvent) => {
+ 38:       if (e.key === "Escape") setMobileOpen(false);
+ 39:     };
+ 40:     document.addEventListener("keydown", handleKeyDown);
+ 41:     return () => document.removeEventListener("keydown", handleKeyDown);
+ 42:   }, [mobileOpen]);
+ 43: 
+ 44:   // Lock scroll when mobile open
+ 45:   useEffect(() => {
+ 46:     document.body.style.overflow = mobileOpen ? "hidden" : "";
+ 47:     return () => {
+ 48:       document.body.style.overflow = "";
+ 49:     };
+ 50:   }, [mobileOpen]);
+ 51: 
+ 52:   return (
+ 53:     <header
+ 54:       className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-in-out ${scrolled || mobileOpen
+ 55:           ? isArkivPage
+ 56:             ? "bg-white/95 backdrop-blur-xl border-b border-slate-200 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+ 57:             : "bg-surface/80 backdrop-blur-xl border-b border-white/10 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+ 58:           : isArkivPage
+ 59:             ? "bg-white border-b border-transparent py-6" // <--- Ubah di sini (langsung putih solid di awal)
+ 60:             : "bg-gradient-to-b from-background/80 to-transparent py-6 border-b border-transparent"
+ 61:         }`}
+ 62:     >
+ 63:       <div className="container mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 md:px-12">
+ 64:         {/* Logo */}
+ 65:         <Link
+ 66:           to="/"
+ 67:           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+ 68:           className="group relative z-10 flex min-w-0 shrink items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+ 69:           aria-label={`${SITE.shortName} — Beranda`}
+ 70:         >
+ 71:           <img
+ 72:             src="/logo/transparent-color.png"
+ 73:             alt="FAST Logo"
+ 74:             className="h-10 w-auto object-contain transition-transform duration-500 will-change-transform group-hover:scale-105"
+ 75:           />
+ 76:         </Link>
+ 77: 
+ 78:         {/* Desktop Nav - Gaya baru (tanpa pill, ada underline hover) */}
+ 79:         <nav className="hidden md:flex items-center space-x-8" aria-label="Navigasi utama">
+ 80:           {NAV_LINKS.map((link) => (
+ 81:             <NavLink
+ 82:               key={link.href}
+ 83:               to={link.href}
+ 84:               end={link.href === "/"}
+ 85:               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+ 86:               className={({ isActive }) =>
+ 87:                 `group relative py-2 text-sm font-semibold transition-colors duration-300 ${isArkivPage
+ 88:                   ? isActive
+ 89:                     ? "text-slate-900"
+ 90:                     : "text-slate-600 hover:text-slate-900"
+ 91:                   : isActive
+ 92:                     ? "text-white"
+ 93:                     : "text-foreground/80 hover:text-white"
+ 94:                 }`
+ 95:               }
+ 96:             >
+ 97:               {({ isActive }) => (
+ 98:                 <>
+ 99:                   {link.label}
+100:                   <span
+101:                     className={`absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-300 ease-out ${isActive ? "w-full" : "w-0 group-hover:w-full"
+102:                       } ${isArkivPage ? "bg-slate-900" : "bg-accent"}`}
+103:                   />
+104:                 </>
+105:               )}
+106:             </NavLink>
+107:           ))}
+108:         </nav>
+109: 
+110:         {/* Mobile toggle */}
+111:         <button
+112:           type="button"
+113:           className={`relative z-10 inline-flex rounded-md p-1 transition-colors focus:outline-none md:hidden ${isArkivPage ? "text-slate-800 hover:text-accent" : "text-foreground hover:text-accent"
+114:             }`}
+115:           aria-expanded={mobileOpen}
+116:           aria-controls="mobile-nav"
+117:           aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
+118:           onClick={() => setMobileOpen((o) => !o)}
+119:         >
+120:           <AnimatePresence mode="wait" initial={false}>
+121:             <motion.span
+122:               key={mobileOpen ? "close" : "open"}
+123:               initial={{ opacity: 0, rotate: -90, scale: 0.7 }}
+124:               animate={{ opacity: 1, rotate: 0, scale: 1 }}
+125:               exit={{ opacity: 0, rotate: 90, scale: 0.7 }}
+126:               transition={{ duration: 0.18 }}
+127:               className="flex items-center justify-center"
+128:             >
+129:               {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+130:             </motion.span>
+131:           </AnimatePresence>
+132:         </button>
+133:       </div>
+134: 
+135:       {/* Mobile drawer */}
+136:       <AnimatePresence>
+137:         {mobileOpen && (
+138:           <>
+139:             {/* Backdrop */}
+140:             <motion.div
+141:               initial={{ opacity: 0 }}
+142:               animate={{ opacity: 1 }}
+143:               exit={{ opacity: 0 }}
+144:               transition={{ duration: 0.25 }}
+145:               className={`fixed inset-0 top-[72px] z-40 backdrop-blur-lg md:hidden ${isArkivPage ? "bg-white/80" : "bg-background/80"
+146:                 }`}
+147:               aria-hidden
+148:               onClick={() => setMobileOpen(false)}
+149:             />
+150: 
+151:             {/* Drawer panel */}
+152:             <motion.nav
+153:               id="mobile-nav"
+154:               initial={{ opacity: 0, y: -16, scale: 0.97 }}
+155:               animate={{ opacity: 1, y: 0, scale: 1 }}
+156:               exit={{ opacity: 0, y: -12, scale: 0.97 }}
+157:               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+158:               className={`absolute inset-x-4 top-[88px] z-50 origin-top overflow-hidden rounded-3xl border p-3 shadow-2xl backdrop-blur-xl md:hidden ${isArkivPage ? "border-slate-200 bg-white/95" : "border-white/10 bg-surface/95"
+159:                 }`}
+160:               aria-label="Navigasi mobile"
+161:             >
+162:               <ul className="flex flex-col gap-1.5">
+163:                 {NAV_LINKS.map((link, i) => (
+164:                   <motion.li
+165:                     key={link.href}
+166:                     initial={{ opacity: 0, x: -12 }}
+167:                     animate={{ opacity: 1, x: 0 }}
+168:                     transition={{ delay: 0.06 + i * 0.05, duration: 0.28 }}
+169:                   >
+170:                     <NavLink
+171:                       to={link.href}
+172:                       end={link.href === "/"}
+173:                       onClick={() => {
+174:                         setMobileOpen(false);
+175:                         window.scrollTo({ top: 0, behavior: "smooth" });
+176:                       }}
+177:                       className={({ isActive }) =>
+178:                         `flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive
+179:                           ? isArkivPage
+180:                             ? "border border-slate-900 bg-slate-900 text-white"
+181:                             : "border border-accent/20 bg-accent/10 text-accent"
+182:                           : isArkivPage
+183:                             ? "border border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+184:                             : "border border-transparent bg-transparent text-foreground-muted hover:border-white/8 hover:bg-surface hover:text-white"
+185:                         }`
+186:                       }
+187:                     >
+188:                       {({ isActive }) => (
+189:                         <>
+190:                           <span
+191:                             className={`flex size-9 shrink-0 items-center justify-center rounded-xl border text-base transition-colors ${isActive
+192:                               ? isArkivPage
+193:                                 ? "border-transparent bg-white/20"
+194:                                 : "border-white/5 bg-background/60"
+195:                               : isArkivPage
+196:                                 ? "border-slate-300/50 bg-slate-200/50"
+197:                                 : "border-white/5 bg-background/60"
+198:                               }`}
+199:                             aria-hidden
+200:                           >
+201:                             {NAV_ICONS[link.href]}
+202:                           </span>
+203:                           {link.label}
+204:                         </>
+205:                       )}
+206:                     </NavLink>
+207:                   </motion.li>
+208:                 ))}
+209:               </ul>
+210: 
+211:               {/* Bottom contact hint */}
+212:               <div
+213:                 className={`mx-1 mt-3 border-t pt-3 ${isArkivPage ? "border-slate-200" : "border-white/8"
+214:                   }`}
+215:               >
+216:                 <a
+217:                   href="https://wa.me/6281290003278"
+218:                   target="_blank"
+219:                   rel="noopener noreferrer"
+220:                   className="flex items-center gap-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/10 px-4 py-3 text-sm font-bold text-[#25D366] transition-colors duration-200 hover:bg-[#25D366]/15"
+221:                   onClick={() => setMobileOpen(false)}
+222:                 >
+223:                   <span
+224:                     className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#25D366]/15 text-base"
+225:                     aria-hidden
+226:                   >
+227:                     💬
+228:                   </span>
+229:                   Hubungi via WhatsApp
+230:                 </a>
+231:               </div>
+232:             </motion.nav>
+233:           </>
+234:         )}
+235:       </AnimatePresence>
+236:     </header>
+237:   );
+238: };
 </file>
 
 </files>
