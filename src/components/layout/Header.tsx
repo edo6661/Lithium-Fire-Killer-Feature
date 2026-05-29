@@ -70,9 +70,9 @@ export const Header = () => {
           aria-label={`${SITE.shortName} — Beranda`}
         >
           <img
-            src="/logo/transparent-color.png"
+            src="/logo/transparent-color-2.png"
             alt="FAST Logo"
-            className="h-10 w-auto object-contain transition-transform duration-500 will-change-transform group-hover:scale-105"
+            className="h-12 w-auto object-contain transition-transform duration-500 will-change-transform group-hover:scale-105"
           />
         </Link>
 

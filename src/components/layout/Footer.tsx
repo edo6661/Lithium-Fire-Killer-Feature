@@ -79,9 +79,9 @@ export const Footer = () => {
               className="inline-flex items-center rounded-xl transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
             >
               <img
-                src="/logo/transparent-color.png"
+                src="/logo/transparent-color-2.png"
                 alt="FAST — PT. Famindo Alfa Spektrum Teknologi"
-                className="h-10 w-auto object-contain brightness-0 invert"
+                className="h-10 w-auto object-contain"
               />
             </Link>
 
