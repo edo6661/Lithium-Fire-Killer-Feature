@@ -8,7 +8,7 @@ export const LFK_X_ARKIV_CONTENT = {
   visionary: {
     heading: "THE CANVAS OF A\nVISIONARY: ARKIV.",
     description:
-      "...Born in Bandung, Indonesia... bridges lowbrow art, street culture, and high-end galleries... Arkiv translates critical spatial awareness into avant-garde masterpieces.",
+      "Born in Bandung, Indonesia, bridges lowbrow art, street culture, and high-end galleries... Arkiv translates critical spatial awareness into avant-garde masterpieces.",
     quote: '"Art shouldn\'t just provoke thought—it should protect life."',
     quoteAuthor: "— Arkiv",
   },
