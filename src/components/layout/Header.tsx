@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { HEADER_NAV } from "../../content";
@@ -17,6 +17,10 @@ const NAV_ICONS: Record<string, string> = {
 export const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  // Cek apakah user sedang berada di halaman eksklusif Arkiv
+  const isArkivPage = location.pathname === "/lfk-x-arkiv";
 
   // Scroll for header bg
   useEffect(() => {
@@ -43,9 +47,13 @@ export const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-out ${scrolled
-        ? "border-b border-white/5 bg-background/75 shadow-[0_4px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl py-1"
-        : "border-b border-transparent bg-gradient-to-b from-background/80 to-transparent py-3"
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-in-out ${scrolled || mobileOpen
+          ? isArkivPage
+            ? "border-b border-slate-300/40 bg-white/80 shadow-md backdrop-blur-xl py-2"
+            : "border-b border-white/10 bg-surface/80 shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl py-2"
+          : isArkivPage
+            ? "border-b border-transparent bg-gradient-to-b from-[#eaeff5]/95 to-transparent py-4"
+            : "border-b border-transparent bg-gradient-to-b from-background/80 to-transparent py-4"
         }`}
     >
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -68,7 +76,8 @@ export const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:block" aria-label="Navigasi utama">
-          <ul className="flex items-center gap-1 rounded-2xl border border-white/5 bg-surface/40 px-2 py-1.5 backdrop-blur-md shadow-sm">
+          <ul className={`flex items-center gap-1 rounded-2xl border px-2 py-1.5 backdrop-blur-md shadow-sm transition-colors duration-300 ${isArkivPage ? "border-slate-300/60 bg-white/50" : "border-white/5 bg-surface/40"
+            }`}>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <NavLink
@@ -79,17 +88,20 @@ export const Header = () => {
                 >
                   {({ isActive }) => (
                     <>
-                      {/* Active pill — layoutId for smooth cross-link morphing */}
+                      {/* Active pill */}
                       {isActive && (
                         <motion.span
                           layoutId="desktop-nav-pill"
-                          className="absolute inset-0 z-0 rounded-xl bg-white/10 border border-white/10"
+                          className={`absolute inset-0 z-0 rounded-xl border ${isArkivPage ? "bg-slate-900 border-slate-900" : "bg-white/10 border-white/10"
+                            }`}
                           transition={{ type: "spring", stiffness: 380, damping: 32 }}
                           aria-hidden
                         />
                       )}
                       <span
-                        className={`relative z-10 transition-colors duration-200 ${isActive ? "text-white" : "text-foreground-muted hover:text-white"
+                        className={`relative z-10 transition-colors duration-200 ${isActive
+                          ? "text-white"
+                          : isArkivPage ? "text-slate-600 hover:text-slate-900" : "text-foreground-muted hover:text-white"
                           }`}
                       >
                         {link.label}
@@ -107,7 +119,10 @@ export const Header = () => {
           type="button"
           whileTap={{ scale: 0.92 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="relative inline-flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-surface/50 text-white transition-colors duration-200 hover:bg-surface hover:border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:hidden"
+          className={`relative inline-flex size-12 items-center justify-center rounded-2xl border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:hidden ${isArkivPage
+            ? "border-slate-300 bg-white/50 text-slate-800 hover:bg-white hover:border-slate-400"
+            : "border-white/10 bg-surface/50 text-white hover:bg-surface hover:border-white/20"
+            }`}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
           aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
@@ -138,7 +153,8 @@ export const Header = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 top-[88px] z-40 bg-background/80 backdrop-blur-lg md:hidden"
+              className={`fixed inset-0 top-[88px] z-40 backdrop-blur-lg md:hidden ${isArkivPage ? "bg-white/80" : "bg-background/80"
+                }`}
               aria-hidden
               onClick={() => setMobileOpen(false)}
             />
@@ -150,7 +166,8 @@ export const Header = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.97 }}
               transition={{ duration: 0.28, ease: [0.21, 0.47, 0.32, 0.98] }}
-              className="absolute inset-x-4 top-[88px] z-50 origin-top rounded-3xl border border-white/10 bg-surface/95 p-3 shadow-2xl backdrop-blur-xl md:hidden"
+              className={`absolute inset-x-4 top-[88px] z-50 origin-top rounded-3xl border p-3 shadow-2xl backdrop-blur-xl md:hidden ${isArkivPage ? "border-slate-200 bg-white/95" : "border-white/10 bg-surface/95"
+                }`}
               aria-label="Navigasi mobile"
             >
               <ul className="flex flex-col gap-1.5">
@@ -170,25 +187,32 @@ export const Header = () => {
                       }}
                       className={({ isActive }) =>
                         `flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive
-                          ? "bg-accent/10 text-accent border border-accent/20"
-                          : "bg-transparent text-foreground-muted border border-transparent hover:bg-surface hover:text-white hover:border-white/8"
+                          ? isArkivPage ? "bg-slate-900 text-white border border-slate-900" : "bg-accent/10 text-accent border border-accent/20"
+                          : isArkivPage ? "bg-transparent text-slate-600 border border-transparent hover:bg-slate-100 hover:text-slate-900" : "bg-transparent text-foreground-muted border border-transparent hover:bg-surface hover:text-white hover:border-white/8"
                         }`
                       }
                     >
-                      <span
-                        className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-background/60 text-base border border-white/5"
-                        aria-hidden
-                      >
-                        {NAV_ICONS[link.href]}
-                      </span>
-                      {link.label}
+                      {({ isActive }) => (
+                        <>
+                          <span
+                            className={`flex size-9 shrink-0 items-center justify-center rounded-xl text-base border transition-colors ${isActive
+                              ? isArkivPage ? "bg-white/20 border-transparent" : "bg-background/60 border-white/5"
+                              : isArkivPage ? "bg-slate-200/50 border-slate-300/50" : "bg-background/60 border-white/5"
+                              }`}
+                            aria-hidden
+                          >
+                            {NAV_ICONS[link.href]}
+                          </span>
+                          {link.label}
+                        </>
+                      )}
                     </NavLink>
                   </motion.li>
                 ))}
               </ul>
 
               {/* Bottom contact hint */}
-              <div className="mt-3 border-t border-white/8 pt-3 px-1">
+              <div className={`mt-3 border-t pt-3 px-1 ${isArkivPage ? "border-slate-200" : "border-white/8"}`}>
                 <a
                   href="https://wa.me/6281290003278"
                   target="_blank"

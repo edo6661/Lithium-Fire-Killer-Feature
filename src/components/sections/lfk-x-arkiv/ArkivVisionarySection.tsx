@@ -1,55 +1,71 @@
-import { motion } from "framer-motion";
 import { LFK_X_ARKIV_CONTENT } from "../../../content";
 import { AnimateIn } from "../../ui/AnimateIn";
-import { ShieldCheck, Globe, Gavel } from "lucide-react";
+import { ShieldCheck, Globe, Gavel, Sparkles } from "lucide-react";
 
 const { visionary } = LFK_X_ARKIV_CONTENT;
 
 export const ArkivVisionarySection = () => {
   return (
-    <section className="relative z-10 mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="rounded-[2rem] border border-white/60 bg-white/40 p-6 shadow-2xl backdrop-blur-xl sm:p-10 lg:p-12">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
+    <section className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <div className="grid items-center gap-16 lg:grid-cols-12">
+        {/* Kolom Gambar */}
+        <div className="lg:col-span-5 relative">
           <AnimateIn direction="right">
-            {/* Placeholder untuk foto Arkiv */}
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-300 shadow-inner">
+            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2.5rem] bg-slate-200 shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/20 to-transparent z-10" />
               <img
                 src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop"
                 alt="Arkiv Visionary"
-                className="size-full object-cover grayscale-[30%]"
+                className="size-full object-cover grayscale-[40%] transition-transform duration-700 hover:scale-105"
               />
+              {/* Badge Dekoratif di gambar */}
+              <div className="absolute -bottom-6 -right-6 size-32 rounded-full border border-white/40 bg-white/20 backdrop-blur-xl z-20 flex items-center justify-center shadow-xl">
+                <Sparkles className="size-10 text-slate-800" />
+              </div>
             </div>
           </AnimateIn>
+        </div>
 
-          <AnimateIn direction="left" delay={0.2} className="space-y-6">
-            <h2 className="whitespace-pre-line text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-              {visionary.heading}
-            </h2>
-            <p className="text-sm font-medium leading-relaxed text-slate-700 sm:text-base">
+        {/* Kolom Teks Konten */}
+        <div className="lg:col-span-7">
+          <AnimateIn direction="left" delay={0.2} className="space-y-10">
+            <div>
+              <h2 className="whitespace-pre-line text-4xl font-black tracking-tighter text-slate-900 sm:text-5xl lg:text-6xl leading-[1.1]">
+                {visionary.heading}
+              </h2>
+              <div className="mt-8 h-1 w-24 bg-slate-900" />
+            </div>
+
+            <p className="text-base font-medium leading-relaxed text-slate-700 sm:text-lg max-w-2xl">
               {visionary.description}
             </p>
 
-            {/* Badges */}
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              <div className="flex flex-col items-center justify-center rounded-xl border border-white/50 bg-white/30 p-3 text-center shadow-sm">
-                <ShieldCheck className="mb-2 size-6 text-slate-800" />
-                <p className="text-[10px] font-extrabold uppercase text-slate-900 leading-tight">Partnership</p>
-              </div>
-              <div className="flex flex-col items-center justify-center rounded-xl border border-white/50 bg-white/30 p-3 text-center shadow-sm">
-                <Globe className="mb-2 size-6 text-slate-800" />
-                <p className="text-[10px] font-extrabold uppercase text-slate-900 leading-tight">Global Brand Projects</p>
-              </div>
-              <div className="flex flex-col items-center justify-center rounded-xl border border-white/50 bg-white/30 p-3 text-center shadow-sm">
-                <Gavel className="mb-2 size-6 text-slate-800" />
-                <p className="text-[10px] font-extrabold uppercase text-slate-900 leading-tight">Global Art Market</p>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-y border-slate-300/50 py-8">
+              {[
+                { icon: ShieldCheck, label: "Partnership", desc: "Exclusive Collab" },
+                { icon: Globe, label: "Global Brand", desc: "Worldwide Projects" },
+                { icon: Gavel, label: "Art Market", desc: "High-end Galleries" },
+              ].map((item, idx) => (
+                <div key={idx} className="flex flex-col gap-3">
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
+                    <item.icon className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-widest text-slate-900">{item.label}</p>
+                    <p className="text-xs font-semibold text-slate-500">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="border-l-2 border-slate-400 pl-4 pt-2">
-              <p className="text-lg font-bold italic text-slate-800">
-                {visionary.quote}
+            <div className="relative pl-8 pt-4">
+              <span className="absolute left-0 top-0 text-6xl text-slate-300 font-serif leading-none">"</span>
+              <p className="text-xl font-bold italic leading-relaxed text-slate-800 relative z-10">
+                {visionary.quote.replace(/"/g, '')}
               </p>
-              <p className="mt-1 text-sm font-bold text-slate-500">{visionary.quoteAuthor}</p>
+              <p className="mt-4 text-sm font-extrabold tracking-widest text-slate-500 uppercase">
+                {visionary.quoteAuthor}
+              </p>
             </div>
           </AnimateIn>
         </div>

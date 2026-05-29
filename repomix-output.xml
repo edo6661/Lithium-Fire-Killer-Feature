@@ -1,3 +1,5 @@
+ingat kode web lfk ini:
+
 <file path="src/components/sections/lfk-x-arkiv/ArkivCtaSection.tsx">
  1: import { motion } from "framer-motion";
  2: import { LFK_X_ARKIV_CONTENT } from "../../../content";

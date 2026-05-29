@@ -52,8 +52,8 @@ export const LfkXArkivPage = () => {
   const seo = PAGE_SEO.lfkXArkiv;
 
   return (
-    // Override base background to silver/light theme specifically for this page
-    <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900">
+    // Tambahkan -mt-[72px] pt-[72px] agar background menutupi celah MainLayout
+    <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900 -mt-[72px] pt-[72px]">
       <PageSeo
         title={seo.title}
         description={seo.description}
