@@ -12,47 +12,30 @@ const HIGHLIGHTS = [
 ];
 
 export const AboutIntroSection = () => {
+
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-br from-brand-navy via-[#002fa8] to-[#001f7a] py-20 text-white sm:py-24 lg:py-32"
+      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-32"
       aria-labelledby="about-intro-heading"
     >
-      {/* Ambient Animated Decorations */}
       <motion.div
-        animate={{ scale: [1, 1.1, 1], opacity: [0.12, 0.16, 0.12] }}
+        animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.08, 0.05] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="pointer-events-none absolute -right-24 -top-24 size-[480px] rounded-full bg-brand-primary blur-[80px]"
-        aria-hidden
-      />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="pointer-events-none absolute -bottom-24 left-0 size-80 rounded-full bg-brand-accent blur-[80px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
-          backgroundSize: "72px 72px",
-        }}
+        className="pointer-events-none absolute -right-24 -top-24 size-[480px] rounded-full bg-accent blur-[100px]"
         aria-hidden
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Label */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mb-7 inline-flex items-center gap-2 rounded-full border border-brand-primary/25 bg-brand-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-primary backdrop-blur-sm"
+          className="mb-7 inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-accent backdrop-blur-sm"
         >
-          <span className="size-1.5 rounded-full bg-brand-primary animate-pulse" aria-hidden />
           PT. Famindo Alfa Spektrum Teknologi
         </motion.div>
 
         <div className="grid items-start gap-14 lg:grid-cols-2 lg:gap-20">
-          {/* Left: Text */}
           <motion.article
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -62,13 +45,13 @@ export const AboutIntroSection = () => {
               id="about-intro-heading"
               className="text-3xl font-extrabold leading-[1.12] tracking-tight sm:text-4xl lg:text-5xl"
             >
-              {intro.heading}
+              Tentang Kami
             </h1>
             <div className="mt-8 space-y-5">
               {intro.paragraphs.map((paragraph) => (
                 <p
                   key={paragraph.slice(0, 48)}
-                  className="text-base leading-relaxed text-white/70 sm:text-lg"
+                  className="text-base leading-relaxed text-foreground-muted sm:text-lg"
                 >
                   {paragraph}
                 </p>
@@ -76,10 +59,9 @@ export const AboutIntroSection = () => {
             </div>
           </motion.article>
 
-          {/* Right: Highlight cards & Image (Staggered) */}
           <StaggerChildren className="flex flex-col gap-3.5" staggerDelay={0.15}>
             <StaggerItem>
-              <figure className="mb-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl ring-1 ring-white/10">
+              <figure className="mb-2 overflow-hidden rounded-3xl border border-white/10 bg-surface/50 shadow-2xl">
                 <img
                   src="/about-us-people-from-lfk.avif"
                   alt="Tim LFK Hartindo"
@@ -91,8 +73,8 @@ export const AboutIntroSection = () => {
 
             {HIGHLIGHTS.map(({ Icon, label }) => (
               <StaggerItem key={label}>
-                <div className="group flex items-center gap-4 rounded-2xl border border-white/8 bg-white/5 px-6 py-5 ring-1 ring-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-primary/15 text-brand-primary ring-1 ring-brand-primary/20 transition-transform duration-300 group-hover:scale-110">
+                <div className="group flex items-center gap-4 rounded-2xl border border-white/5 bg-surface/40 px-6 py-5 ring-1 ring-white/5 backdrop-blur-md transition-all duration-300 hover:border-accent/30 hover:bg-surface/60 hover:shadow-lg">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/20 transition-transform duration-300 group-hover:scale-110">
                     <Icon className="size-6" strokeWidth={1.75} />
                   </div>
                   <p className="text-sm font-bold text-white/90 sm:text-base">{label}</p>
@@ -100,11 +82,10 @@ export const AboutIntroSection = () => {
               </StaggerItem>
             ))}
 
-            {/* Quote card */}
             <StaggerItem>
-              <div className="mt-1 rounded-2xl border border-brand-primary/20 bg-brand-primary/8 px-6 py-5 ring-1 ring-brand-primary/10 transition-colors duration-300 hover:bg-brand-primary/15">
-                <div className="mb-3 text-2xl font-serif leading-none text-brand-primary/40">"</div>
-                <p className="text-sm italic leading-relaxed text-white/70 sm:text-base">
+              <div className="mt-1 rounded-2xl border border-accent/20 bg-accent/5 px-6 py-5 ring-1 ring-accent/10 transition-colors duration-300 hover:bg-accent/10">
+                <div className="mb-3 text-2xl font-serif leading-none text-accent/40">"</div>
+                <p className="text-sm italic leading-relaxed text-foreground-muted sm:text-base">
                   APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya.
                 </p>
               </div>

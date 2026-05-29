@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { CONTACT } from "../../config/site";
 
 const WA_NUMBER = "6281290003278";
@@ -39,54 +40,78 @@ export const WhatsAppButton = () => {
       setShowTooltip(true);
       const hideTimer = setTimeout(() => setShowTooltip(false), 4000);
       return () => clearTimeout(hideTimer);
-    }, 1000);
+    }, 1200);
     return () => clearTimeout(t);
   }, [visible]);
 
-  if (!visible) return null;
-
   return (
-    <div className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3 sm:bottom-8 sm:right-8">
-      {/* Tooltip */}
-      <div
-        className={`pointer-events-none w-[220px] rounded-2xl border border-slate-100 bg-white px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.10)] transition-all duration-300 ease-out ${showTooltip ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
-          }`}
-        role="tooltip"
-        aria-hidden={!showTooltip}
-      >
-        {/* Green dot */}
-        <div className="mb-2 flex items-center gap-2">
-          <span className="size-2 rounded-full bg-[#25D366]" aria-hidden />
-          <p className="text-[11px] font-bold uppercase tracking-widest text-[#25D366]">Online</p>
-        </div>
-        <p className="text-xs font-bold text-brand-navy">Butuh bantuan?</p>
-        <p className="mt-1 text-xs font-medium leading-relaxed text-brand-navy/55">
-          Konsultasi via WhatsApp bersama tim ahli kami.
-        </p>
-        {/* Arrow tail */}
-        <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-b border-r border-slate-100 bg-white" />
-      </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.7, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.7, y: 20 }}
+          transition={{ type: "spring", stiffness: 320, damping: 24 }}
+          className="fixed bottom-6 right-5 z-50 flex flex-col items-end gap-3 sm:bottom-8 sm:right-8"
+        >
+          {/* Tooltip */}
+          <AnimatePresence>
+            {showTooltip && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                transition={{ duration: 0.22 }}
+                className="pointer-events-none w-[220px] rounded-2xl border border-white/10 bg-surface px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.25)]"
+                role="tooltip"
+              >
+                <div className="mb-2 flex items-center gap-2">
+                  {/* Pulsing online dot — CSS only */}
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-60 animate-ping" style={{ animationDuration: "2s" }} />
+                    <span className="relative inline-flex size-2 rounded-full bg-[#25D366]" />
+                  </span>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#25D366]">Online</p>
+                </div>
+                <p className="text-xs font-bold text-white">Butuh bantuan?</p>
+                <p className="mt-1 text-xs font-medium leading-relaxed text-white/50">
+                  Konsultasi via WhatsApp bersama tim ahli kami.
+                </p>
+                {/* Arrow tail */}
+                <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-b border-r border-white/10 bg-surface" />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      {/* FAB Button */}
-      <a
-        href={WA_HREF}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Hubungi FAST via WhatsApp — ${CONTACT.phone}`}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-        onFocus={() => setShowTooltip(true)}
-        onBlur={() => setShowTooltip(false)}
-        className="group relative flex size-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_24px_rgba(37,211,102,0.45)] transition-all duration-200 ease-out hover:scale-110 hover:bg-[#20bd5a] hover:shadow-[0_12px_36px_rgba(37,211,102,0.60)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 active:scale-100 sm:size-15"
-      >
-        {/* Ping ring */}
-        <span
-          className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-25"
-          style={{ animationDuration: "2.5s" }}
-          aria-hidden
-        />
-        <WhatsAppIcon />
-      </a>
-    </div >
+          {/* FAB */}
+          <motion.a
+            href={WA_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Hubungi FAST via WhatsApp — ${CONTACT.phone}`}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            onFocus={() => setShowTooltip(true)}
+            onBlur={() => setShowTooltip(false)}
+            whileHover={{ scale: 1.12, y: -3 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ type: "spring", stiffness: 380, damping: 22 }}
+            className="relative flex size-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_24px_rgba(37,211,102,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 sm:size-[60px]"
+          >
+            {/* Ping ring — CSS, not JS */}
+            <span
+              className="absolute inset-0 rounded-full bg-[#25D366] opacity-25 animate-ping"
+              style={{ animationDuration: "2.5s" }}
+              aria-hidden
+            />
+            <WhatsAppIcon />
+          </motion.a>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
+
+
+
+

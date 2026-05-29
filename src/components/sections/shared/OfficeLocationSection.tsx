@@ -19,11 +19,11 @@ export const OfficeLocationSection = ({
         <header className="max-w-2xl">
           <h2
             id={headingId}
-            className="text-2xl font-bold text-brand-navy sm:text-3xl"
+            className="text-2xl font-bold text-foreground sm:text-3xl"
           >
             Lokasi
           </h2>
-          <p className="mt-3 text-sm text-brand-navy/70 sm:text-base">
+          <p className="mt-3 text-sm text-foreground/70 sm:text-base">
             Kunjungi kantor kami di Jakarta Pusat.
           </p>
         </header>
@@ -37,10 +37,10 @@ export const OfficeLocationSection = ({
                   aria-hidden
                 />
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                  <p className="text-sm font-semibold uppercase tracking-wide text-foreground/60">
                     Alamat
                   </p>
-                  <p className="mt-2 text-base leading-relaxed text-brand-navy sm:text-lg">
+                  <p className="mt-2 text-base leading-relaxed text-foreground sm:text-lg">
                     {OFFICE.address}
                   </p>
                 </div>
@@ -51,10 +51,10 @@ export const OfficeLocationSection = ({
                   aria-hidden
                 />
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-wide text-brand-navy/60">
+                  <p className="text-sm font-semibold uppercase tracking-wide text-foreground/60">
                     Operasional
                   </p>
-                  <p className="mt-2 text-base text-brand-navy sm:text-lg">
+                  <p className="mt-2 text-base text-foreground sm:text-lg">
                     {OFFICE.hours}
                   </p>
                 </div>

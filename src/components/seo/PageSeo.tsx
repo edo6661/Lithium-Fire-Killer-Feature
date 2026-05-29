@@ -12,10 +12,16 @@ export const PageSeo = ({ title, description, path }: PageSeoProps) => {
 
   return (
     <Helmet>
+      {/* Core */}
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalUrl} />
 
+      {/* Theme color — browser tab accent on mobile */}
+      <meta name="theme-color" content="#000000" />
+      <meta name="color-scheme" content="dark" />
+
+      {/* Open Graph */}
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content={DEFAULT_SEO.siteName} />
       <meta property="og:url" content={canonicalUrl} />
@@ -26,6 +32,7 @@ export const PageSeo = ({ title, description, path }: PageSeoProps) => {
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content="id_ID" />
 
+      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />

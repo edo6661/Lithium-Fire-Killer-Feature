@@ -13,25 +13,35 @@ const CATEGORY_ICONS: Record<ProtectionCategory["id"], LucideIcon> = {
   "mining-safety": HardHat,
 };
 
-const CATEGORY_COLORS: Record<ProtectionCategory["id"], { icon: string; tab: string }> = {
+const CATEGORY_COLORS: Record<ProtectionCategory["id"], {
+  icon: string;
+  tabActive: string;
+  tabInactive: string;
+  panelAccent: string;
+}> = {
   "ev-safety": {
-    icon: "bg-brand-primary/12 text-brand-primary ring-brand-primary/15",
-    tab: "bg-brand-primary text-white shadow-md shadow-brand-primary/25",
+    icon: "bg-accent/10 text-accent ring-accent/20",
+    tabActive: "bg-accent text-white shadow-[0_4px_16px_rgba(56,152,212,0.35)] border-accent",
+    tabInactive: "bg-surface/50 border-white/8 text-foreground-muted hover:bg-surface hover:text-white hover:border-white/15",
+    panelAccent: "from-accent/10",
   },
   "business-safety": {
-    icon: "bg-brand-accent/12 text-brand-accent ring-brand-accent/15",
-    tab: "bg-brand-primary text-white shadow-md shadow-brand-primary/25",
+    icon: "bg-accent/10 text-accent ring-accent/20",
+    tabActive: "bg-accent text-white shadow-[0_4px_16px_rgba(56,152,212,0.35)] border-accent",
+    tabInactive: "bg-surface/50 border-white/8 text-foreground-muted hover:bg-surface hover:text-white hover:border-white/15",
+    panelAccent: "from-accent/10",
   },
   "mining-safety": {
-    icon: "bg-amber-500/12 text-amber-400 ring-amber-500/15",
-    tab: "bg-brand-primary text-white shadow-md shadow-brand-primary/25",
+    icon: "bg-accent/10 text-accent ring-accent/20",
+    tabActive: "bg-accent text-white shadow-[0_4px_16px_rgba(56,152,212,0.35)] border-accent",
+    tabInactive: "bg-surface/50 border-white/8 text-foreground-muted hover:bg-surface hover:text-white hover:border-white/15",
+    panelAccent: "from-accent/10",
   },
 };
 
 const { protection } = LITHIUM_FIRE_SAFETY_CONTENT;
 const CATEGORIES = protection.categories;
 
-// Mapping fungsi untuk mencocokkan nama sektor di CONTENT.md dengan letak avif
 const getSectorImage = (sector: string) => {
   const map: Record<string, string> = {
     "EV Charging Station": "/protection/business-safety/ev-charging-station.avif",
@@ -49,110 +59,117 @@ const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
   const colors = CATEGORY_COLORS[category.id];
 
   return (
-    <article className="rounded-2xl border border-slate-100 bg-white p-7 shadow-[0_8px_40px_rgba(0,43,150,0.05)] sm:p-8 lg:p-10">
-      <div className="flex items-start gap-4 border-b border-slate-100 pb-6">
-        <div
-          className={`inline-flex size-13 shrink-0 items-center justify-center rounded-xl ring-1 ${colors.icon}`}
-          aria-hidden
-        >
-          <Icon className="size-6 stroke-[1.75]" />
+    <article className="relative overflow-hidden rounded-3xl border border-white/10 bg-surface/50 backdrop-blur-md p-7 shadow-2xl sm:p-8 lg:p-10">
+      {/* Subtle radial glow top-left */}
+      <div
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${colors.panelAccent} to-transparent opacity-60`}
+        aria-hidden
+      />
+
+      <div className="relative">
+        {/* Header */}
+        <div className="flex items-start gap-4 border-b border-white/8 pb-6">
+          <div className={`inline-flex size-13 shrink-0 items-center justify-center rounded-xl ring-1 ${colors.icon}`} aria-hidden>
+            <Icon className="size-6 stroke-[1.75]" />
+          </div>
+          <div>
+            <h3 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+              {category.title}
+            </h3>
+            {"byline" in category && (
+              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-accent/80">
+                {category.byline}
+              </p>
+            )}
+          </div>
         </div>
-        <div>
-          <h3 className="text-xl font-extrabold tracking-tight text-brand-navy sm:text-2xl">
-            {category.title}
-          </h3>
-          {"byline" in category && (
-            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-brand-secondary/80">
-              {category.byline}
+
+        {/* Paragraphs */}
+        <div className="mt-6 space-y-4">
+          {category.paragraphs.map((paragraph) => (
+            <p key={paragraph.slice(0, 48)} className="text-base leading-relaxed text-foreground-muted sm:text-lg">
+              {paragraph}
             </p>
-          )}
+          ))}
         </div>
-      </div>
 
-      <div className="mt-6 space-y-4">
-        {category.paragraphs.map((paragraph) => (
-          <p
-            key={paragraph.slice(0, 48)}
-            className="text-base leading-relaxed text-brand-navy/70 sm:text-lg"
-          >
-            {paragraph}
-          </p>
-        ))}
-      </div>
-
-      {/* Render gambar statis apabila kategori adalah EV Safety */}
-      {category.id === "ev-safety" && (
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6">
-          <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-            <img
-              src="/protection/ev/1.avif"
-              alt="EV Safety 1"
-              loading="lazy"
-              className="aspect-[4/3] w-full object-cover transition-transform duration-500 hover:scale-105"
-            />
+        {/* EV images */}
+        {category.id === "ev-safety" && (
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6">
+            {["/protection/ev/1.avif", "/protection/ev/2.avif"].map((src, i) => (
+              <motion.div
+                key={src}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                className="overflow-hidden rounded-2xl border border-white/10 shadow-sm bg-background/50"
+              >
+                <img
+                  src={src}
+                  alt={`EV Safety ${i + 1}`}
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-300"
+                />
+              </motion.div>
+            ))}
           </div>
-          <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-            <img
-              src="/protection/ev/2.avif"
-              alt="EV Safety 2"
-              loading="lazy"
-              className="aspect-[4/3] w-full object-cover transition-transform duration-500 hover:scale-105"
-            />
+        )}
+
+        {/* Business subheading block */}
+        {"subheading" in category && (
+          <div className="mt-8 rounded-2xl border border-accent/20 bg-accent/5 p-6">
+            <h4 className="text-base font-extrabold tracking-tight text-white sm:text-lg">
+              {category.subheading}
+            </h4>
+            <p className="mt-3 text-sm leading-relaxed text-foreground-muted sm:text-base">
+              {category.subheadingParagraph}
+            </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {"subheading" in category && (
-        <div className="mt-8 rounded-xl border border-brand-accent/12 bg-gradient-to-br from-[#f0f7ff] to-white p-6">
-          <h4 className="text-base font-extrabold tracking-tight text-brand-navy sm:text-lg">
-            {category.subheading}
-          </h4>
-          <p className="mt-3 text-sm leading-relaxed text-brand-navy/65 sm:text-base">
-            {category.subheadingParagraph}
-          </p>
-        </div>
-      )}
-
-      {"sectors" in category && (
-        <div className="mt-8">
-          <p className="mb-5 text-xs font-extrabold uppercase tracking-widest text-brand-dark-blue/60">
-            {category.sectorsLabel}
-          </p>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {category.sectors.map((sector) => {
-              const imgSrc = getSectorImage(sector);
-              return (
-                <div
-                  key={sector}
-                  className="group relative overflow-hidden rounded-xl border border-brand-accent/15 bg-white shadow-sm ring-1 ring-brand-accent/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:ring-brand-accent/30"
-                >
-                  <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                    {imgSrc ? (
-                      <img
-                        src={imgSrc}
-                        alt={sector}
-                        loading="lazy"
-                        className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      /* Fallback apabila nama sektor tidak masuk ke dalam mapping */
-                      <div className="flex size-full items-center justify-center bg-slate-100">
-                        <CheckCircle2 className="size-6 text-brand-accent/30" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/90 via-brand-navy/60 to-transparent p-4 pt-12">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="size-4 text-brand-primary" aria-hidden />
-                      <span className="text-sm font-bold text-white drop-shadow-sm">{sector}</span>
+        {/* Sectors grid */}
+        {"sectors" in category && (
+          <div className="mt-8">
+            <p className="mb-5 text-xs font-extrabold uppercase tracking-widest text-accent/80">
+              {category.sectorsLabel}
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {category.sectors.map((sector) => {
+                const imgSrc = getSectorImage(sector);
+                return (
+                  <motion.div
+                    key={sector}
+                    whileHover={{ y: -4, scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 320, damping: 22 }}
+                    className="group relative overflow-hidden rounded-2xl border border-white/8 bg-background/50 shadow-sm hover:border-accent/35 transition-colors duration-300"
+                  >
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-background">
+                      {imgSrc ? (
+                        <img
+                          src={imgSrc}
+                          alt={sector}
+                          loading="lazy"
+                          className="size-full object-cover opacity-75 transition-all duration-500 group-hover:scale-110 group-hover:opacity-100"
+                        />
+                      ) : (
+                        <div className="flex size-full items-center justify-center bg-background/50">
+                          <CheckCircle2 className="size-6 text-accent/30" />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                    {/* Label overlay */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent p-4 pt-12">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="size-4 text-accent shrink-0" aria-hidden />
+                        <span className="text-sm font-bold text-white drop-shadow-sm">{sector}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </article>
   );
 };
@@ -180,15 +197,21 @@ export const ProtectionCategoriesSection = () => {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-br from-brand-navy via-[#0032a8] to-[#001f7a] py-20 text-white sm:py-24 lg:py-32"
+      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-32"
       aria-labelledby="protection-heading"
     >
-      <div className="pointer-events-none absolute -left-20 bottom-0 size-96 rounded-full bg-brand-accent/10 blur-[80px]" aria-hidden />
-      <div className="pointer-events-none absolute -right-20 top-0 size-80 rounded-full bg-brand-primary/8 blur-[80px]" aria-hidden />
+      <div className="pointer-events-none absolute -left-20 bottom-0 size-96 rounded-full bg-accent/5 blur-[100px]" aria-hidden />
+      <div className="pointer-events-none absolute -right-20 top-0 size-80 rounded-full bg-blue-900/8 blur-[80px]" aria-hidden />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <span className="inline-block rounded-full border border-brand-primary/25 bg-brand-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-brand-primary">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="max-w-3xl"
+        >
+          <span className="inline-block rounded-full border border-accent/25 bg-accent/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-accent">
             Layanan Proteksi
           </span>
           <h1
@@ -197,9 +220,9 @@ export const ProtectionCategoriesSection = () => {
           >
             {protection.heading}
           </h1>
-        </div>
+        </motion.div>
 
-        {/* Desktop: Tabs dengan Cross-fade */}
+        {/* Desktop tabs */}
         <div className="mt-12 hidden md:block">
           <div
             role="tablist"
@@ -209,33 +232,34 @@ export const ProtectionCategoriesSection = () => {
           >
             {CATEGORIES.map((category, index) => {
               const isActive = activeIndex === index;
-              const tabId = `${baseId}-tab-${category.id}`;
-              const panelId = `${baseId}-panel-${category.id}`;
+              const colors = CATEGORY_COLORS[category.id];
               const Icon = CATEGORY_ICONS[category.id];
 
               return (
-                <button
+                <motion.button
                   key={category.id}
                   type="button"
                   role="tab"
-                  id={tabId}
+                  id={`${baseId}-tab-${category.id}`}
                   aria-selected={isActive}
-                  aria-controls={panelId}
+                  aria-controls={`${baseId}-panel-${category.id}`}
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => setActiveIndex(index)}
                   onKeyDown={(e) => handleTabKeyDown(e, index)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold tracking-wide transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy ${isActive
-                    ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/25"
-                    : "bg-white/6 text-white/70 hover:bg-white/10 hover:text-white ring-1 ring-white/8"
+                  whileHover={!isActive ? { y: -2 } : {}}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 22 }}
+                  className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold tracking-wide border transition-all duration-250 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${isActive ? colors.tabActive : colors.tabInactive
                     }`}
                 >
                   <Icon className="size-4" strokeWidth={1.75} aria-hidden />
                   {category.tabLabel}
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
+          {/* Tab panel */}
           <div className="mt-8">
             <AnimatePresence mode="wait">
               {activeCategory && (
@@ -244,12 +268,12 @@ export const ProtectionCategoriesSection = () => {
                   role="tabpanel"
                   id={`${baseId}-panel-${activeCategory.id}`}
                   aria-labelledby={`${baseId}-tab-${activeCategory.id}`}
-                  initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+                  initial={{ opacity: 0, y: 14, filter: "blur(5px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="focus-visible:outline-none"
+                  exit={{ opacity: 0, y: -10, filter: "blur(5px)" }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
                   tabIndex={0}
+                  className="focus-visible:outline-none"
                 >
                   <CategoryPanel category={activeCategory} />
                 </motion.div>
@@ -258,7 +282,7 @@ export const ProtectionCategoriesSection = () => {
           </div>
         </div>
 
-        {/* Mobile: Accordion dengan Animate Height */}
+        {/* Mobile accordion */}
         <div className="mt-10 space-y-3 md:hidden">
           {CATEGORIES.map((category, index) => {
             const isOpen = openAccordion === index;
@@ -269,7 +293,7 @@ export const ProtectionCategoriesSection = () => {
             return (
               <div
                 key={category.id}
-                className={`overflow-hidden rounded-2xl border transition-colors duration-200 ${isOpen ? "border-white/15 bg-white/6" : "border-white/8 bg-white/[0.03]"
+                className={`overflow-hidden rounded-2xl border transition-colors duration-200 ${isOpen ? "border-accent/35 bg-surface" : "border-white/8 bg-surface/50"
                   }`}
               >
                 <h2 className="text-base font-bold">
@@ -279,24 +303,28 @@ export const ProtectionCategoriesSection = () => {
                     aria-expanded={isOpen}
                     aria-controls={panelId}
                     onClick={() => setOpenAccordion(isOpen ? null : index)}
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-primary"
+                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
                   >
                     <span className="flex items-center gap-3">
-                      <Icon className="size-4.5 shrink-0 text-white/60" strokeWidth={1.75} aria-hidden />
+                      <Icon className="size-4.5 shrink-0 text-foreground-muted" strokeWidth={1.75} aria-hidden />
                       <span className="tracking-wide">
                         {category.title}
                         {"byline" in category && (
-                          <span className="mt-0.5 block text-xs font-bold uppercase tracking-wider text-brand-primary/80">
+                          <span className="mt-0.5 block text-xs font-bold uppercase tracking-wider text-accent/80">
                             {category.byline.replace("oleh ", "")}
                           </span>
                         )}
                       </span>
                     </span>
-                    <ChevronDown
-                      className={`size-4.5 shrink-0 text-white/40 transition-transform duration-300 ${isOpen ? "rotate-180 text-brand-primary" : ""
-                        }`}
-                      aria-hidden
-                    />
+                    <motion.div
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <ChevronDown
+                        className={`size-4.5 shrink-0 transition-colors duration-200 ${isOpen ? "text-accent" : "text-foreground-muted"}`}
+                        aria-hidden
+                      />
+                    </motion.div>
                   </button>
                 </h2>
 
@@ -309,7 +337,7 @@ export const ProtectionCategoriesSection = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
+                      transition={{ duration: 0.32, ease: [0.21, 0.47, 0.32, 0.98] }}
                       className="overflow-hidden"
                     >
                       <div className="border-t border-white/8 px-2 pb-2 pt-2 sm:px-3 sm:pb-3">

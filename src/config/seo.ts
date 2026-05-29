@@ -35,4 +35,10 @@ export const PAGE_SEO = {
     description:
       "Hubungi PT. Famindo Alfa Spektrum Teknologi (FAST) untuk konsultasi proteksi kebakaran lithium.",
   },
+  lfkXArkiv: {
+    path: "/lfk-x-arkiv",
+    title: `LFK × Arkiv Limited Edition — ${SITE.shortName}`,
+    description:
+      "Lithium Fire Killer × Arkiv: A limited-edition collision of avant-garde art and revolutionary fire safety.",
+  },
 } as const;

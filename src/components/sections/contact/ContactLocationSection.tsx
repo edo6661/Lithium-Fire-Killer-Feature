@@ -1,114 +1,126 @@
 import { Clock, MapPin, Navigation, Building2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { CONTACT_PAGE_CONTENT } from "../../../content/contact";
+import { AnimateIn } from "../../ui/AnimateIn";
+import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
 const { location } = CONTACT_PAGE_CONTENT;
 
-export const ContactLocationSection = () => {
-  const mapsEmbedSrc = `https://www.google.com/maps?q=${location.mapsQuery}&output=embed`;
-  const mapsDirectionsHref = `https://www.google.com/maps/dir/?api=1&destination=${location.mapsQuery}`;
+const mapsEmbedSrc = `https://maps.google.com/maps?q=${location.mapsQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+const mapsDirectionsHref = `https://maps.google.com/maps?daddr=${location.mapsQuery}`;
 
+const INFO_ITEMS = [
+  {
+    id: "address",
+    Icon: MapPin,
+    iconBg: "bg-accent/10 text-accent ring-accent/20",
+    label: location.addressLabel,
+    value: location.address,
+    valueClass: "text-sm leading-relaxed text-white/75 sm:text-base",
+  },
+  {
+    id: "hours",
+    Icon: Clock,
+    iconBg: "bg-blue-500/10 text-blue-400 ring-blue-500/20",
+    label: location.hoursLabel,
+    value: location.hours,
+    valueClass: "text-sm font-semibold text-white sm:text-base",
+  },
+  {
+    id: "building",
+    Icon: Building2,
+    iconBg: "bg-purple-500/10 text-purple-400 ring-purple-500/20",
+    label: "Gedung",
+    value: "TCC Tower One Menara Batavia",
+    valueClass: "text-sm font-semibold text-white sm:text-base",
+  },
+] as const;
+
+export const ContactLocationSection = () => {
   return (
     <section
-      className="bg-gradient-to-b from-slate-50/60 to-white py-20 sm:py-24 lg:py-32"
+      className="bg-background py-20 border-y border-white/5 sm:py-24 lg:py-32"
       aria-labelledby="contact-location-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-12">
-          <span className="inline-block rounded-full bg-brand-accent/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-brand-dark-blue">
+        <AnimateIn direction="up" className="mb-12">
+          <span className="inline-block rounded-full bg-accent/10 border border-accent/20 px-4 py-1 text-xs font-bold uppercase tracking-widest text-accent">
             Kunjungi Kami
           </span>
           <h2
             id="contact-location-heading"
-            className="mt-4 text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl"
+            className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl"
           >
             {location.heading}
           </h2>
-        </div>
+        </AnimateIn>
 
         <div className="grid gap-8 lg:grid-cols-[380px_1fr] lg:items-start">
           {/* Info card */}
-          <div className="rounded-2xl border border-brand-navy/8 bg-white p-6 shadow-[0_4px_24px_rgba(0,43,150,0.05)] sm:p-8">
-            <address className="not-italic space-y-6">
-              {/* Address */}
-              <div className="flex gap-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-accent/10 ring-1 ring-brand-accent/15">
-                  <MapPin className="size-5 text-brand-accent" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-brand-navy/40">
-                    {location.addressLabel}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-brand-navy/80 sm:text-base">
-                    {location.address}
-                  </p>
-                </div>
-              </div>
+          <AnimateIn direction="right">
+            <div className="rounded-3xl border border-white/10 bg-surface/40 backdrop-blur-md p-6 shadow-xl sm:p-8">
+              <StaggerChildren staggerDelay={0.1} className="space-y-5">
+                {INFO_ITEMS.map(({ id, Icon, iconBg, label, value, valueClass }, idx) => (
+                  <StaggerItem key={id}>
+                    <>
+                      <div className="flex gap-4">
+                        <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ${iconBg}`}>
+                          <Icon className="size-5" aria-hidden />
+                        </div>
+                        <div>
+                          <p className="text-xs font-extrabold uppercase tracking-widest text-foreground-muted">
+                            {label}
+                          </p>
+                          <p className={`mt-2 ${valueClass}`}>{value}</p>
+                        </div>
+                      </div>
+                      {idx < INFO_ITEMS.length - 1 && (
+                        <div className="h-px bg-white/8 mt-5" />
+                      )}
+                    </>
+                  </StaggerItem>
+                ))}
+              </StaggerChildren>
 
-              <div className="h-px bg-slate-100" />
-
-              {/* Hours */}
-              <div className="flex gap-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 ring-1 ring-brand-primary/15">
-                  <Clock className="size-5 text-brand-primary" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-brand-navy/40">
-                    {location.hoursLabel}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-brand-navy sm:text-base">
-                    {location.hours}
-                  </p>
-                </div>
-              </div>
-
-              <div className="h-px bg-slate-100" />
-
-              {/* Building */}
-              <div className="flex gap-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-dark-blue/8 ring-1 ring-brand-dark-blue/12">
-                  <Building2 className="size-5 text-brand-dark-blue" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-brand-navy/40">
-                    Gedung
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-brand-navy sm:text-base">
-                    TCC Tower One Menara Batavia
-                  </p>
-                </div>
-              </div>
-            </address>
-
-            {/* Directions button */}
-
-            <a
-              href={mapsDirectionsHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-brand-navy/12 px-4 py-3 text-sm font-bold text-brand-navy transition-all duration-200 ease-out hover:border-brand-primary/30 hover:bg-brand-primary/5 hover:text-brand-primary hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 active:translate-y-0"
-            >
-              <Navigation className="size-4" aria-hidden />
-              Petunjuk Arah
-            </a>
-          </div>
+              {/* Directions button */}
+              <motion.a
+                href={mapsDirectionsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ y: -3, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 360, damping: 22 }}
+                className="group mt-7 inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/12 bg-white/[0.04] px-4 py-3 text-sm font-bold text-white/80 backdrop-blur-sm transition-colors duration-200 hover:border-accent/40 hover:bg-accent/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+              >
+                <Navigation className="size-4 text-accent/70 transition-colors duration-200 group-hover:text-accent" aria-hidden />
+                Petunjuk Arah
+              </motion.a>
+            </div>
+          </AnimateIn>
 
           {/* Map */}
-          <figure className="overflow-hidden rounded-2xl border border-brand-navy/8 shadow-[0_8px_32px_rgba(0,43,150,0.06)]">
-            <iframe
-              title="Lokasi kantor FAST di Google Maps"
-              src={mapsEmbedSrc}
-              className="aspect-video w-full min-h-[360px] border-0 bg-[#f0f4ff]"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
-            <figcaption className="sr-only">
-              Peta Google Maps — {location.address}
-            </figcaption>
-          </figure>
+          <AnimateIn direction="left" delay={0.1}>
+            <motion.figure
+              whileHover={{ scale: 1.005 }}
+              transition={{ type: "spring", stiffness: 200, damping: 30 }}
+              className="overflow-hidden rounded-3xl border border-white/10 shadow-xl bg-surface/50"
+            >
+              <iframe
+                title="Lokasi kantor FAST di Google Maps"
+                src={mapsEmbedSrc}
+                className="aspect-video w-full min-h-[360px] border-0 opacity-90 contrast-125 grayscale-[15%]"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+              <figcaption className="sr-only">
+                Peta Google Maps — {location.address}
+              </figcaption>
+            </motion.figure>
+          </AnimateIn>
         </div>
       </div>
-    </section >
+    </section>
   );
 };

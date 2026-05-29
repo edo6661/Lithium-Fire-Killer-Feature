@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Mail, Phone, Instagram, Linkedin, Youtube, CheckCircle2 } from "lucide-react";
+import { Mail, Phone, Instagram, Linkedin, Youtube, CheckCircle2, Send } from "lucide-react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion"; // Tambahan Framer Motion
-import { Button } from "../ui/Button";
+import { AnimatePresence, motion } from "framer-motion";
 import { CONTACT, FOOTER, SITE } from "../../config/site";
 
 export const Footer = () => {
@@ -12,15 +11,9 @@ export const Footer = () => {
   const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!emailValue) return;
-
-    // Simulasi pengiriman form sukses
     setIsNewsletterSent(true);
     setEmailValue("");
-
-    // Reset pesan sukses setelah 5 detik
-    setTimeout(() => {
-      setIsNewsletterSent(false);
-    }, 5000);
+    setTimeout(() => setIsNewsletterSent(false), 5000);
   };
 
   const { newsletter, socialCta } = FOOTER;
@@ -45,41 +38,45 @@ export const Footer = () => {
     },
   ];
 
-  return (
-    <footer className="bg-brand-navy text-white selection:bg-brand-primary/20">
+  const SOCIAL = [
+    { Icon: Instagram, label: "Instagram FAST" },
+    { Icon: Linkedin, label: "LinkedIn FAST" },
+    { Icon: Youtube, label: "YouTube FAST" },
+  ];
 
-      {/* Social Strip */}
+  return (
+    <footer className="bg-brand-navy text-white selection:bg-accent/20">
+      {/* Social bar */}
       <div className="border-b border-white/[0.06]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 sm:flex-row sm:px-6 lg:px-8">
-          <p className="text-sm font-medium text-white/45">{socialCta}</p>
+          <p className="text-sm font-medium text-white/40">{socialCta}</p>
           <div className="flex items-center gap-2">
-            {[
-              { Icon: Instagram, label: "Instagram FAST" },
-              { Icon: Linkedin, label: "LinkedIn FAST" },
-              { Icon: Youtube, label: "YouTube FAST" },
-            ].map(({ Icon, label }) => (
-              <a
+            {SOCIAL.map(({ Icon, label }) => (
+              <motion.a
                 key={label}
                 href="#"
                 aria-label={label}
-                className="flex size-9 items-center justify-center rounded-xl bg-white/[0.05] text-white/40 ring-1 ring-white/[0.07] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-brand-primary hover:text-white hover:ring-brand-primary/40 hover:shadow-[0_6px_16px_rgba(255,115,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                whileHover={{ y: -3, scale: 1.1 }}
+                whileTap={{ scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="flex size-9 items-center justify-center rounded-xl bg-white/[0.04] text-white/35 ring-1 ring-white/[0.07] transition-colors duration-200 hover:bg-accent hover:text-white hover:ring-accent/40 hover:shadow-[0_4px_16px_rgba(56,152,212,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >
                 <Icon className="size-4" />
-              </a>
+              </motion.a>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Main Body */}
+      {/* Main footer body */}
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.7fr_0.7fr_1.1fr] lg:gap-10 xl:gap-16">
 
-          {/* Brand Column */}
+          {/* Brand column */}
           <div className="space-y-6">
             <Link
               to="/"
-              className="inline-flex items-center rounded-xl transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+              className="inline-flex items-center rounded-xl transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
             >
               <img
                 src="/logo/transparent-color.png"
@@ -88,12 +85,11 @@ export const Footer = () => {
               />
             </Link>
 
-            <p className="max-w-[260px] text-sm leading-relaxed text-white/50">
+            <p className="max-w-[260px] text-sm leading-relaxed text-white/45">
               Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31.
               Perlindungan kebakaran lithium terdepan untuk Indonesia.
             </p>
 
-            {/* Contact links */}
             <ul className="space-y-2.5 pt-1">
               {[
                 { href: `mailto:${CONTACT.email}`, Icon: Mail, text: CONTACT.email },
@@ -102,9 +98,9 @@ export const Footer = () => {
                 <li key={text}>
                   <a
                     href={href}
-                    className="group inline-flex items-center gap-3 text-sm font-medium text-white/50 transition-all duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-lg"
+                    className="group inline-flex items-center gap-3 text-sm font-medium text-white/45 transition-all duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
                   >
-                    <span className="flex size-7 items-center justify-center rounded-lg bg-white/[0.05] ring-1 ring-white/[0.07] text-white/35 transition-all duration-200 group-hover:bg-brand-primary/20 group-hover:text-brand-primary group-hover:ring-brand-primary/25">
+                    <span className="flex size-7 items-center justify-center rounded-lg bg-white/[0.04] ring-1 ring-white/[0.07] text-white/30 transition-all duration-200 group-hover:bg-accent/20 group-hover:text-accent group-hover:ring-accent/25">
                       <Icon className="size-3.5" aria-hidden />
                     </span>
                     <span className="truncate">{text}</span>
@@ -114,7 +110,7 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Nav Columns */}
+          {/* Nav columns */}
           {NAV_COLS.map((col) => (
             <nav key={col.heading} aria-label={col.heading} className="space-y-5">
               <h3 className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-white/20">
@@ -125,12 +121,9 @@ export const Footer = () => {
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className="group inline-flex items-center gap-2 text-sm font-medium text-white/55 transition-all duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-md"
+                      className="group inline-flex items-center gap-2 text-sm font-medium text-white/50 transition-all duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
                     >
-                      <span
-                        className="h-px w-0 bg-brand-primary transition-all duration-200 ease-out group-hover:w-3"
-                        aria-hidden
-                      />
+                      <span className="h-px w-0 bg-gradient-to-r from-accent to-blue-400 transition-all duration-300 ease-out group-hover:w-4" aria-hidden />
                       {link.label}
                     </Link>
                   </li>
@@ -139,7 +132,7 @@ export const Footer = () => {
             </nav>
           ))}
 
-          {/* Newsletter Column */}
+          {/* Newsletter */}
           <section aria-labelledby="footer-newsletter-heading" className="space-y-4">
             <h3
               id="footer-newsletter-heading"
@@ -147,7 +140,7 @@ export const Footer = () => {
             >
               Newsletter
             </h3>
-            <p className="text-sm leading-relaxed text-white/50">
+            <p className="text-sm leading-relaxed text-white/45">
               Dapatkan update terbaru seputar keamanan kebakaran baterai lithium.
             </p>
 
@@ -155,12 +148,13 @@ export const Footer = () => {
               {isNewsletterSent ? (
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center gap-3 rounded-xl border border-[#25D366]/30 bg-[#25D366]/10 px-4 py-3.5"
+                  initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-3 rounded-2xl border border-[#25D366]/25 bg-[#25D366]/10 px-4 py-3.5"
                 >
-                  <CheckCircle2 className="size-5 text-[#25D366]" aria-hidden />
+                  <CheckCircle2 className="size-5 text-[#25D366] shrink-0" aria-hidden />
                   <p className="text-sm font-bold text-[#25D366]">Berhasil berlangganan!</p>
                 </motion.div>
               ) : (
@@ -169,7 +163,7 @@ export const Footer = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col gap-2.5"
+                  className="flex flex-col gap-3"
                   onSubmit={handleNewsletterSubmit}
                   noValidate
                 >
@@ -185,29 +179,36 @@ export const Footer = () => {
                     value={emailValue}
                     onChange={(e) => setEmailValue(e.target.value)}
                     placeholder={newsletter.emailPlaceholder}
-                    className="w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-4 py-3 text-sm text-white placeholder:text-white/20 transition-all duration-200 focus:border-brand-primary/50 focus:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-brand-primary/15"
+                    className="w-full rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-white/25 backdrop-blur-sm transition-all duration-300 hover:border-white/20 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_16px_rgba(56,152,212,0.15)] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0b1120] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                   />
-                  <Button
+                  {/* Pill button matching new Button style */}
+                  <motion.button
                     type="submit"
-                    variant="primary"
-                    className="w-full shadow-[0_4px_16px_rgba(255,115,0,0.20)]"
+                    whileHover={{ y: -2, scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                    className="group relative w-full overflow-hidden rounded-full bg-accent px-5 py-3 text-sm font-bold text-white shadow-[0_4px_16px_rgba(56,152,212,0.35)] hover:shadow-[0_8px_28px_rgba(56,152,212,0.5)] hover:bg-[#2d85bf] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                   >
-                    {newsletter.submitButton}
-                  </Button>
+                    {/* Shine sweep */}
+                    <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-500 group-hover:translate-x-full" aria-hidden />
+                    <span className="relative flex items-center justify-center gap-2">
+                      <Send className="size-3.5" aria-hidden />
+                      {newsletter.submitButton}
+                    </span>
+                  </motion.button>
                 </motion.form>
               )}
             </AnimatePresence>
-
           </section>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-8 sm:flex-row">
-          <p className="text-xs font-medium text-white/30">
+          <p className="text-xs font-medium text-white/25">
             © {new Date().getFullYear()} {SITE.name} ({SITE.shortName}). Hak cipta dilindungi.
           </p>
           <div className="flex items-center gap-2">
-            <div className="size-1.5 rounded-full bg-brand-primary/40" aria-hidden />
+            <div className="size-1.5 rounded-full bg-accent/40" aria-hidden />
             <p className="text-xs font-bold tracking-widest text-white/15 uppercase">
               famindofast.com
             </p>

@@ -4,6 +4,7 @@ import { AboutPage } from "../pages/AboutPage";
 import { HomePage } from "../pages/HomePage";
 import { ContactPage } from "../pages/ContactPage";
 import { LithiumFireSafetyPage } from "../pages/LithiumFireSafetyPage";
+import { LfkXArkivPage } from "../pages/LfkXArkivPage"; // <-- Import ini
 
 export const AppRoutes = () => {
   return (
@@ -20,6 +21,10 @@ export const AppRoutes = () => {
           element={<LithiumFireSafetyPage />}
         />
         <Route path="contact" element={<ContactPage />} />
+
+        {/* Update rute lfk-x-arkiv di sini */}
+        <Route path="lfk-x-arkiv" element={<LfkXArkivPage />} />
+
         <Route
           path="kontak"
           element={<Navigate to="/contact" replace />}

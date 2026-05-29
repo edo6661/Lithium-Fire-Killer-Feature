@@ -1,37 +1,57 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 type CardProps = {
   icon: LucideIcon;
   title: string;
   description: string;
   children?: ReactNode;
+  accentColor?: string;
 };
 
-export const Card = ({ icon: Icon, title, description, children }: CardProps) => {
+export const Card = ({
+  icon: Icon,
+  title,
+  description,
+  children,
+}: CardProps) => {
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_2px_12px_rgba(0,43,150,0.05)] transition-all duration-300 ease-out hover:-translate-y-2 hover:border-brand-navy/12 hover:shadow-[0_24px_56px_rgba(0,43,150,0.11)] sm:p-8">
-      {/* Top accent bar — animates in on hover */}
+    <motion.article
+      whileHover={{ y: -8, scale: 1.015 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 300, damping: 22 }}
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/8 bg-surface/40 p-6 backdrop-blur-md shadow-lg transition-colors duration-300 hover:border-white/15 hover:bg-surface/70 sm:p-8"
+    >
+      {/* Top accent bar */}
       <div
-        className="absolute inset-x-0 top-0 h-[3px] rounded-t-2xl bg-gradient-to-r from-brand-primary via-brand-accent to-brand-dark-blue opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="absolute inset-x-0 top-0 h-[2px] rounded-t-3xl bg-gradient-to-r from-accent to-blue-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         aria-hidden
       />
 
-      {/* Icon container */}
+      {/* Radial ambient glow behind icon */}
       <div
-        className="mb-6 inline-flex size-14 items-center justify-center rounded-xl bg-brand-primary/8 text-brand-primary ring-1 ring-brand-primary/12 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-primary/15 group-hover:ring-brand-primary/25 group-hover:shadow-[0_4px_16px_rgba(255,115,0,0.15)]"
+        className="pointer-events-none absolute top-6 left-6 size-24 rounded-full bg-accent/15 blur-[40px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        aria-hidden
+      />
+
+      {/* Icon */}
+      <div
+        className="relative mb-6 inline-flex size-14 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(56,152,212,0.3)]"
         aria-hidden
       >
         <Icon className="size-6 stroke-[1.75]" />
       </div>
 
-      <h3 className="text-lg font-bold tracking-tight text-brand-navy transition-colors duration-200 group-hover:text-brand-dark-blue sm:text-xl">
+      <h3 className="relative text-lg font-bold tracking-tight text-white transition-colors duration-200 group-hover:text-accent sm:text-xl">
         {title}
       </h3>
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-brand-navy/65 selection:bg-brand-primary/10 sm:text-base">
+
+      <p className="relative mt-3 flex-1 text-sm leading-relaxed text-foreground-muted sm:text-[0.95rem]">
         {description}
       </p>
-      {children && <div className="mt-5">{children}</div>}
-    </article>
+
+      {children && <div className="relative mt-5">{children}</div>}
+    </motion.article>
   );
 };

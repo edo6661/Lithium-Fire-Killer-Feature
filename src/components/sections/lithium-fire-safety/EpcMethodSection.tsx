@@ -1,60 +1,64 @@
 import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
 import { CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { AnimateIn } from "../../ui/AnimateIn";
 import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
 const { epc } = LITHIUM_FIRE_SAFETY_CONTENT;
 
-const STEP_GRADIENTS = [
-  "from-brand-primary to-[#ff9133]",
-  "from-brand-dark-blue to-brand-navy",
-  "from-brand-accent to-brand-dark-blue",
-  "from-brand-navy to-[#051f61]",
+// Semua fase pakai warna yang konsisten — accent/navy palette
+const EPC_LETTERS = [
+  { letter: "E", word: "Engineering", color: "bg-accent/10 text-accent border-accent/25" },
+  { letter: "P", word: "Procurement", color: "bg-accent/10 text-accent border-accent/25" },
+  { letter: "C", word: "Construction", color: "bg-accent/10 text-accent border-accent/25" },
 ];
 
-const EPC_LETTERS = [
-  { letter: "E", word: "Engineering", color: "bg-brand-primary/8 text-brand-primary border-brand-primary/15 ring-brand-primary/8" },
-  { letter: "P", word: "Procurement", color: "bg-brand-dark-blue/8 text-brand-dark-blue border-brand-dark-blue/15 ring-brand-dark-blue/8" },
-  { letter: "C", word: "Construction", color: "bg-brand-accent/8 text-brand-accent border-brand-accent/15 ring-brand-accent/8" },
+// Warna per step yang seragam (semua bg sama seperti 1 2 3 4 di tahapan)
+const STEP_COLORS = [
+  { num: "bg-accent/10 text-accent border-accent/20", item: "border-accent/10 bg-accent/[0.04] hover:border-accent/25 hover:bg-accent/[0.08]" },
+  { num: "bg-accent/10 text-accent border-accent/20", item: "border-accent/10 bg-accent/[0.04] hover:border-accent/25 hover:bg-accent/[0.08]" },
+  { num: "bg-accent/10 text-accent border-accent/20", item: "border-accent/10 bg-accent/[0.04] hover:border-accent/25 hover:bg-accent/[0.08]" },
+  { num: "bg-accent/10 text-accent border-accent/20", item: "border-accent/10 bg-accent/[0.04] hover:border-accent/25 hover:bg-accent/[0.08]" },
 ];
 
 export const EpcMethodSection = () => {
   return (
     <section
-      className="bg-gradient-to-b from-white to-slate-50/60 py-20 sm:py-24 lg:py-32"
+      className="bg-surface py-20 border-y border-white/5 sm:py-24 lg:py-32"
       aria-labelledby="epc-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-14 lg:grid-cols-[1fr_460px] lg:items-center lg:gap-16 xl:gap-24">
           <AnimateIn direction="right">
-            {/* Left: Narrative */}
             <article className="space-y-6">
-              <span className="inline-block rounded-full bg-brand-dark-blue/8 px-4 py-1 text-xs font-bold uppercase tracking-widest text-brand-dark-blue">
+              <span className="inline-block rounded-full bg-white/5 border border-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-foreground-muted">
                 Metodologi Kerja
               </span>
               <h2
                 id="epc-heading"
-                className="text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl leading-[1.12]"
+                className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-[1.12]"
               >
                 {epc.heading}
               </h2>
-              <p className="text-base leading-relaxed text-brand-navy/65 sm:text-lg">
+              <p className="text-base leading-relaxed text-foreground-muted sm:text-lg">
                 {epc.description}
               </p>
 
-              {/* EPC Letter badges (Staggered) */}
-              <StaggerChildren staggerDelay={0.15} className="flex flex-wrap gap-3 pt-2">
+              {/* EPC Badges — semua warna seragam */}
+              <StaggerChildren staggerDelay={0.1} className="flex flex-wrap gap-3 pt-2">
                 {EPC_LETTERS.map(({ letter, word, color }) => (
                   <StaggerItem key={letter}>
-                    <div
-                      className={`flex items-center gap-3 rounded-xl border px-4 py-3 ring-1 shadow-sm transition-transform hover:-translate-y-1 ${color}`}
+                    <motion.div
+                      whileHover={{ y: -3, scale: 1.03 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className={`flex items-center gap-3 rounded-xl border px-4 py-3 shadow-sm cursor-default ${color}`}
                     >
                       <span className="text-2xl font-extrabold leading-none">{letter}</span>
                       <div>
-                        <p className="text-xs font-extrabold uppercase tracking-widest opacity-60">Fase</p>
+                        <p className="text-[10px] font-extrabold uppercase tracking-widest opacity-55">Fase</p>
                         <p className="text-sm font-bold tracking-wide">{word}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   </StaggerItem>
                 ))}
               </StaggerChildren>
@@ -62,32 +66,33 @@ export const EpcMethodSection = () => {
           </AnimateIn>
 
           <AnimateIn direction="left" delay={0.1}>
-            {/* Right: Steps (Staggered) */}
-            <div className="rounded-2xl border border-brand-navy/8 bg-white p-7 shadow-[0_8px_40px_rgba(0,43,150,0.05)] sm:p-8">
-              <p className="mb-6 text-xs font-extrabold uppercase tracking-widest text-brand-navy/35">
+            <div className="rounded-3xl border border-white/10 bg-background/50 backdrop-blur-md p-7 shadow-xl sm:p-8">
+              <p className="mb-6 text-xs font-extrabold uppercase tracking-widest text-foreground-muted">
                 {epc.stepsHeading}
               </p>
 
-              <StaggerChildren className="space-y-3 list-none" staggerDelay={0.1} aria-label="Tahapan EPC Tambang">
-                {epc.steps.map((step, idx) => (
-                  <StaggerItem key={step}>
-                    <li className="group flex items-center gap-4">
-                      {/* Step number */}
-                      <div
-                        className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-sm font-extrabold text-white shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${STEP_GRADIENTS[idx] ?? STEP_GRADIENTS[0]}`}
-                      >
-                        {idx + 1}
-                      </div>
-                      {/* Step content */}
-                      <div className="flex flex-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-5 py-4 transition-all duration-200 group-hover:border-slate-200 group-hover:bg-slate-50 group-hover:shadow-sm">
-                        <CheckCircle2 className="size-4 shrink-0 text-brand-accent/50 transition-colors duration-200 group-hover:text-brand-accent" aria-hidden />
-                        <p className="text-sm font-bold text-brand-navy sm:text-base leading-snug">{step}</p>
-                      </div>
-                    </li>
-                  </StaggerItem>
-                ))}
+              <StaggerChildren className="space-y-3 list-none" staggerDelay={0.1}>
+                {epc.steps.map((step, idx) => {
+                  const sc = STEP_COLORS[idx] ?? STEP_COLORS[0];
+                  return (
+                    <StaggerItem key={step}>
+                      <li className="group flex items-center gap-4">
+                        {/* Nomor step — seragam dengan accent */}
+                        <div
+                          className={`flex size-11 shrink-0 items-center justify-center rounded-xl border text-sm font-extrabold shadow-sm transition-all duration-300 group-hover:scale-110 ${sc.num}`}
+                        >
+                          {idx + 1}
+                        </div>
+                        {/* Item row — warna seragam */}
+                        <div className={`flex flex-1 items-center gap-3 rounded-xl border px-5 py-4 transition-all duration-200 ${sc.item}`}>
+                          <CheckCircle2 className="size-4 shrink-0 text-accent/50 transition-colors duration-200 group-hover:text-accent" aria-hidden />
+                          <p className="text-sm font-bold text-white/90 sm:text-base leading-snug">{step}</p>
+                        </div>
+                      </li>
+                    </StaggerItem>
+                  );
+                })}
               </StaggerChildren>
-
             </div>
           </AnimateIn>
         </div>
