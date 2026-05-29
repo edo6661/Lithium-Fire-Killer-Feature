@@ -65,7 +65,7 @@ export const ProductSection = () => {
   const product = PRODUCT_CONTENT;
 
   return (
-    <section className="relative overflow-hidden bg-background border-y border-white/5 py-20 sm:py-24 lg:py-32" aria-labelledby="product-heading">
+    <section className="relative overflow-hidden bg-background border-y border-white/5 py-20 sm:py-24 lg:py-8" aria-labelledby="product-heading">
       {/* Ambient Glow */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[150px] pointer-events-none z-0"></div>
 

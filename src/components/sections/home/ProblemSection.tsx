@@ -14,7 +14,7 @@ const DANGER_TAGS = [
 
 export const ProblemSection = () => {
   return (
-    <section className="relative overflow-hidden bg-background py-20 border-y border-white/5 sm:py-24 lg:py-32" aria-labelledby="problem-heading">
+    <section className="relative overflow-hidden bg-background py-20 border-y border-white/5 sm:py-24 lg:py-8" aria-labelledby="problem-heading">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-16 xl:gap-28">
 

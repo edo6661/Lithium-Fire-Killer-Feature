@@ -39,7 +39,7 @@ const INFO_ITEMS = [
 export const ContactLocationSection = () => {
   return (
     <section
-      className="bg-background py-20 border-y border-white/5 sm:py-24 lg:py-32"
+      className="bg-background py-20 border-y border-white/5 sm:py-24 lg:py-8"
       aria-labelledby="contact-location-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

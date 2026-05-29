@@ -28,7 +28,7 @@ const INFO_ITEMS = [
 export const AboutLocationSection = () => {
   return (
     <section
-      className="bg-background border-y border-white/5 py-20 sm:py-24 lg:py-32"
+      className="bg-background border-y border-white/5 py-20 sm:py-24 lg:py-8"
       aria-labelledby="about-location-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -75,7 +75,7 @@ export const ContactFormSection = () => {
 
   return (
     <section
-      className="bg-surface py-20 border-y border-white/5 sm:py-24 lg:py-32"
+      className="bg-surface py-20 border-y border-white/5 sm:py-24 lg:py-8"
       aria-labelledby="contact-form-heading"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

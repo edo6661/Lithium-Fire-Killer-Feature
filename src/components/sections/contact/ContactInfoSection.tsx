@@ -30,7 +30,7 @@ const CHANNEL_META = {
 export const ContactInfoSection = () => {
   return (
     <section
-      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-32"
+      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-8"
       aria-labelledby="contact-info-heading"
     >
       {/* Ambient glows */}

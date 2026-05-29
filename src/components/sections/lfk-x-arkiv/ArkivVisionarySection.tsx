@@ -10,7 +10,7 @@ export const ArkivVisionarySection = () => {
   const icons = [Layout, Globe, Star];
 
   return (
-    <section className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+    <section className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid items-center gap-16 lg:grid-cols-12">
         <div className="lg:col-span-5 relative">
           <AnimateIn direction="right">
@@ -41,7 +41,6 @@ export const ArkivVisionarySection = () => {
               <p className="text-base leading-relaxed text-slate-700 sm:text-lg whitespace-pre-line">
                 {visionary.description}
               </p>
-              <p className="text-sm font-black text-slate-900 tracking-widest">{visionary.artistName}</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-y border-slate-300/50 py-8">

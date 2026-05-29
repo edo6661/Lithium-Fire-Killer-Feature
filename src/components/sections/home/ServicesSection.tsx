@@ -34,7 +34,7 @@ const { services } = HOME_CONTENT;
 export const ServicesSection = () => {
   return (
     <section
-      className="relative bg-background py-20 sm:py-24 lg:py-32"
+      className="relative bg-background py-20 sm:py-24 lg:py-8"
       aria-labelledby="services-heading"
     >
       {/* Background glow */}

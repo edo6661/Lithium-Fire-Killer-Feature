@@ -15,7 +15,7 @@ export const AboutIntroSection = () => {
 
   return (
     <section
-      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-32"
+      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-8"
       aria-labelledby="about-intro-heading"
     >
       <motion.div

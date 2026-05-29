@@ -7,8 +7,7 @@ export const LFK_X_ARKIV_CONTENT = {
   },
   visionary: {
     heading: "The Visionary",
-    subheading:
-      "Meet Arkiv Vilmansa: Bridging Street Culture and High-End Safety",
+    subheading: "THE ARTIST: ARKIV VILMANSA",
     description:
       "Born in Bandung, Arkiv is a globally acclaimed contemporary artist bridging lowbrow art and high-end galleries. Trained as an architect, he translates structured spatial awareness into liberating, fluid visual narratives.\n\nHis distinct style catapulted him from vinyl art toys to massive global canvases, defining a new era of Indonesian contemporary art.",
     artistName: "THE ARTIST: ARKIV VILMANSA",

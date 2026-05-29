@@ -197,7 +197,7 @@ export const ProtectionCategoriesSection = () => {
 
   return (
     <section
-      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-32"
+      className="relative overflow-hidden bg-background py-20 text-white border-y border-white/5 sm:py-24 lg:py-8"
       aria-labelledby="protection-heading"
     >
       <div className="pointer-events-none absolute -left-20 bottom-0 size-96 rounded-full bg-accent/5 blur-[100px]" aria-hidden />

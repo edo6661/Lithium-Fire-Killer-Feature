@@ -50,7 +50,7 @@ export const ArkivCtaSection = () => {
   };
 
   return (
-    <section className="relative z-10 mx-auto max-w-5xl px-4 py-32 text-center sm:px-6 lg:px-8">
+    <section className="relative z-10 mx-auto max-w-5xl px-4 py-8 text-center sm:px-6 lg:px-8">
       <AnimateIn direction="up">
         <div className="relative overflow-hidden rounded-[3rem] bg-slate-900 p-10 shadow-2xl sm:p-16 lg:p-20">
 

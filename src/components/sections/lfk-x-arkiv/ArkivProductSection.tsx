@@ -9,7 +9,7 @@ const { product } = LFK_X_ARKIV_CONTENT;
 
 export const ArkivProductSection = () => {
   return (
-    <section className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+    <section className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Slide 5 & 7 Heading */}
       <div className="grid items-end gap-12 lg:grid-cols-2 mb-20">
         <AnimateIn direction="up">
@@ -34,63 +34,66 @@ export const ArkivProductSection = () => {
       </div>
 
       {/* Slide 6: Why Art Section */}
-      <div className="mb-20 rounded-[3rem] bg-white/40 border border-white p-8 lg:p-16 backdrop-blur-xl">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <Palette className="text-accent" size={24} />
-              <h3 className="text-2xl font-black tracking-tight text-slate-900">{product.whyArt.title}</h3>
+
+
+      <div className="flex flex-col gap-12">
+        {/* Slide 8: Tiers Grid */}
+        <div className="relative flex flex-col lg:flex-row items-stretch gap-10">
+          <AnimateIn direction="right" delay={0.4} className="relative w-full lg:w-1/2 flex items-center justify-center rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-12 shadow-2xl overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,152,212,0.1)_0%,transparent_70%)]" />
+            <motion.img
+              animate={{ y: [0, -15, 0], rotate: [0, 1, -1, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              src="/arkiv/siluet-tabung.png"
+              alt="Saru Art Piece"
+              className="relative z-20 w-64 drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)] sm:w-80 lg:w-[380px]"
+            />
+          </AnimateIn>
+
+          <AnimateIn direction="left" delay={0.5} className="w-full lg:w-1/2">
+            <div className="h-full overflow-hidden rounded-[3rem] border border-white/60 bg-white/60 shadow-2xl backdrop-blur-xl p-8 sm:p-12">
+              <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                <ShieldCheck className="text-accent" />
+                EXCLUSIVITY TIERS
+              </h3>
+              <table className="w-full text-left text-sm sm:text-base text-slate-700 border-collapse">
+                <tbody>
+                  {product.specs.map((row, idx) => (
+                    <tr key={idx} className={``}>
+                      <td className="py-5 pr-4 align-top font-black text-slate-900 text-xs uppercase tracking-widest w-1/3">
+                        {row.label}
+                      </td>
+                      <td className="py-5 align-top font-bold text-slate-600 whitespace-pre-line">
+                        {row.value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <p className="text-lg font-medium text-slate-600 leading-relaxed mb-8">
-              {product.whyArt.content}
-            </p>
-            <p className="text-xs font-black tracking-[0.3em] text-slate-900 opacity-40">{product.whyArt.label}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {product.tags.map((tag, idx) => (
-              <span key={idx} className="bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider px-5 py-3 rounded-full">
-                {tag}
-              </span>
-            ))}
+          </AnimateIn>
+        </div>
+        <div className="rounded-[3rem] bg-white/40 border border-white p-8 lg:p-16 backdrop-blur-xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <Palette className="text-accent" size={24} />
+                <h3 className="text-2xl font-black tracking-tight text-slate-900">{product.whyArt.title}</h3>
+              </div>
+              <p className="text-lg font-medium text-slate-600 leading-relaxed mb-8">
+                {product.whyArt.content}
+              </p>
+              <p className="text-xs font-black tracking-[0.3em] text-slate-900 opacity-40">{product.whyArt.label}</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {product.tags.map((tag, idx) => (
+                <span key={idx} className="bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider px-5 py-3 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Slide 8: Tiers Grid */}
-      <div className="relative flex flex-col lg:flex-row items-stretch gap-10">
-        <AnimateIn direction="right" delay={0.4} className="relative w-full lg:w-1/2 flex items-center justify-center rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-12 shadow-2xl overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,152,212,0.1)_0%,transparent_70%)]" />
-          <motion.img
-            animate={{ y: [0, -15, 0], rotate: [0, 1, -1, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            src="/arkiv/siluet-tabung.png"
-            alt="Saru Art Piece"
-            className="relative z-20 w-64 drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)] sm:w-80 lg:w-[380px]"
-          />
-        </AnimateIn>
-
-        <AnimateIn direction="left" delay={0.5} className="w-full lg:w-1/2">
-          <div className="h-full overflow-hidden rounded-[3rem] border border-white/60 bg-white/60 shadow-2xl backdrop-blur-xl p-8 sm:p-12">
-            <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
-              <ShieldCheck className="text-accent" />
-              EXCLUSIVITY TIERS
-            </h3>
-            <table className="w-full text-left text-sm sm:text-base text-slate-700 border-collapse">
-              <tbody>
-                {product.specs.map((row, idx) => (
-                  <tr key={idx} className={``}>
-                    <td className="py-5 pr-4 align-top font-black text-slate-900 text-xs uppercase tracking-widest w-1/3">
-                      {row.label}
-                    </td>
-                    <td className="py-5 align-top font-bold text-slate-600 whitespace-pre-line">
-                      {row.value}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </AnimateIn>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { LFK_X_ARKIV_CONTENT } from "../../../content";
 import { Sparkles } from "lucide-react";
+import { FloatingBlobs } from "./FloatingBlobs";
 
 const { hero } = LFK_X_ARKIV_CONTENT;
 
@@ -15,7 +16,9 @@ export const ArkivHeroSection = () => {
         />
       </div>
 
-      <div className="bg-noise absolute inset-0 opacity-[0.04] mix-blend-multiply" />
+      <div className="bg-noise pointer-events-none absolute inset-0 z-[1] opacity-[0.04] mix-blend-multiply" />
+
+      <FloatingBlobs className="z-[5]" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
 

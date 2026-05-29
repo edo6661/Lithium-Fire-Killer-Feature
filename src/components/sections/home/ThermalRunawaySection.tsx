@@ -35,7 +35,7 @@ const WARNING_POINTS = [
 export const ThermalRunawaySection = () => {
   return (
     <section
-      className="relative overflow-hidden bg-surface border-y border-white/5 py-20 sm:py-24 lg:py-32 text-white"
+      className="relative overflow-hidden bg-surface border-y border-white/5 py-20 sm:py-24 lg:py-8 text-white"
       aria-labelledby="thermal-runaway-heading"
     >
       {/* Ambient glows — CSS only, no JS */}
