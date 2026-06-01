@@ -38,7 +38,7 @@ export const ArkivHeroSection = () => {
         >
           <span>WHERE MASTERPIECE</span>
           <br />
-          <span>MEETS PROTECTION.</span>
+          <span>MEETS PROTECTION</span>
         </motion.h1>
 
         <motion.p
