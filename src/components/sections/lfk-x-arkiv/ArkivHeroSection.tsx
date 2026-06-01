@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { LFK_X_ARKIV_CONTENT } from "../../../content";
 import { Sparkles } from "lucide-react";
-import { FloatingBlobs } from "./FloatingBlobs";
 
 const { hero } = LFK_X_ARKIV_CONTENT;
 
@@ -35,16 +34,11 @@ export const ArkivHeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="text-5xl font-black tracking-tighter sm:text-7xl lg:text-[6.5rem] leading-[1.05]"
+          className="text-5xl font-black tracking-tighter text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.28),0_1px_3px_rgba(0,0,0,0.2)] sm:text-7xl lg:text-[6.5rem] leading-[1.05]"
         >
-          {/* Menghapus text-transparent agar teks putihnya muncul sempurna */}
-          <span className="text-white drop-shadow-md">
-            WHERE MASTERPIECE
-          </span>
+          <span>WHERE MASTERPIECE</span>
           <br />
-          <span className="text-white drop-shadow-md">
-            MEETS PROTECTION.
-          </span>
+          <span>MEETS PROTECTION.</span>
         </motion.h1>
 
         <motion.p
