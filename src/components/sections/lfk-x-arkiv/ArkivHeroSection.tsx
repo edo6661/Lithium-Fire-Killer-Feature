@@ -18,7 +18,6 @@ export const ArkivHeroSection = () => {
 
       <div className="bg-noise pointer-events-none absolute inset-0 z-[1] opacity-[0.04] mix-blend-multiply" />
 
-      <FloatingBlobs className="z-[5]" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
 

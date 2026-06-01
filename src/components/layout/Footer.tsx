@@ -42,14 +42,7 @@ export const Footer = () => {
         { label: "Kontak", href: "/contact" },
       ],
     },
-    {
-      heading: "Solusi",
-      links: [
-        { label: "EV Fire Safety", href: "/lithium-fire-safety" },
-        { label: "Business Safety", href: "/lithium-fire-safety" },
-        { label: "Mining Safety", href: "/lithium-fire-safety" },
-      ],
-    },
+
   ];
 
   const SOCIAL: { Icon: LucideIcon; label: string }[] = [

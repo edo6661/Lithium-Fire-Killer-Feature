@@ -25,11 +25,11 @@ export const ABOUT_CONTENT = {
     headline: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
     keyFigures: [
       {
-        name: "Bapak Randall Hartolaksono",
+        name: "Randall Hartolaksono",
         role: "Penemu Hartindo AF31",
       },
       {
-        name: "Bapak Willy Hadiwijaya",
+        name: "Willy Hadiwijaya",
         role: "Pendiri PT. FAST",
       },
     ],
@@ -37,12 +37,14 @@ export const ABOUT_CONTENT = {
       {
         subheading: "Dengan Tim Solid Segalanya Dapat Tercapai",
         paragraphs: [
-          "Kisah ini berawal dari Bapak Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Bapak Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.",
+          "Kisah ini berawal dari Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.",
         ],
       },
       {
         subheading: "Dimulai Dari Panggilan Untuk Menolong Banyak Orang",
-        paragraphs: [],
+        paragraphs: [
+          "PT. FAST berkomitmen untuk terus berinovasi dan mengembangkan produk-produk terbaru yang dapat membantu masyarakat dalam menghadapi bahaya kebakaran. Melalui berbagai program, FAST berkomitmen meningkatkan kesadaran masyarakat agar lebih memprioritaskan perlindungan jiwa serta terlatih dalam menghadapi potensi bahaya kebakaran yang datang tanpa diduga.",
+        ],
       },
       {
         subheading: "Terus Berinovasi Sambil Mengedukasi Masyarakat",

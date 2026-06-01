@@ -68,7 +68,7 @@ const HeroProductVisual = () => (
 
 const STATS = [
   { value: "#1", label: "APAR Lithium Pertama di Dunia", sublabel: "Terdepan & Terpercaya" },
-  { value: "AF31", label: "Formula Paten Hartindo", sublabel: "Inovasi Eksklusif" },
+  { value: "LFK-AF31", label: "Formula Paten Hartindo", sublabel: "Inovasi Eksklusif" },
   { value: "0 Residu", label: "Kimia Berbahaya", sublabel: "Aman untuk Lingkungan" },
 ];
 
@@ -98,7 +98,7 @@ export const HeroSection = () => {
               className="mb-7 inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-accent backdrop-blur-sm"
             >
               <ShieldCheck className="size-4" />
-              HARTINDO AF31 LITHIUM FIRE KILLER
+              HARTINDO AF31 Lithium Fire Killer
             </motion.div>
             <motion.h1
               id="hero-heading"

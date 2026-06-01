@@ -13,7 +13,7 @@ export const PRODUCT_CONTENT = {
     "SNI Certified (Standar Nasional Indonesia)",
     "Fire Classes: A, B, D, F/K, & L (Lithium)",
     "One tool for every emergency",
-    "Lab-tested & TKDN Certified",
+    "National & International Lab-tested",
     "Eco-friendly & Non-toxic",
   ],
   partners: [
