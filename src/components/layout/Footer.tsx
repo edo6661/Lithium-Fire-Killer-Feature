@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { useState, type SVGProps } from "react";
 import { Mail, Phone, Instagram, Linkedin, Youtube, CheckCircle2, Send } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { CONTACT, FOOTER, SITE } from "../../config/site";
+
+const TikTokIcon = ({ className, ...props }: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    aria-hidden
+    {...props}
+  >
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+  </svg>
+);
 
 export const Footer = () => {
   const [isNewsletterSent, setIsNewsletterSent] = useState(false);
@@ -38,10 +52,11 @@ export const Footer = () => {
     },
   ];
 
-  const SOCIAL = [
+  const SOCIAL: { Icon: LucideIcon; label: string }[] = [
     { Icon: Instagram, label: "Instagram FAST" },
     { Icon: Linkedin, label: "LinkedIn FAST" },
     { Icon: Youtube, label: "YouTube FAST" },
+    { Icon: TikTokIcon as LucideIcon, label: "TikTok FAST" },
   ];
 
   return (
@@ -81,7 +96,7 @@ export const Footer = () => {
               <img
                 src="/logo/transparent-color-2.png"
                 alt="FAST — PT. Famindo Alfa Spektrum Teknologi"
-                className="h-10 w-auto object-contain"
+                className="h-32 w-auto object-contain"
               />
             </Link>
 

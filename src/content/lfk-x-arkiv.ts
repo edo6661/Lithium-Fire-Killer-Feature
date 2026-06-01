@@ -39,12 +39,24 @@ export const LFK_X_ARKIV_CONTENT = {
       "Dual-Purpose Art & Safety",
     ],
     specs: [
-      { label: "Edition", value: "LEGENDARY UNITS", isHeader: true },
-      { label: "Tier 1: Legendary", value: "8 Pieces (1-8 / 100)" },
-      { label: "Tier 2: Ultra-Limited", value: "92 Pieces (9-100 / 100)" },
-      { label: "Rarity", value: "EXCLUSIVITY TIERS" },
-      { label: "Technology", value: "AF31 Thermal Runaway Stop" },
-      { label: "Certification", value: "SNI Certified & Indoor Safe" },
+      { label: "Edition", value: "Lithium Fire Killer × Arkiv — SARU Edition" },
+      {
+        label: "Rarity",
+        tiers: [
+          { label: "Tier 1: Legendary", value: "8 Pieces (1-8 / 100)" },
+          { label: "Tier 2: Ultra-Limited", value: "92 Pieces (9-100 / 100)" },
+        ],
+      },
+      {
+        label: "Technology",
+        value:
+          "Hartindo AF31 Patent Formula\nMulti-function against classes of fires [A, B, D, F/K & L]",
+      },
+      {
+        label: "Certification",
+        value:
+          "SNI Certified & Lab Tested & Certified by International Institutions",
+      },
     ],
   },
   cta: {

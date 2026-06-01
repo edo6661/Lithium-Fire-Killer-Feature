@@ -39,14 +39,14 @@ export const ArkivProductSection = () => {
       <div className="flex flex-col gap-12">
         {/* Slide 8: Tiers Grid */}
         <div className="relative flex flex-col lg:flex-row items-stretch gap-10">
-          <AnimateIn direction="right" delay={0.4} className="relative w-full lg:w-1/2 flex items-center justify-center rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-12 shadow-2xl overflow-hidden">
+          <AnimateIn direction="right" delay={0.4} className="relative w-full lg:w-1/2 flex min-h-[420px] items-center justify-center rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-8 sm:p-10 shadow-2xl overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,152,212,0.1)_0%,transparent_70%)]" />
             <motion.img
               animate={{ y: [0, -15, 0], rotate: [0, 1, -1, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               src="/arkiv/siluet-tabung.png"
               alt="Saru Art Piece"
-              className="relative z-20 w-64 drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)] sm:w-80 lg:w-[380px]"
+              className="relative z-20 w-[min(92%,520px)] max-h-[min(72vh,560px)] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)] sm:w-[min(88%,480px)] lg:w-[min(95%,520px)]"
             />
           </AnimateIn>
 
@@ -58,16 +58,38 @@ export const ArkivProductSection = () => {
               </h3>
               <table className="w-full text-left text-sm sm:text-base text-slate-700 border-collapse">
                 <tbody>
-                  {product.specs.map((row, idx) => (
-                    <tr key={idx} className={``}>
-                      <td className="py-5 pr-4 align-top font-black text-slate-900 text-xs uppercase tracking-widest w-1/3">
-                        {row.label}
-                      </td>
-                      <td className="py-5 align-top font-bold text-slate-600 whitespace-pre-line">
-                        {row.value}
-                      </td>
-                    </tr>
-                  ))}
+                  {product.specs.map((row, idx) =>
+                    "tiers" in row ? (
+                      <tr key={idx}>
+                        <td className="py-5 pr-4 align-top font-black text-slate-900 text-xs uppercase tracking-widest w-1/3">
+                          {row.label}
+                        </td>
+                        <td className="py-5 align-top">
+                          <ul className="space-y-4">
+                            {row.tiers.map((tier) => (
+                              <li key={tier.label}>
+                                <p className="font-black text-slate-800 text-xs uppercase tracking-wide">
+                                  {tier.label}
+                                </p>
+                                <p className="mt-1 font-bold text-slate-600">
+                                  {tier.value}
+                                </p>
+                              </li>
+                            ))}
+                          </ul>
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr key={idx}>
+                        <td className="py-5 pr-4 align-top font-black text-slate-900 text-xs uppercase tracking-widest w-1/3">
+                          {row.label}
+                        </td>
+                        <td className="py-5 align-top font-bold text-slate-600 whitespace-pre-line">
+                          {row.value}
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>

@@ -98,7 +98,7 @@ export const HeroSection = () => {
               className="mb-7 inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-accent backdrop-blur-sm"
             >
               <ShieldCheck className="size-4" />
-              Distributor Eksklusif Hartindo AF31
+              HARTINDO AF31 LITHIUM FIRE KILLER
             </motion.div>
             <motion.h1
               id="hero-heading"

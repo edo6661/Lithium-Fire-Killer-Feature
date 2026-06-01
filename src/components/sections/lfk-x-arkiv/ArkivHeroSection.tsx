@@ -10,7 +10,7 @@ export const ArkivHeroSection = () => {
     <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 z-0 bg-slate-50 flex items-center justify-center">
         <img
-          src="/hero-lfk-x-arkiv.jpeg"
+          src="/hero-lfk-x-arkiv.png"
           alt="LFK x Arkiv"
           className="block h-full w-full object-cover"
         />
