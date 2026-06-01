@@ -159,6 +159,8 @@ PT. FAST hadir sebagai mitra strategis bagi berbagai sektor industri di Indonesi
 - Data Center
 - Logistics
 - Energy Powerplant
+- Research Laboratory
+- Telecommunication
 
 ---
 
@@ -166,11 +168,7 @@ PT. FAST hadir sebagai mitra strategis bagi berbagai sektor industri di Indonesi
 
 Industri pertambangan memiliki tantangan keselamatan yang sangat kompleks dan membutuhkan solusi khusus dari para ahli berpengalaman. Untuk itu, hadir FIRST (PT. Fastindo Intiraya Solusi Tambang) dengan komitmen kuat menghadirkan teknologi terdepan dan layanan terpercaya demi menjaga keselamatan serta memastikan pertambangan Indonesia tetap berada di garis terdepan.
 
----
-
-#### Section 2 — Metode EPC (Engineering, Procurement, Construction)
-
-**Metode EPC**
+**Metode EPC** _(hanya di tab Mining Safety)_
 
 EPC (Engineering, Procurement, and Construction) adalah metode yang digunakan oleh FIRST untuk merancang solusi sesuai kebutuhan spesifik di lokasi pertambangan. Proses ini mencakup perencanaan menyeluruh, penyusunan mekanisme pencegahan kebakaran, integrasi detektor, hingga pemasangan sistem proteksi kebakaran. Dengan pendekatan EPC, FIRST memastikan setiap tahap dilaksanakan secara tepat dan disesuaikan dengan kebutuhan klien.
 
@@ -183,7 +181,7 @@ EPC (Engineering, Procurement, and Construction) adalah metode yang digunakan ol
 
 ---
 
-#### Section 3 — Bottom CTA
+#### Section 2 — Bottom CTA
 
 - **Headline:** Butuh Bantuan Lebih Lanjut?
 - **Call to Action:** `[Button: Hubungi Kami]` → Arahkan ke `/contact`

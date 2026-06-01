@@ -3,6 +3,7 @@ import { Building2, Car, ChevronDown, HardHat, CheckCircle2 } from "lucide-react
 import type { LucideIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LITHIUM_FIRE_SAFETY_CONTENT } from "../../../content/lithium-fire-safety";
+import { EpcMethodBlock } from "./EpcMethodSection";
 
 type ProtectionCategory =
   (typeof LITHIUM_FIRE_SAFETY_CONTENT.protection.categories)[number];
@@ -50,6 +51,8 @@ const getSectorImage = (sector: string) => {
     "Data Center": "/protection/business-safety/data-center.avif",
     "Logistics": "/protection/business-safety/logistics.avif",
     "Energy Powerplant": "/protection/business-safety/energy-powerplant.avif",
+    "Research Laboratory": "/protection/business-safety/research-laboratory.avif",
+    "Telecommunication": "/protection/business-safety/telecommunication.avif",
   };
   return map[sector];
 };
@@ -93,6 +96,33 @@ const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
           ))}
         </div>
 
+        {"evGrowthChart" in category && (
+          <figure className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-background/60 shadow-sm">
+            <p className="border-b border-white/8 px-5 py-4 text-sm font-extrabold tracking-tight text-white sm:px-6 sm:text-base">
+              {category.evGrowthChart.heading}
+            </p>
+            <div className="p-4 sm:p-5">
+              <img
+                src={category.evGrowthChart.imageSrc}
+                alt={category.evGrowthChart.imageAlt}
+                loading="lazy"
+                className="w-full rounded-xl"
+              />
+            </div>
+            <figcaption className="border-t border-white/8 px-5 py-4 text-xs leading-relaxed text-foreground-muted sm:px-6 sm:text-sm">
+              {category.evGrowthChart.source.prefix}{" "}
+              <a
+                href={category.evGrowthChart.source.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent underline decoration-accent/40 underline-offset-2 transition-colors hover:text-white hover:decoration-white/50"
+              >
+                {category.evGrowthChart.source.label}
+              </a>
+            </figcaption>
+          </figure>
+        )}
+
         {/* EV images */}
         {category.id === "ev-safety" && (
           <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6">
@@ -125,6 +155,8 @@ const CategoryPanel = ({ category }: { category: ProtectionCategory }) => {
             </p>
           </div>
         )}
+
+        {"epc" in category && <EpcMethodBlock epc={category.epc} />}
 
         {/* Sectors grid */}
         {"sectors" in category && (

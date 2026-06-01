@@ -1,7 +1,6 @@
 import { PageSeo } from "../components/seo/PageSeo";
 import {
   ContactCtaSection,
-  EpcMethodSection,
   ProtectionCategoriesSection,
 } from "../components/sections/lithium-fire-safety";
 import { PAGE_SEO } from "../config/seo";
@@ -18,7 +17,6 @@ export const LithiumFireSafetyPage = () => {
       />
 
       <ProtectionCategoriesSection />
-      <EpcMethodSection />
       <ContactCtaSection />
     </>
   );

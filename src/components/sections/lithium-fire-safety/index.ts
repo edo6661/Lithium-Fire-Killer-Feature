@@ -1,3 +1,3 @@
 export { ProtectionCategoriesSection } from "./ProtectionCategoriesSection";
-export { EpcMethodSection } from "./EpcMethodSection";
+export { EpcMethodBlock } from "./EpcMethodSection";
 export { ContactCtaSection } from "./ContactCtaSection";
