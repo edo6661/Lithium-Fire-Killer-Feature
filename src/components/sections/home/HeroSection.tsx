@@ -1,46 +1,74 @@
 import { motion } from "framer-motion";
 import { HOME_CONTENT } from "../../../content/home";
 import { ButtonLink } from "../../ui/ButtonLink";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
 const { hero } = HOME_CONTENT;
 
-const ShieldIllustration = () => (
-  <svg
-    viewBox="0 0 400 420"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-    className="w-full max-w-[300px] drop-shadow-2xl lg:max-w-[360px] xl:max-w-[400px]"
+const LFK_HERO_PRODUCT = "/products/LFK/LFK_3_KG_[Font].avif";
+
+const FeatureBadge = ({
+  title,
+  subtitle,
+  icon,
+  className,
+}: {
+  title: string;
+  subtitle: string;
+  icon: "check" | "shield";
+  className?: string;
+}) => (
+  <div
+    className={`flex items-center gap-2.5 rounded-[13px] border border-white/12 bg-[#0b1120]/80 px-3 py-2.5 shadow-lg backdrop-blur-sm ${className ?? ""}`}
   >
-    <circle cx="200" cy="200" r="185" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.05" strokeDasharray="6 12" />
-    <circle cx="200" cy="200" r="152" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.07" strokeDasharray="4 9" />
-    <circle cx="200" cy="200" r="119" fill="none" stroke="#3898d4" strokeWidth="0.75" strokeOpacity="0.15" />
-    <path d="M200 52 L318 100 L318 210 Q318 310 200 358 Q82 310 82 210 L82 100 Z" fill="#3898d4" fillOpacity="0.07" stroke="#3898d4" strokeWidth="1.5" strokeOpacity="0.45" />
-    <path d="M200 76 L296 116 L296 208 Q296 290 200 332 Q104 290 104 208 L104 116 Z" fill="#3898d4" fillOpacity="0.09" stroke="#3898d4" strokeWidth="1" strokeOpacity="0.30" />
-    <path d="M200 100 L274 132 L274 206 Q274 270 200 308 Q126 270 126 206 L126 132 Z" fill="white" fillOpacity="0.03" />
-    <path d="M158 202 L186 232 L246 170" stroke="#3898d4" strokeWidth="10" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M158 202 L186 232 L246 170" stroke="white" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.25" />
-    <g>
-      <rect x="28" y="100" width="112" height="44" rx="13" fill="#0b1120" fillOpacity="0.8" stroke="white" strokeWidth="0.5" strokeOpacity="0.12" />
-      <circle cx="50" cy="122" r="10" fill="#3898d4" fillOpacity="0.22" />
-      <path d="M46 122 L49 125 L54 119" stroke="#3898d4" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <text x="66" y="119" fill="white" fillOpacity="0.95" fontSize="9" fontFamily="system-ui" fontWeight="700">ZERO RESIDUE</text>
-      <text x="66" y="131" fill="white" fillOpacity="0.45" fontSize="7.5" fontFamily="system-ui">Tanpa sisa kimia</text>
-    </g>
-    <g>
-      <rect x="260" y="268" width="118" height="44" rx="13" fill="#0b1120" fillOpacity="0.8" stroke="white" strokeWidth="0.5" strokeOpacity="0.12" />
-      <circle cx="282" cy="290" r="10" fill="#3898d4" fillOpacity="0.28" />
-      <path d="M278 290 L281 287 L286 292" stroke="#3898d4" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-      <text x="298" y="287" fill="white" fillOpacity="0.95" fontSize="9" fontFamily="system-ui" fontWeight="700">AF31 CERTIFIED</text>
-      <text x="298" y="299" fill="white" fillOpacity="0.45" fontSize="7.5" fontFamily="system-ui">Hartindo Formula</text>
-    </g>
-  </svg>
+    <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-accent/25">
+      {icon === "check" ? (
+        <Check className="size-2.5 text-accent" strokeWidth={2.5} aria-hidden />
+      ) : (
+        <ShieldCheck className="size-2.5 text-accent" strokeWidth={2.5} aria-hidden />
+      )}
+    </div>
+    <div className="min-w-0">
+      <p className="text-[9px] font-bold uppercase leading-tight text-white/95">{title}</p>
+      <p className="text-[7.5px] leading-tight text-white/45">{subtitle}</p>
+    </div>
+  </div>
+);
+
+const HeroProductVisual = () => (
+  <div className="relative aspect-[3/4] w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[360px] xl:max-w-[400px]">
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
+      <div className="absolute size-[92%] rounded-full border border-dashed border-white/5" />
+      <div className="absolute size-[76%] rounded-full border border-dashed border-white/[0.07]" />
+      <div className="absolute size-[60%] rounded-full border border-accent/15" />
+      <div className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle_at_center,rgba(56,152,212,0.12)_0%,transparent_70%)]" />
+    </div>
+    <img
+      src={LFK_HERO_PRODUCT}
+      alt="Lithium Fire Killer 3 KG — APAR kebakaran baterai lithium"
+      className="relative z-10 mx-auto h-full w-full object-contain drop-shadow-[0_24px_60px_rgba(0,0,0,0.45)]"
+      width={400}
+      height={520}
+    />
+    <FeatureBadge
+      title="ZERO RESIDUE"
+      subtitle="Tanpa sisa kimia"
+      icon="check"
+      className="absolute left-0 top-[22%] z-20 max-w-[140px] sm:max-w-none"
+    />
+    <FeatureBadge
+      title="LAB TESTED & CERTIFIED"
+      subtitle="Hartindo Formula"
+      icon="shield"
+      className="absolute right-0 bottom-[24%] z-20 max-w-[160px] sm:max-w-none"
+    />
+  </div>
 );
 
 const STATS = [
-  { value: "#1", label: "APAR Lithium di Indonesia", sublabel: "Terdepan & Terpercaya" },
-  { value: "AF31", label: "Formula Hartindo", sublabel: "Inovasi Eksklusif" },
+  { value: "#1", label: "APAR Lithium Pertama di Dunia", sublabel: "Terdepan & Terpercaya" },
+  { value: "AF31", label: "Formula Paten Hartindo", sublabel: "Inovasi Eksklusif" },
   { value: "0 Residu", label: "Kimia Berbahaya", sublabel: "Aman untuk Lingkungan" },
 ];
 
@@ -104,7 +132,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.2, ease: easeOut }}
-              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg lg:mx-0"
+              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg lg:mx-0 text-justify"
             >
               {hero.description}
             </motion.p>
@@ -166,8 +194,11 @@ export const HeroSection = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.65, delay: 0.15, ease: easeOut }}
           >
-            <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-              <ShieldIllustration />
+            <motion.div
+              animate={{ y: [0, -12, 0], rotate: [0, 0.6, -0.6, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <HeroProductVisual />
             </motion.div>
           </motion.div>
         </div>

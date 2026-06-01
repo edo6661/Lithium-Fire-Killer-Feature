@@ -6,9 +6,9 @@ import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 const { intro } = ABOUT_CONTENT;
 
 const HIGHLIGHTS = [
-  { Icon: ShieldCheck, label: "APAR Lithium #1 di Indonesia" },
-  { Icon: Award, label: "Formula Hartindo AF31 — Tanpa Residu" },
-  { Icon: Users, label: "Edukasi & Sosialisasi Nasional" },
+  { Icon: ShieldCheck, label: "Disributor APAR Lithium Pertama #1 Di Dunia" },
+  { Icon: Award, label: "Dipercaya Agensi Pemerintahan & Sektor Bisnis Besar Ternama" },
+  { Icon: Users, label: "Berkomitmen untuk Edukasi & Sosialisasi soal keselamatan" },
 ];
 
 export const AboutIntroSection = () => {
@@ -51,11 +51,47 @@ export const AboutIntroSection = () => {
               {intro.paragraphs.map((paragraph) => (
                 <p
                   key={paragraph.slice(0, 48)}
-                  className="text-base leading-relaxed text-foreground-muted sm:text-lg"
+                  className="text-base leading-relaxed text-foreground-muted sm:text-lg text-justify"
                 >
                   {paragraph}
                 </p>
               ))}
+            </div>
+
+            <div
+              className="mt-10 rounded-2xl border border-white/10 bg-surface/40 p-6 ring-1 ring-white/5 backdrop-blur-md sm:p-7"
+              aria-labelledby="about-core-values-heading"
+            >
+              <p
+                id="about-core-values-heading"
+                className="text-xs font-bold uppercase tracking-widest text-accent"
+              >
+                {intro.coreValues.title}
+              </p>
+              <p
+                className="mt-2 font-extrabold tracking-[0.35em] text-white sm:text-lg"
+                aria-label={intro.coreValues.acronym}
+              >
+                {intro.coreValues.acronym}
+              </p>
+              <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                {intro.coreValues.items.map(({ letter, label }) => (
+                  <li
+                    key={letter}
+                    className="flex items-center gap-3 rounded-xl border border-white/5 bg-background/40 px-4 py-3"
+                  >
+                    <span
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-sm font-extrabold text-accent ring-1 ring-accent/25"
+                      aria-hidden
+                    >
+                      {letter}
+                    </span>
+                    <span className="text-sm font-semibold text-white/90 sm:text-base">
+                      {label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </motion.article>
 
