@@ -61,7 +61,7 @@ export const ArkivHeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.32, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mx-auto mt-8 max-w-2xl rounded-2xl bg-gradient-to-r from-[#FFCFCF]/50 to-[#1A80C1]/50 px-6 py-4 text-lg font-bold leading-relaxed text-white backdrop-blur-md sm:text-xl border border-white/10"
+          className="mx-auto mt-8 max-w-2xl rounded-2xl bg-gradient-to-r from-[#FFCFCF]/50 to-[#1A80C1]/50 px-6 py-4 text-lg font-bold leading-relaxed text-white backdrop-blur-md sm:text-xl border border-white/10 mb-12"
         >
           {hero.subheadline}
         </motion.p>
