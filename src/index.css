@@ -109,6 +109,23 @@
     background: var(--theme-accent);
   }
 
+  /* Body copy — rata kiri-kanan (permintaan client) */
+  #main-content
+    :is(p, figcaption):where(
+      [class*="leading-relaxed"],
+      [class*="leading-[1.75]"],
+      [class*="leading-[1.8]"]
+    ):not(:where([class*="text-center"])),
+  #main-content
+    p:where([class*="max-w-"][class*="font-light"]):not(
+      :where([class*="text-center"], [class*="bg-clip-text"])
+    ),
+  footer
+    p:where([class*="leading-relaxed"]):not(:where([class*="text-center"])) {
+    text-align: justify;
+    text-wrap: pretty;
+  }
+
   /* ── Skip link ───────────────────────── */
   .skip-link {
     position: absolute;

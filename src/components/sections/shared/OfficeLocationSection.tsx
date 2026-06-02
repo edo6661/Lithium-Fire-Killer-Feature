@@ -54,7 +54,7 @@ export const OfficeLocationSection = ({
                   <p className="text-sm font-semibold uppercase tracking-wide text-foreground/60">
                     Operasional
                   </p>
-                  <p className="mt-2 text-base text-foreground sm:text-lg">
+                  <p className="mt-2 text-base leading-relaxed text-foreground sm:text-lg">
                     {OFFICE.hours}
                   </p>
                 </div>

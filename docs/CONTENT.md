@@ -105,14 +105,14 @@ Selain menghadirkan produk unggulan, FAST juga berkomitmen untuk mengedukasi mas
 
 **Tokoh Kunci:**
 
-- Bapak Randall Hartolaksono — Penemu Hartindo AF31
-- Bapak Willy Hadiwijaya — Pendiri PT. FAST
+- Randall Hartolaksono — Penemu Hartindo AF31
+- Willy Hadiwijaya — Pendiri PT. FAST
 
 **Konten:**
 
 _Dengan Tim Solid Segalanya Dapat Tercapai_
 
-Kisah ini berawal dari Bapak Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Bapak Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.
+Kisah ini berawal dari Randall Hartolaksono, penemu Lithium Fire Killer Hartindo AF31, dengan visi menyelamatkan banyak jiwa dari risiko kebakaran baterai lithium di Indonesia. Semangat ini kemudian diteruskan melalui PT. FAST yang didirikan oleh Willy Hadiwijaya, sebagai pionir dan distributor eksklusif APAR lithium pertama di dunia.
 
 _Dimulai Dari Panggilan Untuk Menolong Banyak Orang_
 

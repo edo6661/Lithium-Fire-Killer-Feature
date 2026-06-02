@@ -132,7 +132,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, delay: 0.2, ease: easeOut }}
-              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg lg:mx-0 text-justify"
+              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg lg:mx-0"
             >
               {hero.description}
             </motion.p>

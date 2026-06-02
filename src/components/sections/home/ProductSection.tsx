@@ -199,7 +199,7 @@ export const ProductSection = () => {
           <div className="pt-20 mt-12 border-t border-white/10">
             <AnimateIn direction="up" className="text-center mb-12">
               <h3 className="text-3xl font-bold text-white mb-4">Varian Produk</h3>
-              <p className="text-foreground-muted font-light max-w-2xl mx-auto">
+              <p className="max-w-2xl mx-auto text-foreground-muted font-light leading-relaxed">
                 Pilih ukuran dan kapasitas silinder yang paling sesuai dengan skala kebutuhan proteksi Anda.
               </p>
             </AnimateIn>

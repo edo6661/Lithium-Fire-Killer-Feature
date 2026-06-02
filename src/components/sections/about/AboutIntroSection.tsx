@@ -51,7 +51,7 @@ export const AboutIntroSection = () => {
               {intro.paragraphs.map((paragraph) => (
                 <p
                   key={paragraph.slice(0, 48)}
-                  className="text-justify text-base leading-relaxed text-foreground-muted sm:text-lg"
+                  className="text-base leading-relaxed text-foreground-muted sm:text-lg"
                 >
                   {paragraph}
                 </p>
