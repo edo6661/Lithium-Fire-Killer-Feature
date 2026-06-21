@@ -1,5 +1,11 @@
 import { Helmet } from "react-helmet-async";
-import { SITE_URL, OG_IMAGE, DEFAULT_SEO } from "../../config/seo";
+import {
+  SITE_URL,
+  OG_IMAGE,
+  OG_IMAGE_WIDTH,
+  OG_IMAGE_HEIGHT,
+  DEFAULT_SEO,
+} from "../../config/seo";
 
 interface PageSeoProps {
   title: string;
@@ -33,8 +39,8 @@ export const PageSeo = ({
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={image} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      <meta property="og:image:width" content={OG_IMAGE_WIDTH} />
+      <meta property="og:image:height" content={OG_IMAGE_HEIGHT} />
       <meta property="og:image:alt" content={title} />
       <meta property="og:locale" content="id_ID" />
 

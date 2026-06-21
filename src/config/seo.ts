@@ -1,7 +1,9 @@
 import { SITE } from "./site";
 
-export const SITE_URL = "https://www.lithiumfirekiller.com"; 
-export const OG_IMAGE = `${SITE_URL}/og-image.png`; 
+export const SITE_URL = "https://www.lithiumfirekiller.com";
+export const OG_IMAGE = `${SITE_URL}/logo/transparent-color.png`;
+export const OG_IMAGE_WIDTH = "612";
+export const OG_IMAGE_HEIGHT = "408";
 
 
 export const DEFAULT_SEO = {
