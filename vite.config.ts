@@ -4,7 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import viteCompression from "vite-plugin-compression";
 import Sitemap from "vite-plugin-sitemap";
 
-const SITE_ROUTES = ["/", "/about", "/lithium-fire-safety", "/contact"];
+const SITE_ROUTES = ["/", "/about", "/lithium-fire-safety", "/contact", "/lfk-x-arkiv"];
+
 
 export default defineConfig({
   plugins: [

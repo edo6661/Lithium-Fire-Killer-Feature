@@ -20,7 +20,7 @@ export const PAGE_SEO = {
   },
   about: {
     path: "/about",
-    title: `Tentang Kami — ${SITE.shortName}`,
+    title: `Tentang Kami — Distributor APAR Lithium Fire Killer | FAST`,
     description:
       "Kenali PT. Famindo Alfa Spektrum Teknologi (FAST), distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 di Indonesia.",
   },
@@ -32,7 +32,7 @@ export const PAGE_SEO = {
   },
   contact: {
     path: "/contact",
-    title: `Kontak — ${SITE.shortName}`,
+    title: `Kontak — Konsultasi Proteksi Kebakaran Lithium | FAST`,
     description:
       "Hubungi PT. Famindo Alfa Spektrum Teknologi (FAST) untuk konsultasi proteksi kebakaran lithium.",
   },
