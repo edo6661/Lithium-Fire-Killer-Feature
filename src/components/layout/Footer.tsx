@@ -218,7 +218,7 @@ export const Footer = () => {
           <div className="flex items-center gap-2">
             <div className="size-1.5 rounded-full bg-accent/40" aria-hidden />
             <p className="text-xs font-bold tracking-widest text-white/15 uppercase">
-              famindofast.com
+              lithiumfirekiller.com
             </p>
           </div>
         </div>

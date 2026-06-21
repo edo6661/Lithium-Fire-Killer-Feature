@@ -11,7 +11,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     Sitemap({
-      hostname: "https://www.famindofast.com",
+      hostname: "https://www.lithiumfirekiller.com",
       dynamicRoutes: SITE_ROUTES.filter((route) => route !== "/"),
       generateRobotsTxt: true,
     }),
