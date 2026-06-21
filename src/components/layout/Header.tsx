@@ -11,7 +11,7 @@ const NAV_ICONS: Record<string, string> = {
   "/": "🏠",
   "/about": "🏢",
   "/lithium-fire-safety": "🔥",
-  "/lfk-x-arkiv": "✨",
+  // "/lfk-x-arkiv": "✨",
   "/contact": "📞",
 };
 

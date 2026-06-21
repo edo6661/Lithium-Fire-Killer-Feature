@@ -6,7 +6,7 @@ export const HEADER_NAV = [
   { label: "Beranda", href: "/" },
   { label: "Tentang Kami", href: "/about" },
   { label: "Lithium Fire Safety", href: "/lithium-fire-safety" },
-  { label: "LFK × Arkiv", href: "/lfk-x-arkiv" },
+  // { label: "LFK × Arkiv", href: "/lfk-x-arkiv" },
   { label: "Kontak", href: "/contact" },
 ] as const;
 
