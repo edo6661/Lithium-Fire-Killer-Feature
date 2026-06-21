@@ -10,3 +10,4 @@ export { StaggerChildren, StaggerItem } from "./StaggerChildren";
 // Global UI
 export { ScrollProgress } from "./ScrollProgress";
 export { WhatsAppButton } from "./WhatsAppButton";
+export { Toast } from "./Toast";

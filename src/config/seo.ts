@@ -1,7 +1,8 @@
 import { SITE } from "./site";
 
-export const SITE_URL = "https://www.famindofast.com";
-export const OG_IMAGE = `${SITE_URL}/og-image.svg`;
+export const SITE_URL = "https://www.lithiumfirekiller.com"; 
+export const OG_IMAGE = `${SITE_URL}/og-image.png`; 
+
 
 export const DEFAULT_SEO = {
   siteName: SITE.shortName,

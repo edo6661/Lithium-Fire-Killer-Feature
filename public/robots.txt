@@ -1,8 +1,6 @@
 User-agent: *
 Allow: /
 
-Disallow: /assets/
 Disallow: /*.json$
 
-Sitemap: https://www.famindofast.com/sitemap.xml
-
+Sitemap: https://www.lithiumfirekiller.com/sitemap.xml

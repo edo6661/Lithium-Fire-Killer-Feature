@@ -7,11 +7,24 @@ const { hero } = LFK_X_ARKIV_CONTENT;
 export const ArkivHeroSection = () => {
   return (
     <section className="relative flex min-h-[100vh] flex-col items-center justify-center overflow-hidden pt-20">
-      <div className="absolute inset-0 z-0 bg-slate-50 flex items-center justify-center">
+      <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-[#1A80C1] via-[#5a9fd4] to-[#eaeff5]">
+        {/* Desktop: full sharp hero */}
         <img
           src="/hero-lfk-x-arkiv.png"
-          alt="LFK x Arkiv"
-          className="block h-full w-full object-cover"
+          alt=""
+          aria-hidden
+          className="hidden h-full w-full object-cover md:block"
+        />
+        {/* Mobile: blurred ambient fill — avoids harsh crop artifacts */}
+        <img
+          src="/hero-lfk-x-arkiv.png"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_20%] opacity-50 blur-lg md:hidden"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#1A80C1]/50 via-[#1A80C1]/25 to-[#1A80C1]/55 md:from-black/5 md:via-transparent md:to-black/20"
+          aria-hidden
         />
       </div>
 
