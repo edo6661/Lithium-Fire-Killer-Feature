@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle2, Download, MessageSquare, ShieldCheck, Weight, Zap, MapPin, X, ShoppingCart } from 'lucide-react';
 import { PRODUCT_CONTENT, type ProductVariant, type ProductPartner } from '../../../content/product';
 import { AnimateIn } from '../../ui/AnimateIn';
@@ -63,6 +64,15 @@ const VariantCard = ({ variant }: { variant: ProductVariant }) => {
 export const ProductSection = () => {
   const [selectedPartner, setSelectedPartner] = useState<ProductPartner | null>(null);
   const product = PRODUCT_CONTENT;
+
+  useEffect(() => {
+    if (!selectedPartner) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [selectedPartner]);
 
   return (
     <section className="relative overflow-hidden bg-background border-y border-white/5 py-20 sm:py-24 lg:py-8" aria-labelledby="product-heading">
@@ -215,13 +225,16 @@ export const ProductSection = () => {
         )}
       </div>
 
-      {/* Partner Locations Modal */}
-      {selectedPartner && (
+      {/* Partner Locations Modal — portaled to body so fixed positioning isn't clipped by section overflow-hidden */}
+      {selectedPartner && createPortal(
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
           onClick={() => setSelectedPartner(null)}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="partner-locations-title"
             className="bg-surface border border-accent/30 rounded-3xl p-8 max-w-md w-full shadow-[0_10px_40px_rgba(56,152,212,0.15)] relative"
             onClick={e => e.stopPropagation()}
           >
@@ -240,7 +253,7 @@ export const ProductSection = () => {
               />
             </div>
 
-            <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+            <h4 id="partner-locations-title" className="text-xl font-bold text-white mb-4 flex items-center gap-3">
               <MapPin className="text-accent" size={24} />
               Lokasi Tersedia
             </h4>
@@ -254,7 +267,8 @@ export const ProductSection = () => {
               ))}
             </ul>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
