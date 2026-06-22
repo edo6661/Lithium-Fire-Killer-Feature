@@ -1,23 +1,28 @@
+import { useTranslation } from "react-i18next";
 import { PageSeo } from "../components/seo/PageSeo";
 import {
   AboutHistorySection,
   AboutIntroSection,
+  AboutLocationSection,
 } from "../components/sections/about";
 import { PAGE_SEO } from "../config/seo";
 
 export const AboutPage = () => {
-  const seo = PAGE_SEO.about;
+  const { t } = useTranslation("about");
+  // Tetap ambil path dari config SEO
+  const seoPath = PAGE_SEO.about.path;
 
   return (
     <>
       <PageSeo
-        title={seo.title}
-        description={seo.description}
-        path={seo.path}
+        title={t("seo.title")}
+        description={t("seo.description")}
+        path={seoPath}
       />
 
       <AboutIntroSection />
       <AboutHistorySection />
+      <AboutLocationSection />
     </>
   );
 };

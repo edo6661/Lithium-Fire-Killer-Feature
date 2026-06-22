@@ -1,43 +1,39 @@
 import { motion } from "framer-motion";
-import { ABOUT_CONTENT } from "../../../content/about";
+import { useTranslation } from "react-i18next";
 import { AnimateIn } from "../../ui/AnimateIn";
 import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
 
-const { history } = ABOUT_CONTENT;
-
 export const AboutHistorySection = () => {
+  const { t } = useTranslation("about");
+
+  const keyFigures = t("history.keyFigures", { returnObjects: true }) as Array<{ name: string; role: string }>;
+  const blocks = t("history.blocks", { returnObjects: true }) as Array<{ subheading: string; paragraphs: string[] }>;
+
   return (
-    <section
-      className="bg-surface border-y border-white/5 py-20 sm:py-24 lg:py-8"
-      aria-labelledby="about-history-heading"
-    >
+    <section className="bg-surface border-y border-white/5 py-20 sm:py-24 lg:py-8" aria-labelledby="about-history-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <AnimateIn direction="up" className="mx-auto max-w-2xl text-center">
           <span className="inline-block rounded-full bg-white/5 border border-white/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-foreground-muted">
-            Sejarah & Visi
+            {t("history.badge")}
           </span>
-          <h2
-            id="about-history-heading"
-            className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-[1.12]"
-          >
-            {history.headline}
+          <h2 id="about-history-heading" className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-[1.12]">
+            {t("history.headline")}
           </h2>
         </AnimateIn>
 
         {/* Key figures */}
         <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-4 sm:flex-row sm:gap-5">
-          {history.keyFigures.map((figure, i) => (
-            <AnimateIn key={figure.name} direction="up" delay={i * 0.1} className="flex-1">
+          {keyFigures.map((figure, idx) => (
+            <AnimateIn key={idx} direction="up" delay={idx * 0.1} className="flex-1">
               <motion.div
                 whileHover={{ y: -5, scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 320, damping: 22 }}
                 className="flex h-full items-center gap-4 rounded-3xl border border-white/10 bg-background/50 backdrop-blur-md px-6 py-5 shadow-xl transition-colors duration-300 hover:border-accent/35 hover:bg-background/70"
               >
                 <div
-                  className={`flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-extrabold shadow-md transition-transform duration-300 hover:scale-110 ${i === 0
-                    ? "bg-accent/20 border border-accent/30 text-accent"
-                    : "bg-white/8 border border-white/15 text-white"
-                    }`}
+                  className={`flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-extrabold shadow-md transition-transform duration-300 hover:scale-110 ${
+                    idx === 0 ? "bg-accent/20 border border-accent/30 text-accent" : "bg-white/8 border border-white/15 text-white"
+                  }`}
                 >
                   {figure.name.split(" ").slice(-1)[0]?.[0] ?? "?"}
                 </div>
@@ -53,7 +49,6 @@ export const AboutHistorySection = () => {
         {/* Timeline */}
         <div className="mx-auto mt-16 max-w-3xl">
           <div className="relative space-y-0">
-            {/* Animated vertical line */}
             <div className="absolute left-5 top-2 bottom-2 w-px bg-white/8" aria-hidden>
               <motion.div
                 initial={{ scaleY: 0 }}
@@ -65,12 +60,11 @@ export const AboutHistorySection = () => {
             </div>
 
             <StaggerChildren staggerDelay={0.22}>
-              {history.blocks
+              {blocks
                 .filter((b) => b.paragraphs.length > 0 || b.subheading)
                 .map((block, idx) => (
-                  <StaggerItem key={block.subheading}>
+                  <StaggerItem key={idx}>
                     <div className="relative flex gap-8 pb-10 last:pb-0 group">
-                      {/* Step circle */}
                       <motion.div
                         whileHover={{ scale: 1.15 }}
                         transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -85,11 +79,8 @@ export const AboutHistorySection = () => {
                         </h3>
                         {block.paragraphs.length > 0 && (
                           <div className="mt-3 space-y-3">
-                            {block.paragraphs.map((paragraph) => (
-                              <p
-                                key={paragraph.slice(0, 48)}
-                                className="text-sm leading-relaxed text-foreground-muted sm:text-base"
-                              >
+                            {block.paragraphs.map((paragraph, pIdx) => (
+                              <p key={pIdx} className="text-sm leading-relaxed text-foreground-muted sm:text-base">
                                 {paragraph}
                               </p>
                             ))}

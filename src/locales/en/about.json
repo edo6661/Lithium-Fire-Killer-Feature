@@ -1,0 +1,70 @@
+{
+    "seo": {
+      "title": "About Us — Lithium Fire Killer Extinguisher Distributor | FAST",
+      "description": "Get to know PT. Famindo Alfa Spektrum Teknologi (FAST), the exclusive distributor of the Lithium Fire Killer Hartindo AF31 extinguisher in Indonesia."
+    },
+    "intro": {
+      "badge": "PT. Famindo Alfa Spektrum Teknologi",
+      "heading": "About Us",
+      "paragraphs": [
+        "PT. Famindo Alfa Spektrum Teknologi (FAST) is a company focused on providing security solutions against fire risks. FAST is the exclusive distributor of the Lithium Fire Killer Hartindo AF31, the world's first fire extinguisher proven effective in extinguishing lithium-ion battery fires without leaving chemical residues harmful to humans or the environment.",
+        "In addition to presenting superior products, FAST is also committed to educating the public about fire hazards, especially lithium-ion battery fires, and providing an understanding of how to handle them safely and effectively."
+      ],
+      "highlights": [
+        "The World's #1 First Lithium Extinguisher Distributor",
+        "Trusted by Government Agencies & Major Business Sectors",
+        "Committed to Safety Education & Socialization"
+      ],
+      "quote": "The world's first fire extinguisher proven effective in extinguishing lithium-ion battery fires without leaving harmful chemical residues.",
+      "coreValues": {
+        "title": "Company's Core Values",
+        "acronym": "NOFIRE",
+        "items": [
+          { "letter": "N", "label": "Nationality" },
+          { "letter": "O", "label": "Ownership" },
+          { "letter": "F", "label": "Focus" },
+          { "letter": "I", "label": "Integrity" },
+          { "letter": "E", "label": "Excellence" }
+        ]
+      }
+    },
+    "history": {
+      "badge": "History & Vision",
+      "headline": "Started From a Calling to Help Many People",
+      "keyFigures": [
+        { "name": "Randall Hartolaksono", "role": "Inventor of Hartindo AF31" },
+        { "name": "Willy Hadiwijaya", "role": "Founder of PT. FAST" }
+      ],
+      "blocks": [
+        {
+          "subheading": "With a Solid Team, Everything is Achievable",
+          "paragraphs": [
+            "This story began with Randall Hartolaksono, the inventor of Lithium Fire Killer Hartindo AF31, with a vision to save many lives from the risk of lithium battery fires in Indonesia. This spirit was then continued through PT. FAST, founded by Willy Hadiwijaya, as the pioneer and exclusive distributor of the world's first lithium fire extinguisher."
+          ]
+        },
+        {
+          "subheading": "Started From a Calling to Help Many People",
+          "paragraphs": [
+            "PT. FAST is committed to continuously innovating and developing the latest products that can help the community face fire hazards. Through various programs, FAST is committed to increasing public awareness to prioritize life protection and be trained in facing potential fire hazards that come unexpectedly."
+          ]
+        },
+        {
+          "subheading": "Continuously Innovating While Educating the Public",
+          "paragraphs": [
+            "PT. FAST does not only act as a provider of fire safety products but is also dedicated to educating and socializing the importance of safety. Through various programs, FAST is committed to increasing public awareness to prioritize life protection and be trained in facing potential fire hazards that come unexpectedly."
+          ]
+        }
+      ]
+    },
+    "location": {
+      "badge": "Find Us",
+      "heading": "Our Location",
+      "description": "Visit our office in Central Jakarta.",
+      "addressLabel": "Address",
+      "hoursLabel": "Operational Hours",
+      "address": "TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Tanah Abang District, Central Jakarta City, Special Capital Region of Jakarta 10220",
+      "hours": "Monday – Friday | 09.00 AM – 05.00 PM WIB",
+      "building": "TCC Tower One Menara Batavia",
+      "city": "Central Jakarta"
+    }
+  }
