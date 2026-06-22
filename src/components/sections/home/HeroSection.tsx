@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
-import { HOME_CONTENT } from "../../../content/home";
+import { useTranslation } from "react-i18next";
 import { ButtonLink } from "../../ui/ButtonLink";
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { StaggerChildren, StaggerItem } from "../../ui/StaggerChildren";
-
-const { hero } = HOME_CONTENT;
 
 const LFK_HERO_PRODUCT = "/products/LFK/LFK_3_KG_[Font].avif";
 
@@ -36,7 +34,8 @@ const FeatureBadge = ({
   </div>
 );
 
-const HeroProductVisual = () => (
+// Mengambil prop 't' untuk translasi badge di dalam visual
+const HeroProductVisual = ({ t }: { t: any }) => (
   <div className="relative aspect-[3/4] w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[360px] xl:max-w-[400px]">
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
       <div className="absolute size-[92%] rounded-full border border-dashed border-white/5" />
@@ -52,29 +51,28 @@ const HeroProductVisual = () => (
       height={520}
     />
     <FeatureBadge
-      title="ZERO RESIDUE"
-      subtitle="Tanpa sisa kimia"
+      title={t("hero.badges.zeroResidue.title")}
+      subtitle={t("hero.badges.zeroResidue.subtitle")}
       icon="check"
       className="absolute left-0 top-[22%] z-20 max-w-[140px] sm:max-w-none"
     />
     <FeatureBadge
-      title="LAB TESTED & CERTIFIED"
-      subtitle="Hartindo Formula"
+      title={t("hero.badges.labTested.title")}
+      subtitle={t("hero.badges.labTested.subtitle")}
       icon="shield"
       className="absolute right-0 bottom-[24%] z-20 max-w-[160px] sm:max-w-none"
     />
   </div>
 );
 
-const STATS = [
-  { value: "#1", label: "APAR Lithium Pertama di Dunia", sublabel: "Terdepan & Terpercaya" },
-  { value: "LFK-AF31", label: "Formula Paten Hartindo", sublabel: "Inovasi Eksklusif" },
-  { value: "0 Residu", label: "Kimia Berbahaya", sublabel: "Aman untuk Lingkungan" },
-];
-
 const easeOut = [0.21, 0.47, 0.32, 0.98] as const;
 
 export const HeroSection = () => {
+  const { t } = useTranslation("home");
+  
+  // Memuat array stat dari file JSON
+  const stats = t("hero.stats", { returnObjects: true }) as Array<{ value: string; label: string; sublabel: string }>;
+
   return (
     <section className="relative overflow-hidden bg-background text-white" aria-labelledby="hero-heading">
       <div className="pointer-events-none absolute -right-40 -top-40 size-[560px] rounded-full bg-accent/5 blur-[100px]" aria-hidden />
@@ -98,7 +96,7 @@ export const HeroSection = () => {
               className="mb-7 inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-accent backdrop-blur-sm"
             >
               <ShieldCheck className="size-4" />
-              HARTINDO AF31 Lithium Fire Killer
+              {t("hero.badge")}
             </motion.div>
             <motion.h1
               id="hero-heading"
@@ -110,7 +108,7 @@ export const HeroSection = () => {
               }}
               className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-5xl xl:text-[3.5rem]"
             >
-              {"Spesialis Perlindungan".split(" ").map((word, i) => (
+              {t("hero.headline.part1").split(" ").map((word, i) => (
                 <motion.span
                   key={i}
                   variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
@@ -124,7 +122,7 @@ export const HeroSection = () => {
                 variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}
                 className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-blue-400 inline-block"
               >
-                Kebakaran Baterai Lithium
+                {t("hero.headline.part2")}
               </motion.span>
             </motion.h1>
 
@@ -134,7 +132,7 @@ export const HeroSection = () => {
               transition={{ duration: 0.55, delay: 0.2, ease: easeOut }}
               className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg lg:mx-0"
             >
-              {hero.description}
+              {t("hero.description")}
             </motion.p>
 
             <motion.div
@@ -145,10 +143,10 @@ export const HeroSection = () => {
             >
               {/* PRIMARY CTA — solid accent, glow, pill shape */}
               <ButtonLink
-                to={hero.cta.href}
+                to="/about"
                 className="group w-full sm:w-auto px-8 py-3.5 text-sm font-bold bg-accent text-white rounded-full shadow-[0_0_24px_rgba(56,152,212,0.45)] hover:shadow-[0_0_40px_rgba(56,152,212,0.65)] hover:-translate-y-0.5 hover:bg-[#2d85bf] transition-all duration-300 ease-out"
               >
-                {hero.cta.label}
+                {t("hero.ctaPrimary")}
                 <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
               </ButtonLink>
 
@@ -158,7 +156,7 @@ export const HeroSection = () => {
                 className="group relative inline-flex items-center gap-2 px-6 py-3.5 text-sm font-bold tracking-wide text-white/70 transition-all duration-300 hover:text-white"
               >
                 <span className="relative">
-                  Hubungi Kami
+                  {t("hero.ctaSecondary")}
                   <span className="absolute inset-x-0 -bottom-0.5 h-px bg-gradient-to-r from-accent to-blue-400 scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" aria-hidden />
                 </span>
                 <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-1 text-accent" />
@@ -167,8 +165,8 @@ export const HeroSection = () => {
 
             {/* STATS — redesigned dengan card glassmorphism per item */}
             <StaggerChildren staggerDelay={0.12} className="mt-14 grid grid-cols-3 gap-3 border-t border-white/10 pt-8">
-              {STATS.map((stat, i) => (
-                <StaggerItem key={stat.label}>
+              {stats.map((stat, i) => (
+                <StaggerItem key={i}> 
                   <motion.div
                     whileHover={{ y: -3, scale: 1.02 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -198,7 +196,8 @@ export const HeroSection = () => {
               animate={{ y: [0, -12, 0], rotate: [0, 0.6, -0.6, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             >
-              <HeroProductVisual />
+              {/* Pass fungsi t ke dalam visual */}
+              <HeroProductVisual t={t} />
             </motion.div>
           </motion.div>
         </div>

@@ -44,7 +44,7 @@ export const ProblemSection = () => {
                 ];
                 return (
                   <motion.div
-                    key={tag.label}
+                    key={i}
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
