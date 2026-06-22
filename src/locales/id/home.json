@@ -1,0 +1,32 @@
+{
+    "hero": {
+      "badge": "HARTINDO AF31 Lithium Fire Killer",
+      "headline": {
+        "part1": "Spesialis Perlindungan",
+        "part2": "Kebakaran Baterai Lithium"
+      },
+      "description": "Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.",
+      "ctaPrimary": "Lihat Profil Perusahaan Kami",
+      "ctaSecondary": "Hubungi Kami",
+      "stats": [
+        { "value": "#1", "label": "APAR Lithium Pertama di Dunia", "sublabel": "Terdepan & Terpercaya" },
+        { "value": "LFK-AF31", "label": "Formula Paten Hartindo", "sublabel": "Inovasi Eksklusif" },
+        { "value": "0 Residu", "label": "Kimia Berbahaya", "sublabel": "Ramah Lingkungan" }
+      ],
+      "badges": {
+        "zeroResidue": { "title": "ZERO RESIDUE", "subtitle": "Tanpa sisa kimia" },
+        "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
+      }
+    },
+    "problem": {
+      "badge": "Kesadaran & Edukasi",
+      "headline": "No Fire, No Fear",
+      "description": "Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.",
+      "cta": "Pelajari Lebih Detail",
+      "tags": [
+        { "label": "Thermal Runaway" },
+        { "label": "Kelas Api Baru" },
+        { "label": "Risiko Ledakan" }
+      ]
+    }
+  }

@@ -1,0 +1,32 @@
+{
+    "hero": {
+      "badge": "HARTINDO AF31 Lithium Fire Killer",
+      "headline": {
+        "part1": "Protection Specialist for",
+        "part2": "Lithium Battery Fires"
+      },
+      "description": "Lithium battery fires are unique and cannot be handled with conventional extinguishing methods. With a deep understanding of thermal runaway, we deliver leading lithium fire protection technology for mobility, energy storage, and your business operations.",
+      "ctaPrimary": "View Our Company Profile",
+      "ctaSecondary": "Contact Us",
+      "stats": [
+        { "value": "#1", "label": "World's First Lithium Extinguisher", "sublabel": "Leading & Trusted" },
+        { "value": "LFK-AF31", "label": "Hartindo Patented Formula", "sublabel": "Exclusive Innovation" },
+        { "value": "0 Residue", "label": "Hazardous Chemicals", "sublabel": "Eco-Friendly" }
+      ],
+      "badges": {
+        "zeroResidue": { "title": "ZERO RESIDUE", "subtitle": "No chemical residue" },
+        "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
+      }
+    },
+    "problem": {
+      "badge": "Awareness & Education",
+      "headline": "No Fire, No Fear",
+      "description": "The rapid development of lithium battery technology brings great advancements across various sectors. However, this progress also introduces the risk of lithium battery fires—a new class of fire that cannot be extinguished with conventional fire extinguishers. Therefore, hazard education and lithium fire response training are top priorities to ensure we are safely prepared for this challenge.",
+      "cta": "Learn More in Detail",
+      "tags": [
+        { "label": "Thermal Runaway" },
+        { "label": "New Fire Class" },
+        { "label": "Explosion Risk" }
+      ]
+    }
+  }

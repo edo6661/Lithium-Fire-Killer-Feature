@@ -1,18 +1,20 @@
 import { AlertTriangle, Zap, Flame, ShieldX, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { HOME_CONTENT } from "../../../content/home";
+import { useTranslation } from "react-i18next";
 import { ButtonLink } from "../../ui/ButtonLink";
 import { AnimateIn } from "../../ui/AnimateIn";
 
-const { problem } = HOME_CONTENT;
-
-const DANGER_TAGS = [
-  { Icon: Zap, label: "Thermal Runaway", color: "text-amber-400" },
-  { Icon: Flame, label: "Kelas Api Baru", color: "text-red-400" },
-  { Icon: ShieldX, label: "Risiko Ledakan", color: "text-accent" },
+const DANGER_ICONS = [
+  { Icon: Zap, color: "text-amber-400" },
+  { Icon: Flame, color: "text-red-400" },
+  { Icon: ShieldX, color: "text-accent" },
 ];
 
 export const ProblemSection = () => {
+  const { t } = useTranslation("home");
+
+  const tags = t("problem.tags", { returnObjects: true }) as Array<{ label: string }>;
+
   return (
     <section className="relative overflow-hidden bg-background py-20 border-y border-white/5 sm:py-24 lg:py-8" aria-labelledby="problem-heading">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -33,7 +35,8 @@ export const ProblemSection = () => {
                 <AlertTriangle className="size-11 stroke-[1.5] text-accent" />
               </motion.div>
 
-              {DANGER_TAGS.map(({ Icon, label, color }, i) => {
+              {tags.map((tag, i) => {
+                const { Icon, color } = DANGER_ICONS[i];
                 const positions = [
                   "absolute -top-2 right-4",
                   "absolute bottom-8 -left-8",
@@ -41,7 +44,7 @@ export const ProblemSection = () => {
                 ];
                 return (
                   <motion.div
-                    key={label}
+                    key={tag.label}
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -49,7 +52,7 @@ export const ProblemSection = () => {
                     className={`${positions[i]} inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold tracking-wide border border-white/10 bg-surface/80 backdrop-blur-md text-white shadow-xl`}
                   >
                     <Icon className={`size-3.5 ${color}`} aria-hidden />
-                    {label}
+                    {tag.label}
                   </motion.div>
                 );
               })}
@@ -60,21 +63,20 @@ export const ProblemSection = () => {
           <AnimateIn direction="right">
             <div className="space-y-6">
               <span className="inline-block rounded-full bg-accent/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-accent border border-accent/20">
-                Kesadaran & Edukasi
+                {t("problem.badge")}
               </span>
               <h2 id="problem-heading" className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl xl:text-5xl leading-[1.12]">
-                {problem.headline}
+                {t("problem.headline")}
               </h2>
               <p className="text-base leading-relaxed text-foreground-muted sm:text-lg">
-                {problem.description}
+                {t("problem.description")}
               </p>
               <div className="pt-2">
-                {/* "Pelajari Lebih Detail" — outlined pill dengan ikon panah diagonal */}
                 <ButtonLink
-                  to={problem.cta.href}
+                  to="/lithium-fire-safety"
                   className="group w-full sm:w-auto inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.04] px-7 py-3.5 text-sm font-bold text-white/85 backdrop-blur-sm transition-all duration-300 hover:border-accent/50 hover:bg-accent/10 hover:text-white hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(56,152,212,0.2)] focus-visible:ring-accent"
                 >
-                  {problem.cta.label}
+                  {t("problem.cta")}
                   <ArrowUpRight className="size-4 text-accent/70 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" aria-hidden />
                 </ButtonLink>
               </div>
