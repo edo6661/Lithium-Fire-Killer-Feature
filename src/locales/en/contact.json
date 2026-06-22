@@ -1,0 +1,55 @@
+{
+    "seo": {
+      "title": "Contact — Lithium Fire Protection Consultation | FAST",
+      "description": "Contact PT. Famindo Alfa Spektrum Teknologi (FAST) for lithium fire protection consultation."
+    },
+    "info": {
+      "badge": "Ready to Help You",
+      "heading": "Contact Information",
+      "description": "Contact our expert team for a lithium fire protection consultation — free, with no commitment.",
+      "hoursLabel": "Operational hours:",
+      "hoursValue": "Monday – Friday, 09.00 AM – 05.00 PM WIB",
+      "channels": [
+        { "id": "phone", "label": "Phone / WhatsApp", "value": "+62 812 9000 3278" },
+        { "id": "email", "label": "Email", "value": "support@famindofast.com" }
+      ]
+    },
+    "form": {
+      "badge": "Send a Message",
+      "heading": "We Are Ready to Answer \nYour Questions",
+      "description": "Tell us your operational security or business protection needs — our expert team will respond within 1×24 working hours.",
+      "trustPoints": [
+        "Free consultation with no commitment",
+        "Certified lithium fire safety team",
+        "Response within 1×24 working hours"
+      ],
+      "trustedBy": {
+        "label": "Trusted by",
+        "value": "EV industries, battery manufacturing, data centers, mining, and various strategic sectors in Indonesia."
+      },
+      "fields": {
+        "firstName": { "label": "First Name", "placeholder": "Enter your first name" },
+        "email": { "label": "Email Address", "placeholder": "name@company.com" },
+        "message": { "label": "Write Your Message Here", "placeholder": "Tell us your security needs..." }
+      },
+      "submitLabel": "Send Message",
+      "errors": {
+        "required": "This field is required.",
+        "emailInvalid": "Invalid email address format."
+      },
+      "success": {
+        "title": "Message sent successfully",
+        "message": "Thank you. We have received your message and will follow up shortly."
+      }
+    },
+    "location": {
+      "badge": "Visit Us",
+      "heading": "Map & Location",
+      "items": [
+        { "id": "address", "label": "Address", "value": "TCC Tower One Menara Batavia — Jl. K.H. Mas Mansyur No. Kav. 126, RT.9/RW.3, Karet Tengsin, Tanah Abang District, Central Jakarta City, Special Capital Region of Jakarta 10220" },
+        { "id": "hours", "label": "Operational Hours", "value": "Monday – Friday | 09.00 AM – 05.00 PM WIB" },
+        { "id": "building", "label": "Building", "value": "TCC Tower One Menara Batavia" }
+      ],
+      "directionsBtn": "Get Directions"
+    }
+  }

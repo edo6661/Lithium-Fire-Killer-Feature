@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { PageSeo } from "../components/seo/PageSeo";
 import {
   ContactFormSection,
@@ -7,14 +8,15 @@ import {
 import { PAGE_SEO } from "../config/seo";
 
 export const ContactPage = () => {
-  const seo = PAGE_SEO.contact;
+  const { t } = useTranslation("contact");
+  const seoPath = PAGE_SEO.contact.path;
 
   return (
     <>
       <PageSeo
-        title={seo.title}
-        description={seo.description}
-        path={seo.path}
+        title={t("seo.title")}
+        description={t("seo.description")}
+        path={seoPath}
       />
 
       <ContactInfoSection />
