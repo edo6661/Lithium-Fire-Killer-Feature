@@ -75,14 +75,13 @@ export const Footer = () => {
             >
               <img
                 src="/logo/transparent-color-2.png"
-                alt="FAST — PT. Famindo Alfa Spektrum Teknologi"
+                alt={t("footer.brandAlt")}
                 className="h-32 w-auto object-contain"
               />
             </Link>
 
             <p className="max-w-[260px] text-sm leading-relaxed text-white/45">
-              Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31.
-              Perlindungan kebakaran lithium terdepan untuk Indonesia.
+              {t("footer.brandDesc")}
             </p>
 
             <ul className="space-y-2.5 pt-1">

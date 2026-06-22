@@ -8,7 +8,7 @@
       }
     },
     "footer": {
-      "socialCta": "Stay up to date by following our social media!",
+      "socialCta": "Tetap terhubung dengan kami melalui media sosial kami!",
       "newsletter": {
         "heading": "Newsletter",
         "description": "Dapatkan update terbaru seputar keamanan kebakaran baterai lithium.",
@@ -21,6 +21,8 @@
       "needHelp": "Butuh bantuan?",
       "waConsultation": "Konsultasi via WhatsApp bersama tim ahli kami.",
       "waOnline": "Online",
-      "waButton": "Hubungi via WhatsApp"
+      "waButton": "Hubungi via WhatsApp",
+      "brandAlt": "FAST — PT. Famindo Alfa Spektrum Teknologi",
+      "brandDesc": "Distributor eksklusif APAR Lithium Fire Killer Hartindo AF31. Perlindungan kebakaran lithium terdepan untuk Indonesia."
     }
   }
