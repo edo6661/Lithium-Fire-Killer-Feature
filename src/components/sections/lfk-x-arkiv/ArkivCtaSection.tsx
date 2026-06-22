@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { LFK_X_ARKIV_CONTENT } from "../../../content";
+import { useTranslation } from "react-i18next";
 import { AnimateIn } from "../../ui/AnimateIn";
 import { Mail, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const { cta } = LFK_X_ARKIV_CONTENT;
-
 export const ArkivCtaSection = () => {
+  const { t } = useTranslation("lfk-x-arkiv");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
@@ -18,34 +17,21 @@ export const ArkivCtaSection = () => {
 
     try {
       const params = new URLSearchParams({ email });
-
-      // Menggunakan URL Web App Apps Script paling baru: AKfycbzcmq_lSelgu9uDYn8lMgUzW8azLCNxX3MT7TqzSAZmbkRb_2QfJ4uKwzu3jMM1wOOS
       await fetch(
         "https://script.google.com/macros/s/AKfycbzcmq_lSelgu9uDYn8lMgUzW8azLCNxX3MT7TqzSAZmbkRb_2QfJ4uKwzu3jMM1wOOS/exec",
         {
           method: "POST",
           body: params,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          mode: "no-cors", // Menggunakan no-cors karena Google Apps Script akan meredirect request ke server hosting Google
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          mode: "no-cors",
         }
       );
-
       setStatus("success");
       setEmail("");
-
-      // Notifikasi sukses akan hilang otomatis setelah 6 detik
-      setTimeout(() => {
-        setStatus("idle");
-      }, 6000);
+      setTimeout(() => setStatus("idle"), 6000);
     } catch (error) {
-      console.error("Error submitting email:", error);
       setStatus("error");
-
-      setTimeout(() => {
-        setStatus("idle");
-      }, 5000);
+      setTimeout(() => setStatus("idle"), 5000);
     }
   };
 
@@ -53,7 +39,6 @@ export const ArkivCtaSection = () => {
     <section className="relative z-10 mx-auto max-w-5xl px-4 py-8 text-center sm:px-6 lg:px-8">
       <AnimateIn direction="up">
         <div className="relative overflow-hidden rounded-[3rem] bg-slate-900 p-10 shadow-2xl sm:p-16 lg:p-20">
-
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2)_0%,transparent_60%)]" />
           <div className="bg-noise absolute inset-0 opacity-10" />
 
@@ -63,11 +48,11 @@ export const ArkivCtaSection = () => {
             </div>
 
             <h2 className="text-3xl font-black tracking-tighter text-white sm:text-4xl lg:text-5xl max-w-2xl leading-tight">
-              {cta.heading}
+              {t("cta.heading")}
             </h2>
 
             <p className="mx-auto mt-6 max-w-xl text-sm font-medium leading-relaxed text-slate-400 sm:text-base">
-              {cta.description}
+              {t("cta.description")}
             </p>
 
             <AnimatePresence mode="wait">
@@ -81,7 +66,7 @@ export const ArkivCtaSection = () => {
                 >
                   <CheckCircle2 className="size-5 shrink-0 text-green-400" />
                   <span className="text-sm font-bold text-green-400 text-left">
-                    Terima kasih! Email Anda telah tersimpan dan tim kami akan segera menghubungi Anda.
+                    {t("cta.successMessage")}
                   </span>
                 </motion.div>
               ) : (
@@ -98,7 +83,7 @@ export const ArkivCtaSection = () => {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={cta.inputPlaceholder}
+                    placeholder={t("cta.inputPlaceholder")}
                     required
                     disabled={status === "loading"}
                     className="w-full rounded-full border border-white/20 bg-white/5 py-4 pl-6 pr-36 sm:pr-40 text-sm font-bold text-white placeholder:text-slate-500 focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 backdrop-blur-md transition-all disabled:opacity-50"
@@ -112,14 +97,14 @@ export const ArkivCtaSection = () => {
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
                       <>
-                        Join List
-                        <ArrowRight className="size-4" />
+                        {t("cta.button")}
+                        <ArrowRight className="size-4 hidden sm:block" />
                       </>
                     )}
                   </button>
                   {status === "error" && (
                     <p className="absolute -bottom-7 left-0 right-0 text-center text-xs font-bold text-red-400">
-                      Terjadi kesalahan jaringan. Silakan coba lagi.
+                      {t("cta.errorMessage")}
                     </p>
                   )}
                 </motion.form>
@@ -127,7 +112,7 @@ export const ArkivCtaSection = () => {
             </AnimatePresence>
 
             <p className="mt-8 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-              Limited Edition • Exclusive Drop
+              {t("cta.limitedTag")}
             </p>
           </div>
         </div>

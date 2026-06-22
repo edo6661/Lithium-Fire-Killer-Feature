@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { PageSeo } from "../components/seo/PageSeo";
 import { PAGE_SEO } from "../config/seo";
 import {
@@ -6,17 +7,22 @@ import {
   ArkivProductSection,
   PaymentInstructionModal,
   ArkivCtaSection,
+  ArkivPaymentSection,
 } from "../components/sections/lfk-x-arkiv";
 import { FloatingBlobs } from "../components/sections/lfk-x-arkiv/FloatingBlobs";
 import { Toast } from "../components/ui/Toast";
 import { useCreateInvoiceVa } from "../hooks/useCreateInvoiceVa";
 
 export const LfkXArkivPage = () => {
-  const seo = PAGE_SEO.lfkXArkiv;
+  const { t } = useTranslation("lfk-x-arkiv");
   const {
+    error,
+    isLoading,
     vaData,
     isModalOpen,
+    isPaymentComplete,
     toast,
+    handleCreateVA,
     markPaymentPaid,
     handlePaymentComplete,
     closeModal,
@@ -26,9 +32,9 @@ export const LfkXArkivPage = () => {
   return (
     <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900 -mt-[72px] pt-[72px]">
       <PageSeo
-        title={seo.title}
-        description={seo.description}
-        path={seo.path}
+        title={t("seo.title")}
+        description={t("seo.description")}
+        path={PAGE_SEO.lfkXArkiv.path}
       />
 
       <FloatingBlobs className="z-0" />
@@ -38,6 +44,15 @@ export const LfkXArkivPage = () => {
         <ArkivVisionarySection />
         <ArkivProductSection />
         
+        {/* Tambahkan ArkivPaymentSection di sini jika diperlukan (sesuai kode asli jika ada) */}
+        <ArkivPaymentSection 
+          onCreateVA={handleCreateVA} 
+          isLoading={isLoading} 
+          error={error} 
+          isPaymentComplete={isPaymentComplete} 
+          vaData={vaData} 
+        />
+
         <ArkivCtaSection />
       </div>
 

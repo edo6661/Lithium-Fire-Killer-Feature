@@ -1,0 +1,104 @@
+{
+    "seo": {
+      "title": "LFK × Arkiv Limited Edition — FAST",
+      "description": "Lithium Fire Killer × Arkiv: Kolaborasi edisi terbatas antara seni avant-garde dan revolusi keselamatan kebakaran."
+    },
+    "hero": {
+      "badge": "Kolaborasi Eksklusif",
+      "headlinePart1": "WHERE MASTERPIECE",
+      "headlinePart2": "MEETS PROTECTION",
+      "subheadline": "Lithium Fire Killer × Arkiv: Kolaborasi edisi terbatas antara seni avant-garde dan revolusi keselamatan kebakaran."
+    },
+    "visionary": {
+      "heading": "Sang Visioner",
+      "subheading": "SANG SENIMAN: ARKIV VILMANSA",
+      "description": "Lahir di Bandung, Arkiv adalah seniman kontemporer yang diakui secara global, menjembatani seni lowbrow dan galeri kelas atas. Dilatih sebagai seorang arsitek, ia menerjemahkan kesadaran spasial yang terstruktur menjadi narasi visual yang membebaskan dan mengalir.\n\nGaya khasnya melambungkannya dari mainan seni vinyl ke kanvas global yang masif, mendefinisikan era baru seni kontemporer Indonesia.",
+      "highlights": [
+        { "label": "Proyek Kolaborasi", "desc": "IKEA, Volkswagen, dan RWB." },
+        { "label": "Pasar Seni", "desc": "Sangat diminati dari HK hingga LA." },
+        { "label": "Kemitraan BAPE", "desc": "Kolaborasi seniman Asia Tenggara pertama." }
+      ],
+      "quote": "Seni kehidupan adalah seni menjaga keselamatan agar kita dapat fokus pada apa yang penting dan hidup lebih lama.",
+      "quoteAuthor": "— MANIFESTO LITHIUM FIRE KILLER X ARKIV"
+    },
+    "product": {
+      "badge": "ANATOMI MAHAKARYA",
+      "heading": "TEMUI SARU YANG DIDEFINISIKAN ULANG",
+      "description": "Ini bukan sekadar alat pemadam biasa. Ini adalah mahakarya bersertifikat dengan fungsi ganda. Direkayasa dengan teknologi mutakhir untuk menetralkan kebakaran baterai secara instan, dibalut dengan garis tegas karakter ikonik Arkiv, Saru.",
+      "statement": "Mengubah alat keselamatan menjadi karya utama yang ingin Anda pajang.",
+      "whyArt": {
+        "title": "Mengapa Seni?",
+        "content": "Sudah terlalu lama, alat keselamatan disembunyikan di dalam lemari gelap. Kami menggunakan seni untuk mengedukasi, mendobrak, dan mengangkat nilai keselamatan kebakaran dari sesuatu yang merusak pemandangan menjadi pusat perhatian.",
+        "label": "LEBIH DARI SEKADAR DEKORASI"
+      },
+      "tags": [
+        "Dioptimalkan untuk Lithium-Ion (AF31)",
+        "Seni Koleksi (Kualitas Museum)",
+        "Ramah Lingkungan (Non-toksik)",
+        "Fungsi Ganda Seni & Keselamatan"
+      ],
+      "tableHeader": "TINGKAT EKSKLUSIVITAS",
+      "specs": [
+        { "label": "Edisi", "value": "Lithium Fire Killer × Arkiv — Edisi SARU" },
+        {
+          "label": "Kelangkaan",
+          "tiers": [
+            { "label": "Tingkat 1: Legendaris", "value": "8 Buah (1-8 / 100)" },
+            { "label": "Tingkat 2: Sangat Terbatas", "value": "92 Buah (9-100 / 100)" }
+          ]
+        },
+        { "label": "Teknologi", "value": "Formula Paten Hartindo AF31\nMulti-fungsi untuk beragam kelas api [A, B, D, F/K & L]" },
+        { "label": "Sertifikasi", "value": "Tersertifikasi SNI & Diuji di Lab & Disertifikasi oleh Institusi Internasional" }
+      ]
+    },
+    "cta": {
+      "heading": "Jangan Sembunyikan Keselamatan Anda. Tampilkan.",
+      "description": "Setelah 100 karya edisi terbatas ini habis, mereka tidak akan diproduksi ulang. Daftar untuk mendapatkan akses prioritas pembelian.",
+      "inputPlaceholder": "[ Masukkan alamat email Anda... ]",
+      "button": "DAPATKAN AKSES PRIORITAS",
+      "successMessage": "Terima kasih! Email Anda telah tersimpan dan tim kami akan segera menghubungi Anda.",
+      "errorMessage": "Terjadi kesalahan jaringan. Silakan coba lagi.",
+      "limitedTag": "Edisi Terbatas • Rilis Eksklusif"
+    },
+    "payment": {
+      "badge": "Pembayaran Aman",
+      "heading": "Selesaikan Pembelian Anda",
+      "description": "Buat Virtual Account untuk mengamankan karya LFK × Arkiv edisi terbatas Anda. Pembayaran diproses secara aman melalui YUKK Payment Gateway.",
+      "totalLabel": "Total Tagihan",
+      "successHeading": "Pembayaran Lunas",
+      "successDescPart1": "Tagihan",
+      "successDescPart2": "sebesar",
+      "successDescPart3": "telah berhasil dibayar.",
+      "form": {
+        "nameLabel": "Nama Lengkap",
+        "namePlaceholder": "Nama sesuai rekening",
+        "emailLabel": "Email",
+        "emailPlaceholder": "email@example.com",
+        "phoneLabel": "No. WhatsApp / Telepon",
+        "phonePlaceholder": "628123456789",
+        "bankLegend": "Pilih Bank Virtual Account",
+        "secureNote": "Pembayaran aman melalui YUKK Payment Gateway. Nomor VA unik untuk transaksi ini.",
+        "submitBtn": "Buat Virtual Account",
+        "loadingBtn": "Membuat Virtual Account..."
+      },
+      "modal": {
+        "successHeading": "Pembayaran Berhasil Diterima!",
+        "successDescPart1": "Pembayaran untuk",
+        "successDescPart2": "sebesar",
+        "successDescPart3": "telah kami terima.",
+        "finishBtn": "Selesai",
+        "instructionBadge": "Instruksi Pembayaran",
+        "instructionHeading": "Virtual Account",
+        "waitingBadge": "Menunggu Pembayaran",
+        "nominalLabel": "Nominal Tagihan",
+        "docLabel": "No. dokumen:",
+        "bankLabel": "Bank Tujuan",
+        "vaLabel": "Nomor Virtual Account",
+        "copyBtn": "Salin",
+        "copiedBtn": "Tersalin",
+        "checkBtn": "Cek Status Pembayaran",
+        "checkingBtn": "Memeriksa Status...",
+        "autoUpdateNote": "Status diperbarui otomatis setiap 5 detik setelah Anda transfer."
+      }
+    }
+  }

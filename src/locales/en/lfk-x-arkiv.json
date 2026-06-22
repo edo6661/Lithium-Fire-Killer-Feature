@@ -1,0 +1,104 @@
+{
+    "seo": {
+      "title": "LFK × Arkiv Limited Edition — FAST",
+      "description": "Lithium Fire Killer × Arkiv: A limited-edition collision of avant-garde art and revolutionary fire safety."
+    },
+    "hero": {
+      "badge": "Exclusive Collaboration",
+      "headlinePart1": "WHERE MASTERPIECE",
+      "headlinePart2": "MEETS PROTECTION",
+      "subheadline": "Lithium Fire Killer × Arkiv: A limited-edition collision of avant-garde art and revolutionary fire safety."
+    },
+    "visionary": {
+      "heading": "The Visionary",
+      "subheading": "THE ARTIST: ARKIV VILMANSA",
+      "description": "Born in Bandung, Arkiv is a globally acclaimed contemporary artist bridging lowbrow art and high-end galleries. Trained as an architect, he translates structured spatial awareness into liberating, fluid visual narratives.\n\nHis distinct style catapulted him from vinyl art toys to massive global canvases, defining a new era of Indonesian contemporary art.",
+      "highlights": [
+        { "label": "Brand Projects", "desc": "IKEA, Volkswagen, and RWB." },
+        { "label": "Art Market", "desc": "Sought after from HK to LA." },
+        { "label": "BAPE Partnership", "desc": "First SE Asian artist collab." }
+      ],
+      "quote": "The art of living is the art of staying safe so we can focus on what matters and live longer.",
+      "quoteAuthor": "— LITHIUM FIRE KILLER X ARKIV MANIFEST"
+    },
+    "product": {
+      "badge": "ANATOMY OF A MASTERPIECE",
+      "heading": "MEET SARU REIMAGINED",
+      "description": "This isn't just an extinguisher. It’s a certified, dual-purpose masterpiece. Engineered with cutting-edge technology to neutralize battery fires instantly, cloaked in the bold lines of Arkiv’s iconic Saru.",
+      "statement": "Evolving safety into a centerpiece you’ll want to display.",
+      "whyArt": {
+        "title": "Why Art?",
+        "content": "For too long, safety was hidden in dark cupboards. We are using art to educate, disrupt, and elevate fire safety from an eyesore to a highlight.",
+        "label": "BEYOND DECORATION"
+      },
+      "tags": [
+        "Lithium-Ion Optimized (AF31)",
+        "Collectible Art (Museum Grade)",
+        "Eco-Friendly (Non-toxic)",
+        "Dual-Purpose Art & Safety"
+      ],
+      "tableHeader": "EXCLUSIVITY TIERS",
+      "specs": [
+        { "label": "Edition", "value": "Lithium Fire Killer × Arkiv — SARU Edition" },
+        {
+          "label": "Rarity",
+          "tiers": [
+            { "label": "Tier 1: Legendary", "value": "8 Pieces (1-8 / 100)" },
+            { "label": "Tier 2: Ultra-Limited", "value": "92 Pieces (9-100 / 100)" }
+          ]
+        },
+        { "label": "Technology", "value": "Hartindo AF31 Patent Formula\nMulti-function against classes of fires [A, B, D, F/K & L]" },
+        { "label": "Certification", "value": "SNI Certified & Lab Tested & Certified by International Institutions" }
+      ]
+    },
+    "cta": {
+      "heading": "Don't Hide Your Safety. Display It.",
+      "description": "Once these 100 limited-edition pieces are gone, they will not be restocked. Sign up for priority access to the drop.",
+      "inputPlaceholder": "[ Enter your email address... ]",
+      "button": "GET PRIORITY ACCESS",
+      "successMessage": "Thank you! Your email has been saved and our team will contact you shortly.",
+      "errorMessage": "A network error occurred. Please try again.",
+      "limitedTag": "Limited Edition • Exclusive Drop"
+    },
+    "payment": {
+      "badge": "Secure Checkout",
+      "heading": "Complete Your Purchase",
+      "description": "Generate a Virtual Account to secure your limited-edition LFK × Arkiv piece. Payment is processed securely via YUKK Payment Gateway.",
+      "totalLabel": "Total Due",
+      "successHeading": "Payment Successful",
+      "successDescPart1": "The bill",
+      "successDescPart2": "for",
+      "successDescPart3": "has been successfully paid.",
+      "form": {
+        "nameLabel": "Full Name",
+        "namePlaceholder": "Name on bank account",
+        "emailLabel": "Email",
+        "emailPlaceholder": "email@example.com",
+        "phoneLabel": "WhatsApp / Phone No.",
+        "phonePlaceholder": "628123456789",
+        "bankLegend": "Select Virtual Account Bank",
+        "secureNote": "Secure payment via YUKK Payment Gateway. Unique VA number for this transaction.",
+        "submitBtn": "Generate Virtual Account",
+        "loadingBtn": "Generating Virtual Account..."
+      },
+      "modal": {
+        "successHeading": "Payment Successfully Received!",
+        "successDescPart1": "Payment for",
+        "successDescPart2": "of",
+        "successDescPart3": "has been received.",
+        "finishBtn": "Done",
+        "instructionBadge": "Payment Instructions",
+        "instructionHeading": "Virtual Account",
+        "waitingBadge": "Awaiting Payment",
+        "nominalLabel": "Billing Amount",
+        "docLabel": "Doc No.:",
+        "bankLabel": "Destination Bank",
+        "vaLabel": "Virtual Account Number",
+        "copyBtn": "Copy",
+        "copiedBtn": "Copied",
+        "checkBtn": "Check Payment Status",
+        "checkingBtn": "Checking Status...",
+        "autoUpdateNote": "Status updates automatically every 5 seconds after you transfer."
+      }
+    }
+  }

@@ -1,12 +1,10 @@
-// path: src/components/sections/lfk-x-arkiv/ArkivVisionarySection.tsx
-
-import { LFK_X_ARKIV_CONTENT } from "../../../content";
+import { useTranslation } from "react-i18next";
 import { AnimateIn } from "../../ui/AnimateIn";
 import { Sparkles, Layout, Globe, Star } from "lucide-react";
 
-const { visionary } = LFK_X_ARKIV_CONTENT;
-
 export const ArkivVisionarySection = () => {
+  const { t } = useTranslation("lfk-x-arkiv");
+  const highlights = (t("visionary.highlights", { returnObjects: true }) || []) as Array<{ label: string; desc: string }>;
   const icons = [Layout, Globe, Star];
 
   return (
@@ -16,11 +14,7 @@ export const ArkivVisionarySection = () => {
           <AnimateIn direction="right">
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2.5rem] bg-slate-200 shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/20 to-transparent z-10" />
-              <img
-                src="/arkiv/arkiv-profile.jpeg"
-                alt="Arkiv Vilmansa"
-                className="size-full object-cover grayscale-[20%] transition-transform duration-700 hover:scale-105"
-              />
+              <img src="/arkiv/arkiv-profile.jpeg" alt="Arkiv Vilmansa" className="size-full object-cover grayscale-[20%] transition-transform duration-700 hover:scale-105" />
               <div className="absolute -bottom-6 -right-6 size-32 rounded-full border border-white/40 bg-white/20 backdrop-blur-xl z-20 flex items-center justify-center shadow-xl">
                 <Sparkles className="size-10 text-slate-800" />
               </div>
@@ -31,21 +25,21 @@ export const ArkivVisionarySection = () => {
         <div className="lg:col-span-7">
           <AnimateIn direction="left" delay={0.2} className="space-y-10">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-accent mb-4">{visionary.heading}</p>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-accent mb-4">{t("visionary.heading")}</p>
               <h2 className="text-4xl font-black tracking-tighter text-slate-900 sm:text-5xl leading-[1.1]">
-                {visionary.subheading}
+                {t("visionary.subheading")}
               </h2>
             </div>
 
             <div className="space-y-6">
               <p className="text-base leading-relaxed text-slate-700 sm:text-lg whitespace-pre-line">
-                {visionary.description}
+                {t("visionary.description")}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-y border-slate-300/50 py-8">
-              {visionary.highlights.map((item, idx) => {
-                const Icon = icons[idx];
+              {highlights.map((item, idx) => {
+                const Icon = icons[idx] || Star;
                 return (
                   <div key={idx} className="flex flex-col gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-lg">
@@ -63,10 +57,10 @@ export const ArkivVisionarySection = () => {
             <div className="relative pl-10 pt-4">
               <span className="absolute left-0 top-0 text-7xl text-slate-200 font-serif leading-none">"</span>
               <p className="text-xl font-bold italic leading-relaxed text-slate-800 relative z-10">
-                {visionary.quote}
+                {t("visionary.quote")}
               </p>
               <p className="mt-4 text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
-                {visionary.quoteAuthor}
+                {t("visionary.quoteAuthor")}
               </p>
             </div>
           </AnimateIn>
