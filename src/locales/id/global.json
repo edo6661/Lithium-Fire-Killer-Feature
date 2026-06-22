@@ -1,0 +1,26 @@
+{
+    "header": {
+      "nav": {
+        "home": "Beranda",
+        "about": "Tentang Kami",
+        "lithiumFireSafety": "Lithium Fire Safety",
+        "contact": "Kontak"
+      }
+    },
+    "footer": {
+      "socialCta": "Stay up to date by following our social media!",
+      "newsletter": {
+        "heading": "Newsletter",
+        "description": "Dapatkan update terbaru seputar keamanan kebakaran baterai lithium.",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Email",
+        "submitButton": "Kirim Informasi",
+        "successMessage": "Berhasil berlangganan!"
+      },
+      "copyright": "Hak cipta dilindungi.",
+      "needHelp": "Butuh bantuan?",
+      "waConsultation": "Konsultasi via WhatsApp bersama tim ahli kami.",
+      "waOnline": "Online",
+      "waButton": "Hubungi via WhatsApp"
+    }
+  }

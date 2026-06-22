@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { CONTACT } from "../../config/site";
 
 const WA_NUMBER = "6281290003278";
@@ -21,6 +22,7 @@ const WhatsAppIcon = () => (
 );
 
 export const WhatsAppButton = () => {
+  const { t } = useTranslation("global");
   const [visible, setVisible] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -66,16 +68,18 @@ export const WhatsAppButton = () => {
                 role="tooltip"
               >
                 <div className="mb-2 flex items-center gap-2">
-                  {/* Pulsing online dot — CSS only */}
+                  {/* Pulsing online dot */}
                   <span className="relative flex size-2">
                     <span className="absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-60 animate-ping" style={{ animationDuration: "2s" }} />
                     <span className="relative inline-flex size-2 rounded-full bg-[#25D366]" />
                   </span>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#25D366]">Online</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#25D366]">
+                    {t("footer.waOnline")}
+                  </p>
                 </div>
-                <p className="text-xs font-bold text-white">Butuh bantuan?</p>
+                <p className="text-xs font-bold text-white">{t("footer.needHelp")}</p>
                 <p className="mt-1 text-xs font-medium leading-relaxed text-white/50">
-                  Konsultasi via WhatsApp bersama tim ahli kami.
+                  {t("footer.waConsultation")}
                 </p>
                 {/* Arrow tail */}
                 <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-b border-r border-white/10 bg-surface" />
@@ -98,7 +102,7 @@ export const WhatsAppButton = () => {
             transition={{ type: "spring", stiffness: 380, damping: 22 }}
             className="relative flex size-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_6px_24px_rgba(37,211,102,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 sm:size-[60px]"
           >
-            {/* Ping ring — CSS, not JS */}
+            {/* Ping ring */}
             <span
               className="absolute inset-0 rounded-full bg-[#25D366] opacity-25 animate-ping"
               style={{ animationDuration: "2.5s" }}
@@ -111,7 +115,3 @@ export const WhatsAppButton = () => {
     </AnimatePresence>
   );
 };
-
-
-
-

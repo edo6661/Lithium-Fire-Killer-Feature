@@ -1,0 +1,26 @@
+{
+    "header": {
+      "nav": {
+        "home": "Home",
+        "about": "About Us",
+        "lithiumFireSafety": "Lithium Fire Safety",
+        "contact": "Contact"
+      }
+    },
+    "footer": {
+      "socialCta": "Stay up to date by following our social media!",
+      "newsletter": {
+        "heading": "Newsletter",
+        "description": "Get the latest updates on lithium battery fire safety.",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Email",
+        "submitButton": "Send Information",
+        "successMessage": "Successfully subscribed!"
+      },
+      "copyright": "All rights reserved.",
+      "needHelp": "Need help?",
+      "waConsultation": "Consult via WhatsApp with our expert team.",
+      "waOnline": "Online",
+      "waButton": "Contact via WhatsApp"
+    }
+  }

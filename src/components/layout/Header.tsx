@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { HEADER_NAV } from "../../content";
 import { SITE } from "../../config/site";
 
@@ -19,11 +20,26 @@ export const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { t, i18n } = useTranslation("global");
 
-  // Cek apakah user sedang berada di halaman eksklusif Arkiv
   const isArkivPage = location.pathname === "/lfk-x-arkiv";
 
-  // Scroll for header bg
+  // Helper untuk translasikan label navigasi
+  const getNavLabel = (href: string) => {
+    switch (href) {
+      case "/": return t("header.nav.home");
+      case "/about": return t("header.nav.about");
+      case "/lithium-fire-safety": return t("header.nav.lithiumFireSafety");
+      case "/contact": return t("header.nav.contact");
+      default: return "";
+    }
+  };
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === "id" ? "en" : "id";
+    i18n.changeLanguage(nextLang);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -32,7 +48,6 @@ export const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Escape key closes mobile menu
   useEffect(() => {
     if (!mobileOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,7 +57,6 @@ export const Header = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [mobileOpen]);
 
-  // Lock scroll when mobile open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
@@ -53,12 +67,12 @@ export const Header = () => {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-in-out ${scrolled || mobileOpen
-        ? isArkivPage
-          ? "bg-white/95 backdrop-blur-xl border-b border-slate-200 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
-          : "bg-surface/80 backdrop-blur-xl border-b border-white/10 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-        : isArkivPage
-          ? "bg-white border-b border-transparent py-6"
-          : "bg-gradient-to-b from-background/80 to-transparent py-6 border-b border-transparent"
+          ? isArkivPage
+            ? "bg-white/95 backdrop-blur-xl border-b border-slate-200 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
+            : "bg-surface/80 backdrop-blur-xl border-b border-white/10 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+          : isArkivPage
+            ? "bg-white border-b border-transparent py-6"
+            : "bg-gradient-to-b from-background/80 to-transparent py-6 border-b border-transparent"
         }`}
     >
       <div className="container mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 md:px-12">
@@ -77,36 +91,51 @@ export const Header = () => {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center space-x-8" aria-label="Navigasi utama">
-          {NAV_LINKS.map((link) => (
-            <NavLink
-              key={link.href}
-              to={link.href}
-              end={link.href === "/"}
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className={({ isActive }) =>
-                `group relative py-2 text-sm font-semibold transition-colors duration-300 ${isArkivPage
-                  ? isActive
-                    ? "text-slate-900"
-                    : "text-slate-600 hover:text-slate-900"
-                  : isActive
-                    ? "text-white"
-                    : "text-foreground/80 hover:text-white"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  {link.label}
-                  <span
-                    className={`absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-300 ease-out ${isActive ? "w-full" : "w-0 group-hover:w-full"
-                      } ${isArkivPage ? "bg-slate-900" : "bg-accent"}`}
-                  />
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
+        <div className="hidden md:flex items-center space-x-8">
+          <nav className="flex items-center space-x-8" aria-label="Navigasi utama">
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.href}
+                to={link.href}
+                end={link.href === "/"}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className={({ isActive }) =>
+                  `group relative py-2 text-sm font-semibold transition-colors duration-300 ${isArkivPage
+                    ? isActive
+                      ? "text-slate-900"
+                      : "text-slate-600 hover:text-slate-900"
+                    : isActive
+                      ? "text-white"
+                      : "text-foreground/80 hover:text-white"
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {getNavLabel(link.href)}
+                    <span
+                      className={`absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-300 ease-out ${isActive ? "w-full" : "w-0 group-hover:w-full"
+                        } ${isArkivPage ? "bg-slate-900" : "bg-accent"}`}
+                    />
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Desktop Language Switcher */}
+          <button
+            onClick={toggleLanguage}
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-all hover:scale-105 ${
+              isArkivPage
+                ? "border-slate-300 text-slate-700 hover:bg-slate-100"
+                : "border-white/20 text-white hover:bg-white/10"
+            }`}
+          >
+            <Globe className="size-3.5" />
+            {i18n.language.toUpperCase()}
+          </button>
+        </div>
 
         {/* Mobile toggle */}
         <button
@@ -188,24 +217,39 @@ export const Header = () => {
                         <>
                           <span
                             className={`flex size-9 shrink-0 items-center justify-center rounded-xl border text-base transition-colors ${isActive
-                              ? isArkivPage
-                                ? "border-transparent bg-white/20"
-                                : "border-white/5 bg-background/60"
-                              : isArkivPage
-                                ? "border-slate-300/50 bg-slate-200/50"
-                                : "border-white/5 bg-background/60"
+                                ? isArkivPage
+                                  ? "border-transparent bg-white/20"
+                                  : "border-white/5 bg-background/60"
+                                : isArkivPage
+                                  ? "border-slate-300/50 bg-slate-200/50"
+                                  : "border-white/5 bg-background/60"
                               }`}
                             aria-hidden
                           >
                             {NAV_ICONS[link.href]}
                           </span>
-                          {link.label}
+                          {getNavLabel(link.href)}
                         </>
                       )}
                     </NavLink>
                   </motion.li>
                 ))}
               </ul>
+
+              {/* Mobile Language Switcher */}
+              <div className={`mx-1 mt-3 flex items-center justify-between border-t pt-3 ${isArkivPage ? "border-slate-200" : "border-white/8"}`}>
+                <button
+                  onClick={toggleLanguage}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold transition-all ${
+                    isArkivPage
+                      ? "border-slate-300 text-slate-700 hover:bg-slate-100"
+                      : "border-white/20 text-white hover:bg-white/10"
+                  }`}
+                >
+                  <Globe className="size-4" />
+                  {i18n.language.toUpperCase()}
+                </button>
+              </div>
 
               <div
                 className={`mx-1 mt-3 border-t pt-3 ${isArkivPage ? "border-slate-200" : "border-white/8"
@@ -224,7 +268,7 @@ export const Header = () => {
                   >
                     💬
                   </span>
-                  Hubungi via WhatsApp
+                  {t("footer.waButton")}
                 </a>
               </div>
             </motion.nav>
