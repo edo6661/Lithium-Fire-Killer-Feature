@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { PageSeo } from "../components/seo/PageSeo";
 import {
   ContactCtaSection,
@@ -6,14 +7,14 @@ import {
 import { PAGE_SEO } from "../config/seo";
 
 export const LithiumFireSafetyPage = () => {
-  const seo = PAGE_SEO.lithiumFireSafety;
+  const { t } = useTranslation("lithium-fire-safety");
 
   return (
     <>
       <PageSeo
-        title={seo.title}
-        description={seo.description}
-        path={seo.path}
+        title={t("seo.title")}
+        description={t("seo.description")}
+        path={PAGE_SEO.lithiumFireSafety.path}
       />
 
       <ProtectionCategoriesSection />

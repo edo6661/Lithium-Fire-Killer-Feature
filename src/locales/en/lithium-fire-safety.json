@@ -1,0 +1,76 @@
+{
+    "seo": {
+      "title": "Lithium Fire Safety — FAST",
+      "description": "Lithium fire protection solutions: EV Safety, Business Safety, Mining Safety, and EPC methods from FAST."
+    },
+    "protection": {
+      "badge": "Protection Services",
+      "heading": "Protection Categories",
+      "categories": [
+        {
+          "id": "ev-safety",
+          "title": "Electric Vehicle (EV) Safety",
+          "tabLabel": "EV Safety",
+          "paragraphs": [
+            "The electric vehicle (EV) industry in Indonesia is growing very rapidly and will soon become an essential part of the public's transportation needs.",
+            "Therefore, every EV owner needs to understand how to maintain their vehicle while protecting themselves from the risk of lithium battery fires that can occur at any time."
+          ],
+          "evGrowthChart": {
+            "heading": "Estimated EV growth in Indonesia",
+            "sourcePrefix": "Estimated EV growth in Indonesia according to",
+            "sourceLabel": "Tens of Millions of Electric Vehicles Targeted to Operate by 2030, Here is the Calculation — Investor Trust"
+          }
+        },
+        {
+          "id": "business-safety",
+          "title": "Business Safety",
+          "tabLabel": "Business Safety",
+          "paragraphs": [
+            "Various business sectors in Indonesia have now adopted lithium battery-based technology, including the battery manufacturing industry itself. To protect employees and maintain the sustainability of company assets, the implementation of security systems against lithium battery fire risks is an absolute necessity."
+          ],
+          "subheading": "Securing Various Business Sectors in Indonesia",
+          "subheadingParagraph": "PT. FAST is here as a strategic partner for various industrial sectors in Indonesia in facing the risk of lithium battery fires. We not only provide leading protection solutions but are also committed to protecting employees, assets, and business continuity through education and the application of effective safety standards.",
+          "sectorsLabel": "Sectors served:",
+          "sectors": [
+            "EV Charging Station",
+            "Battery Storage & Manufacturer",
+            "Manufacturer",
+            "Data Center",
+            "Logistics",
+            "Energy Powerplant",
+            "Research Laboratory",
+            "Telecommunication"
+          ]
+        },
+        {
+          "id": "mining-safety",
+          "title": "Mining Safety",
+          "tabLabel": "Mining Safety",
+          "byline": "by PT. Fastindo Intiraya Solusi Tambang — FIRST",
+          "paragraphs": [
+            "The mining industry has highly complex safety challenges and requires specific solutions from experienced experts. Therefore, FIRST (PT. Fastindo Intiraya Solusi Tambang) is here with a strong commitment to bringing leading technology and trusted services to maintain safety and ensure Indonesian mining remains at the forefront."
+          ],
+          "epc": {
+            "methodLabel": "Working Methodology",
+            "heading": "EPC Method",
+            "description": "EPC (Engineering, Procurement, and Construction) is the method used by FIRST to design solutions according to specific needs at mining sites. This process includes comprehensive planning, the formulation of fire prevention mechanisms, detector integration, to the installation of fire protection systems. With the EPC approach, FIRST ensures every stage is carried out precisely and tailored to client needs.",
+            "phaseLabel": "Phase",
+            "stepsHeading": "EPC Stages:",
+            "steps": [
+              "Comprehensive planning",
+              "Formulation of fire prevention mechanism",
+              "Detector integration",
+              "Precise fire protection system installation"
+            ]
+          }
+        }
+      ]
+    },
+    "cta": {
+      "badge": "Free Strategic Consultation",
+      "headline": "Need Further Assistance?",
+      "description": "Our team of expert consultants is ready to analyze risks and design the best lithium fire safety management system for your corporation.",
+      "button": "Contact Us",
+      "waButton": "WhatsApp Now"
+    }
+  }

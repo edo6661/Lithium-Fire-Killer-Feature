@@ -5,8 +5,10 @@ import globalID from "./locales/id/global.json";
 import globalEN from "./locales/en/global.json";
 import homeID from "./locales/id/home.json";
 import homeEN from "./locales/en/home.json";
-import aboutID from "./locales/id/about.json"; // <-- Tambahkan ini
-import aboutEN from "./locales/en/about.json"; // <-- Tambahkan ini
+import aboutID from "./locales/id/about.json";
+import aboutEN from "./locales/en/about.json";
+import lfsID from "./locales/id/lithium-fire-safety.json"; // <-- Tambahkan ini
+import lfsEN from "./locales/en/lithium-fire-safety.json"; // <-- Tambahkan ini
 
 const savedLanguage = localStorage.getItem("app-language") || "id";
 
@@ -14,12 +16,14 @@ const resources = {
   id: {
     global: globalID,
     home: homeID,
-    about: aboutID, // <-- Tambahkan ini
+    about: aboutID,
+    "lithium-fire-safety": lfsID, // <-- Tambahkan ini
   },
   en: {
     global: globalEN,
     home: homeEN,
-    about: aboutEN, // <-- Tambahkan ini
+    about: aboutEN,
+    "lithium-fire-safety": lfsEN, // <-- Tambahkan ini
   },
 };
 
@@ -27,7 +31,7 @@ i18n.use(initReactI18next).init({
   resources,
   lng: savedLanguage,
   fallbackLng: "id",
-  ns: ["global", "home", "about"], // <-- Tambahkan "about"
+  ns: ["global", "home", "about", "lithium-fire-safety"], // <-- Tambahkan ini
   defaultNS: "global",
   interpolation: { escapeValue: false },
 });
