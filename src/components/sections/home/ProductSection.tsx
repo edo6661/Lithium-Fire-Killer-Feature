@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle2, Download, MessageSquare, ShieldCheck, Weight, Zap, MapPin, X, ShoppingCart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { PRODUCT_CONTENT, type ProductPartner } from '../../../content/product';
@@ -66,6 +67,15 @@ export const ProductSection = () => {
   const [selectedPartner, setSelectedPartner] = useState<ProductPartner | null>(null);
   const productSource = PRODUCT_CONTENT;
   const { t } = useTranslation("home");
+
+  useEffect(() => {
+    if (!selectedPartner) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedPartner]);
 
   const features = t("product.features", { returnObjects: true }) as string[];
   const variants = t("product.variants", { returnObjects: true }) as any[];
@@ -218,19 +228,22 @@ export const ProductSection = () => {
         </div>
       </div>
 
-      {/* Partner Locations Modal */}
-      {selectedPartner && (
+      {selectedPartner && createPortal(
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto"
           onClick={() => setSelectedPartner(null)}
         >
           <div
-            className="bg-surface border border-accent/30 rounded-3xl p-8 max-w-md w-full shadow-[0_10px_40px_rgba(56,152,212,0.15)] relative"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="partner-locations-title"
+            className="bg-surface border border-accent/30 rounded-3xl p-8 max-w-md w-full shadow-[0_10px_40px_rgba(56,152,212,0.15)] relative my-auto"
             onClick={e => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedPartner(null)}
               className="absolute top-4 right-4 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full p-2 transition-colors focus:outline-none"
+              aria-label="Close"
             >
               <X size={20} />
             </button>
@@ -243,7 +256,7 @@ export const ProductSection = () => {
               />
             </div>
 
-            <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+            <h4 id="partner-locations-title" className="text-xl font-bold text-white mb-4 flex items-center gap-3">
               <MapPin className="text-accent" size={24} />
               {t("product.locationTitle")}
             </h4>
@@ -257,7 +270,8 @@ export const ProductSection = () => {
               ))}
             </ul>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
