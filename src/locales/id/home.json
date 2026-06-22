@@ -1,32 +1,145 @@
 {
-    "hero": {
-      "badge": "HARTINDO AF31 Lithium Fire Killer",
-      "headline": {
-        "part1": "Spesialis Perlindungan",
-        "part2": "Kebakaran Baterai Lithium"
-      },
-      "description": "Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.",
-      "ctaPrimary": "Lihat Profil Perusahaan Kami",
-      "ctaSecondary": "Hubungi Kami",
-      "stats": [
-        { "value": "#1", "label": "APAR Lithium Pertama di Dunia", "sublabel": "Terdepan & Terpercaya" },
-        { "value": "LFK-AF31", "label": "Formula Paten Hartindo", "sublabel": "Inovasi Eksklusif" },
-        { "value": "0 Residu", "label": "Kimia Berbahaya", "sublabel": "Ramah Lingkungan" }
-      ],
-      "badges": {
-        "zeroResidue": { "title": "ZERO RESIDUE", "subtitle": "Tanpa sisa kimia" },
-        "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
-      }
+  "hero": {
+    "badge": "HARTINDO AF31 Lithium Fire Killer",
+    "headline": {
+      "part1": "Spesialis Perlindungan",
+      "part2": "Kebakaran Baterai Lithium"
     },
-    "problem": {
-      "badge": "Kesadaran & Edukasi",
-      "headline": "No Fire, No Fear",
-      "description": "Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.",
-      "cta": "Pelajari Lebih Detail",
-      "tags": [
-        { "label": "Thermal Runaway" },
-        { "label": "Kelas Api Baru" },
-        { "label": "Risiko Ledakan" }
-      ]
+    "description": "Kebakaran baterai lithium bersifat unik dan tidak bisa ditangani dengan cara pemadaman biasa. Dengan pemahaman mendalam tentang thermal runaway, kami menghadirkan teknologi perlindungan kebakaran lithium yang terdepan untuk mobilitas, penyimpanan energi, dan operasional bisnis Anda.",
+    "ctaPrimary": "Lihat Profil Perusahaan Kami",
+    "ctaSecondary": "Hubungi Kami",
+    "stats": [
+      { "value": "#1", "label": "APAR Lithium Pertama di Dunia", "sublabel": "Terdepan & Terpercaya" },
+      { "value": "LFK-AF31", "label": "Formula Paten Hartindo", "sublabel": "Inovasi Eksklusif" },
+      { "value": "0 Residu", "label": "Kimia Berbahaya", "sublabel": "Ramah Lingkungan" }
+    ],
+    "badges": {
+      "zeroResidue": { "title": "ZERO RESIDUE", "subtitle": "Tanpa sisa kimia" },
+      "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
     }
+  },
+  "problem": {
+    "badge": "Kesadaran & Edukasi",
+    "headline": "No Fire, No Fear",
+    "description": "Perkembangan teknologi berbasis baterai lithium membawa kemajuan besar di berbagai sektor. Namun, kemajuan ini juga menghadirkan risiko kebakaran baterai lithium—suatu kelas api baru yang tidak dapat dipadamkan dengan alat pemadam konvensional. Untuk itu, edukasi bahaya dan pelatihan penanggulangan kebakaran lithium menjadi prioritas penting agar kita siap menghadapi tantangan ini dengan aman.",
+    "cta": "Pelajari Lebih Detail",
+    "tags": [
+      { "label": "Thermal Runaway" },
+      { "label": "Kelas Api Baru" },
+      { "label": "Risiko Ledakan" }
+    ]
+  },
+  "product": {
+    "badge": "Produk Unggulan",
+    "overview": "Ikhtisar Produk",
+    "offlineStore": "Tersedia di Offline Store",
+    "securityTitle": "Keamanan Terjamin",
+    "securityDesc": "Dapatkan produk resmi dengan sertifikasi SNI dan TKDN. Hubungi kami untuk penawaran dan solusi terbaik bagi bisnis Anda.",
+    "downloadBtn": "Unduh Brosur",
+    "tokopediaBtn": "Beli di Tokopedia",
+    "salesBtn": "Hubungi Sales",
+    "variantTitle": "Varian Produk",
+    "variantDesc": "Pilih ukuran dan kapasitas silinder yang paling sesuai dengan skala kebutuhan proteksi Anda.",
+    "weightLabel": "Berat",
+    "locationTitle": "Lokasi Tersedia",
+    "title": "Lithium Fire Killer HARTINDO AF31",
+    "tagline": "APAR Pemadam Api Lithium Pertama di Dunia",
+    "description": "Alat pemadam multi-fungsi, non-toksik, dan ramah lingkungan yang mampu menangani berbagai keadaan darurat. Mulai dari kebakaran kertas biasa hingga kobaran api baterai lithium yang berisiko tinggi. Lindungi rumah, armada, serta nyawa Anda dan orang-orang tercinta dengan solusi keselamatan kebakaran khusus ini.",
+    "features": [
+      "Tersertifikasi SNI (Standar Nasional Indonesia)",
+      "Kelas Api: A, B, D, F/K, & L (Lithium)",
+      "Satu alat untuk setiap keadaan darurat",
+      "Telah Diuji di Lab Nasional & Internasional",
+      "Ramah Lingkungan & Tidak Beracun"
+    ],
+    "variants": [
+      { "weight": "1kg (Portabel)", "name": "LFK AF31 Portable - 1 KG", "desc": "Silinder pemadam ringan yang ideal untuk kendaraan listrik pribadi dan area yang sempit." },
+      { "weight": "3kg (Portabel)", "name": "LFK AF31 Portable - 3 KG", "desc": "Silinder serbaguna untuk garasi EV standar, ruang server, dan ruang komersial." },
+      { "weight": "6kg (Portabel)", "name": "LFK AF31 Portable - 6 KG", "desc": "Unit portabel berkapasitas tinggi untuk fasilitas industri dan perlindungan skala besar." },
+      { "weight": "25kg (Troli)", "name": "LFK AF31 Trolley - 25 KG", "desc": "Solusi mobilitas tugas berat untuk lokasi pertambangan, gudang besar, dan stasiun pengisian daya EV." },
+      { "weight": "50kg (Troli)", "name": "LFK AF31 Trolley - 50 KG", "desc": "Sistem pemadaman kapasitas maksimum untuk lingkungan industri ekstrem dan bank baterai berskala besar." }
+    ],
+    "views": {
+      "front": "Depan",
+      "back": "Belakang",
+      "left": "Kiri",
+      "right": "Kanan"
+    }
+  },
+  "services": {
+    "badge": "Solusi Kami",
+    "heading": "Layanan / Solusi Keamanan",
+    "description": "Solusi proteksi kebakaran lithium yang komprehensif untuk setiap kebutuhan industri Anda.",
+    "learnMore": "Pelajari lebih lanjut",
+    "items": [
+      { "title": "EV Fire Safety", "description": "Menjaga keselamatan diri adalah tanggung jawab setiap pemilik EV." },
+      { "title": "Business Safety", "description": "Prioritaskan keamanan nyawa karyawan dan aset bisnis Anda." },
+      { "title": "Mining Safety", "description": "Maksimalkan sistem keamanan operasional di sektor pertambangan." }
+    ]
+  },
+  "education": {
+    "badge": "Edukasi",
+    "heading": "Apa Itu Baterai Lithium?",
+    "paragraphs": [
+      "Baterai lithium-ion (Li-ion) adalah jenis baterai isi ulang yang banyak digunakan pada perangkat elektronik portabel maupun kendaraan listrik. Mekanismenya bekerja dengan memindahkan ion lithium antara elektroda positif (katoda) dan elektroda negatif (anoda) melalui elektrolit.",
+      "Baterai Li-ion mampu menyimpan energi lebih besar dalam ukuran yang ringkas dan ringan, menjadikannya pilihan ideal untuk perangkat portabel. Berbeda dengan beberapa jenis baterai lain, baterai Li-ion tidak mengalami penurunan kapasitas meski diisi ulang sebelum benar-benar habis. Dengan umur pakai yang relatif panjang serta mampu melalui banyak siklus pengisian dan pengosongan, baterai ini lebih efisien, ramah lingkungan, dan dapat didaur ulang.",
+      "Meskipun menawarkan banyak keunggulan, baterai lithium-ion juga memiliki risiko tertentu yang perlu diwaspadai."
+    ],
+    "advantages": [
+      "Energi tinggi dalam kemasan ringkas",
+      "Tidak ada memory effect",
+      "Umur pakai panjang",
+      "Dapat didaur ulang"
+    ],
+    "diagram": {
+      "anode": "Anoda",
+      "electrolyte": "Elektrolit",
+      "cathode": "Katoda",
+      "ionFlow": "Perpindahan Ion Li⁺",
+      "note": "Ilustrasi skematik pergerakan ion baterai lithium-ion",
+      "stat1Value": "Li-ion",
+      "stat1Desc": "Teknologi baterai",
+      "stat2Value": "∞ Siklus",
+      "stat2Desc": "Tanpa memory effect"
+    }
+  },
+  "thermalRunaway": {
+    "badge": "Bahaya Kritis",
+    "heading": "Bahaya Thermal Runaway",
+    "paragraphs": [
+      "Baterai lithium-ion menyimpan energi besar di dalam elektrolit yang mudah terbakar. Saat terjadi kerusakan fisik, korsleting, atau suhu berlebih, elektrolit dapat bocor dan memicu reaksi berbahaya berupa kebakaran atau ledakan. Faktor pemicu umumnya berasal dari cacat produksi, pengisian daya yang tidak sesuai, atau paparan suhu ekstrem.",
+      "Thermal runaway adalah kondisi peningkatan suhu pada baterai yang berlangsung secara terus-menerus dan sulit dikendalikan. Proses ini dapat membuat baterai mengeluarkan asap, terbakar, hingga meledak. Memahami risiko ini penting agar pengguna lebih bijak dalam menyimpan, mengisi, dan menggunakan baterai lithium dengan cara yang aman."
+    ],
+    "warnings": [
+      { "label": "Korsleting internal", "sub": "Kerusakan fisik atau cacat produksi" },
+      { "label": "Suhu berlebih", "sub": "Pengisian daya tidak sesuai atau paparan panas" },
+      { "label": "Thermal runaway", "sub": "Reaksi berantai suhu meningkat tak terkendali" }
+    ],
+    "finalWarning": {
+      "label": "Kebakaran atau Ledakan Hebat",
+      "sub": "Tidak bisa dipadamkan menggunakan APAR konvensional biasa."
+    }
+  },
+  "regulation": {
+    "badge": "Regulasi Indonesia",
+    "heading": "Regulasi Pemerintah di Indonesia",
+    "description": "Peluang Indonesia sebagai pusat industri baterai lithium dan dukungan regulasi.",
+    "rows": [
+      {
+        "regulation": "Perpres No. 55 Tahun 2019",
+        "fullName": "Peraturan Presiden Nomor 55 Tahun 2019",
+        "description": "Mengatur Percepatan Program Kendaraan Bermotor Listrik Berbasis Baterai (Battery Electric Vehicle/BEV) untuk transportasi jalan. Di dalamnya tercakup kerangka regulasi serta berbagai insentif guna menarik investasi, memperkuat industri lokal, membangun infrastruktur pendukung, dan mendorong adopsi kendaraan listrik secara luas di masyarakat."
+      },
+      {
+        "regulation": "Inpres No. 7 Tahun 2022",
+        "fullName": "Instruksi Presiden Nomor 7 Tahun 2022",
+        "description": "Mewajibkan seluruh instansi pemerintah, baik pusat maupun daerah, untuk menggunakan kendaraan bermotor listrik berbasis baterai (Battery Electric Vehicle/BEV) sebagai kendaraan dinas operasional maupun kendaraan perorangan."
+      },
+      {
+        "regulation": "Permenhub No. 13 Tahun 2024",
+        "fullName": "Peraturan Menteri Perhubungan Nomor 13 Tahun 2024",
+        "description": "Mengatur tentang perlengkapan keselamatan kendaraan bermotor, termasuk sabuk keselamatan, alat pemadam api ringan (APAR), dan perlengkapan keselamatan lainnya. Tujuannya adalah untuk meningkatkan standar keselamatan berkendara dan melindungi pengguna jalan di Indonesia."
+      }
+    ]
   }
+}

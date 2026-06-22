@@ -1,32 +1,145 @@
 {
     "hero": {
-      "badge": "HARTINDO AF31 Lithium Fire Killer",
-      "headline": {
+        "badge": "HARTINDO AF31 Lithium Fire Killer",
+        "headline": {
         "part1": "Protection Specialist for",
         "part2": "Lithium Battery Fires"
-      },
-      "description": "Lithium battery fires are unique and cannot be handled with conventional extinguishing methods. With a deep understanding of thermal runaway, we deliver leading lithium fire protection technology for mobility, energy storage, and your business operations.",
-      "ctaPrimary": "View Our Company Profile",
-      "ctaSecondary": "Contact Us",
-      "stats": [
+        },
+        "description": "Lithium battery fires are unique and cannot be handled with conventional extinguishing methods. With a deep understanding of thermal runaway, we deliver leading lithium fire protection technology for mobility, energy storage, and your business operations.",
+        "ctaPrimary": "View Our Company Profile",
+        "ctaSecondary": "Contact Us",
+        "stats": [
         { "value": "#1", "label": "World's First Lithium Extinguisher", "sublabel": "Leading & Trusted" },
         { "value": "LFK-AF31", "label": "Hartindo Patented Formula", "sublabel": "Exclusive Innovation" },
         { "value": "0 Residue", "label": "Hazardous Chemicals", "sublabel": "Eco-Friendly" }
-      ],
-      "badges": {
+        ],
+        "badges": {
         "zeroResidue": { "title": "ZERO RESIDUE", "subtitle": "No chemical residue" },
         "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
-      }
+        }
     },
     "problem": {
-      "badge": "Awareness & Education",
-      "headline": "No Fire, No Fear",
-      "description": "The rapid development of lithium battery technology brings great advancements across various sectors. However, this progress also introduces the risk of lithium battery fires—a new class of fire that cannot be extinguished with conventional fire extinguishers. Therefore, hazard education and lithium fire response training are top priorities to ensure we are safely prepared for this challenge.",
-      "cta": "Learn More in Detail",
-      "tags": [
+        "badge": "Awareness & Education",
+        "headline": "No Fire, No Fear",
+        "description": "The rapid development of lithium battery technology brings great advancements across various sectors. However, this progress also introduces the risk of lithium battery fires—a new class of fire that cannot be extinguished with conventional fire extinguishers. Therefore, hazard education and lithium fire response training are top priorities to ensure we are safely prepared for this challenge.",
+        "cta": "Learn More in Detail",
+        "tags": [
         { "label": "Thermal Runaway" },
         { "label": "New Fire Class" },
         { "label": "Explosion Risk" }
-      ]
+        ]
+    },
+    "product": {
+    "badge": "Featured Product",
+    "overview": "Product Overview",
+    "offlineStore": "Available at Offline Stores",
+    "securityTitle": "Guaranteed Security",
+    "securityDesc": "Get official products with SNI and TKDN certifications. Contact us for the best offers and solutions for your business.",
+    "downloadBtn": "Download Brochure",
+    "tokopediaBtn": "Buy on Tokopedia",
+    "salesBtn": "Contact Sales",
+    "variantTitle": "Product Variants",
+    "variantDesc": "Choose the cylinder size and capacity that best suits your protection needs.",
+    "weightLabel": "Weight",
+    "locationTitle": "Locations Available",
+    "title": "Lithium Fire Killer HARTINDO AF31",
+    "tagline": "The First Lithium Fire Extinguisher In The World",
+    "description": "A multi-function, non-toxic, and eco-friendly extinguisher that is capable of handling multiple emergencies. From common paper fires to high-stake lithium battery blazes. Protect your home, fleet, also your life and your loved ones with this specialized fire safety solution.",
+    "features": [
+      "SNI Certified (Indonesian National Standard)",
+      "Fire Classes: A, B, D, F/K, & L (Lithium)",
+      "One tool for every emergency",
+      "National & International Lab-tested",
+      "Eco-friendly & Non-toxic"
+    ],
+    "variants": [
+      { "weight": "1kg (Portable)", "name": "LFK AF31 Portable - 1 KG", "desc": "Lightweight suppression cylinder ideal for personal electric vehicles and compact areas." },
+      { "weight": "3kg (Portable)", "name": "LFK AF31 Portable - 3 KG", "desc": "Versatile cylinder for standard EV garages, server rooms, and commercial spaces." },
+      { "weight": "6kg (Portable)", "name": "LFK AF31 Portable - 6 KG", "desc": "High-capacity portable unit for industrial facilities and larger scale protection." },
+      { "weight": "25kg (Trolley)", "name": "LFK AF31 Trolley - 25 KG", "desc": "Heavy-duty mobility solution for mining sites, large warehouses, and EV charging stations." },
+      { "weight": "50kg (Trolley)", "name": "LFK AF31 Trolley - 50 KG", "desc": "Maximum capacity suppression system for extreme industrial environments and massive battery banks." }
+    ],
+    "views": {
+      "front": "Front",
+      "back": "Back",
+      "left": "Left",
+      "right": "Right"
     }
+  },
+  "services": {
+    "badge": "Our Solutions",
+    "heading": "Security Services / Solutions",
+    "description": "Comprehensive lithium fire protection solutions for every industry need.",
+    "learnMore": "Learn more",
+    "items": [
+      { "title": "EV Fire Safety", "description": "Ensuring personal safety is the responsibility of every EV owner." },
+      { "title": "Business Safety", "description": "Prioritize the safety of your employees' lives and business assets." },
+      { "title": "Mining Safety", "description": "Maximize operational security systems in the mining sector." }
+    ]
+  },
+  "education": {
+    "badge": "Education",
+    "heading": "What is a Lithium Battery?",
+    "paragraphs": [
+      "Lithium-ion (Li-ion) batteries are a type of rechargeable battery widely used in portable electronics and electric vehicles. Their mechanism works by moving lithium ions between the positive electrode (cathode) and negative electrode (anode) through an electrolyte.",
+      "Li-ion batteries can store more energy in a compact and lightweight size, making them the ideal choice for portable devices. Unlike some other battery types, Li-ion batteries do not experience capacity degradation even if recharged before being completely depleted. With a relatively long lifespan and the ability to go through many charge and discharge cycles, these batteries are more efficient, eco-friendly, and recyclable.",
+      "Despite offering many advantages, lithium-ion batteries also have certain risks that need to be monitored."
+    ],
+    "advantages": [
+      "High energy in a compact package",
+      "No memory effect",
+      "Long service life",
+      "Recyclable"
+    ],
+    "diagram": {
+      "anode": "Anode",
+      "electrolyte": "Electrolyte",
+      "cathode": "Cathode",
+      "ionFlow": "Li⁺ Ion Transfer",
+      "note": "Schematic illustration of lithium-ion battery ion movement",
+      "stat1Value": "Li-ion",
+      "stat1Desc": "Battery Technology",
+      "stat2Value": "∞ Cycles",
+      "stat2Desc": "No memory effect"
+    }
+  },
+  "thermalRunaway": {
+    "badge": "Critical Danger",
+    "heading": "The Danger of Thermal Runaway",
+    "paragraphs": [
+      "Lithium-ion batteries store massive energy within highly flammable electrolytes. When physical damage, short circuits, or overheating occurs, the electrolyte can leak and trigger dangerous reactions such as fire or explosion. Triggering factors usually stem from manufacturing defects, improper charging, or exposure to extreme temperatures.",
+      "Thermal runaway is a condition of continuous and uncontrollable temperature increase in a battery. This process can cause the battery to emit smoke, catch fire, or even explode. Understanding this risk is crucial so users can be wiser in safely storing, charging, and using lithium batteries."
+    ],
+    "warnings": [
+      { "label": "Internal Short Circuit", "sub": "Physical damage or manufacturing defect" },
+      { "label": "Overheating", "sub": "Improper charging or heat exposure" },
+      { "label": "Thermal Runaway", "sub": "Uncontrollable rising temperature chain reaction" }
+    ],
+    "finalWarning": {
+      "label": "Severe Fire or Explosion",
+      "sub": "Cannot be extinguished using conventional fire extinguishers."
+    }
+  },
+  "regulation": {
+    "badge": "Indonesian Regulation",
+    "heading": "Government Regulations in Indonesia",
+    "description": "Indonesia's opportunity as a lithium battery industry hub and regulatory support.",
+    "rows": [
+      {
+        "regulation": "Perpres No. 55 of 2019",
+        "fullName": "Presidential Regulation Number 55 of 2019",
+        "description": "Regulates the Acceleration of the Battery Electric Vehicle (BEV) Program for road transportation. It encompasses the regulatory framework and various incentives to attract investment, strengthen local industries, build supporting infrastructure, and encourage widespread electric vehicle adoption."
+      },
+      {
+        "regulation": "Inpres No. 7 of 2022",
+        "fullName": "Presidential Instruction Number 7 of 2022",
+        "description": "Mandates all government agencies, both central and regional, to use Battery Electric Vehicles (BEV) as operational official vehicles and individual vehicles."
+      },
+      {
+        "regulation": "Permenhub No. 13 of 2024",
+        "fullName": "Minister of Transportation Regulation Number 13 of 2024",
+        "description": "Regulates motor vehicle safety equipment, including seat belts, light fire extinguishers (APAR), and other safety gear. The goal is to improve driving safety standards and protect road users in Indonesia."
+      }
+    ]
   }
+}

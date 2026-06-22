@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { CheckCircle2, Download, MessageSquare, ShieldCheck, Weight, Zap, MapPin, X, ShoppingCart } from 'lucide-react';
-import { PRODUCT_CONTENT, type ProductVariant, type ProductPartner } from '../../../content/product';
+import { useTranslation } from 'react-i18next';
+import { PRODUCT_CONTENT, type ProductPartner } from '../../../content/product';
 import { AnimateIn } from '../../ui/AnimateIn';
 import { StaggerChildren, StaggerItem } from '../../ui/StaggerChildren';
 
-const VariantCard = ({ variant }: { variant: ProductVariant }) => {
+const VariantCard = ({ variant, weightLabel, t }: { variant: any, weightLabel: string, t: any }) => {
   const [activeView, setActiveView] = useState<'front' | 'back' | 'left' | 'right'>('front');
 
   return (
@@ -20,7 +20,8 @@ const VariantCard = ({ variant }: { variant: ProductVariant }) => {
               className="w-full h-full object-contain p-4 transform transition-all duration-500 group-hover/image:scale-110 drop-shadow-2xl"
             />
             <span className="absolute top-3 left-3 bg-surface/80 backdrop-blur-md border border-white/10 text-[9px] font-bold px-2 py-1 rounded text-foreground-muted uppercase tracking-wider">
-              {activeView}
+              {/* Terapkan translasi di sini */}
+              {t(`product.views.${activeView}`)}
             </span>
           </div>
           <div className="flex justify-center gap-2 w-full">
@@ -33,7 +34,8 @@ const VariantCard = ({ variant }: { variant: ProductVariant }) => {
                   : 'bg-background border border-white/10 text-foreground-muted hover:text-white hover:border-white/30'
                   }`}
               >
-                {view}
+                {/* Terapkan translasi di sini juga */}
+                {t(`product.views.${view}`)}
               </button>
             ))}
           </div>
@@ -46,7 +48,7 @@ const VariantCard = ({ variant }: { variant: ProductVariant }) => {
 
       <div className="mt-auto">
         {variant.weight && (
-          <span className="block text-xs text-foreground-muted uppercase tracking-wider mb-2">Berat: {variant.weight}</span>
+          <span className="block text-xs text-foreground-muted uppercase tracking-wider mb-2">{weightLabel}: {variant.weight}</span>
         )}
         <h4 className="text-xl font-bold text-white/90 mb-3 group-hover:text-accent transition-colors">
           {variant.name}
@@ -60,19 +62,13 @@ const VariantCard = ({ variant }: { variant: ProductVariant }) => {
     </div>
   );
 };
-
 export const ProductSection = () => {
   const [selectedPartner, setSelectedPartner] = useState<ProductPartner | null>(null);
-  const product = PRODUCT_CONTENT;
+  const productSource = PRODUCT_CONTENT;
+  const { t } = useTranslation("home");
 
-  useEffect(() => {
-    if (!selectedPartner) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [selectedPartner]);
+  const features = t("product.features", { returnObjects: true }) as string[];
+  const variants = t("product.variants", { returnObjects: true }) as any[];
 
   return (
     <section className="relative overflow-hidden bg-background border-y border-white/5 py-20 sm:py-24 lg:py-8" aria-labelledby="product-heading">
@@ -80,58 +76,55 @@ export const ProductSection = () => {
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[150px] pointer-events-none z-0"></div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl">
-        {/* Header Section */}
         <AnimateIn direction="up" className="mb-16">
           <div className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-sm">
             <Zap size={16} className="text-accent" />
             <span className="text-xs font-bold tracking-widest text-accent uppercase">
-              Produk Unggulan
+              {t("product.badge")}
             </span>
           </div>
           <h2 id="product-heading" className="text-4xl md:text-5xl font-bold text-white tracking-tight max-w-4xl leading-tight">
-            {product.title}
+            {t("product.title")}
           </h2>
           <p className="text-xl md:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-accent to-cyan-300 font-medium max-w-3xl leading-relaxed mt-4">
-            {product.tagline}
+            {t("product.tagline")}
           </p>
         </AnimateIn>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          {/* Left Column - Description & Partners */}
+          {/* Left Column */}
           <div className="lg:col-span-7 space-y-12">
             <AnimateIn direction="right">
               <h3 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
-                Ikhtisar Produk
+                {t("product.overview")}
                 <div className="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent ml-4"></div>
               </h3>
               <p className="text-foreground-muted text-lg leading-relaxed font-light mb-8">
-                {product.description}
+                {t("product.description")}
               </p>
 
-              {product.features && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
-                  {product.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-4 p-5 rounded-2xl bg-surface/40 border border-white/5 hover:border-accent/30 transition-all duration-300 group">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <CheckCircle2 size={18} className="text-accent" />
-                      </div>
-                      <span className="text-foreground-muted font-light text-sm leading-relaxed group-hover:text-white/90 transition-colors">
-                        {feature}
-                      </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                {features.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-4 p-5 rounded-2xl bg-surface/40 border border-white/5 hover:border-accent/30 transition-all duration-300 group">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <CheckCircle2 size={18} className="text-accent" />
                     </div>
-                  ))}
-                </div>
-              )}
+                    <span className="text-foreground-muted font-light text-sm leading-relaxed group-hover:text-white/90 transition-colors">
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </AnimateIn>
 
             {/* Partners */}
             <AnimateIn direction="up">
               <h3 className="text-2xl font-bold mb-8 text-white flex items-center gap-3">
-                Tersedia di Offline Store
+                {t("product.offlineStore")}
                 <div className="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent ml-4"></div>
               </h3>
               <div className="flex flex-wrap gap-6 items-center">
-                {product.partners.map((partner, index) => (
+                {productSource.partners.map((partner, index) => (
                   <button
                     key={index}
                     onClick={() => partner.locations ? setSelectedPartner(partner as ProductPartner) : undefined}
@@ -148,7 +141,7 @@ export const ProductSection = () => {
             </AnimateIn>
           </div>
 
-          {/* Right Column - Sticky CTA Card */}
+          {/* Right Column */}
           <div className="lg:col-span-5">
             <AnimateIn direction="left" className="relative overflow-hidden p-8 md:p-10 rounded-3xl bg-surface border border-accent/30 shadow-[0_10px_40px_rgba(56,152,212,0.15)] group lg:sticky lg:top-28">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-surface to-background opacity-50 group-hover:opacity-80 transition-opacity duration-500"></div>
@@ -158,45 +151,43 @@ export const ProductSection = () => {
                 <div className="w-14 h-14 rounded-2xl bg-background border border-white/10 flex items-center justify-center text-accent mb-6">
                   <ShieldCheck size={28} />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Keamanan Terjamin</h3>
+                <h3 className="text-2xl font-bold text-white mb-3">{t("product.securityTitle")}</h3>
                 <p className="text-foreground-muted text-sm mb-8 font-light leading-relaxed">
-                  Dapatkan produk resmi dengan sertifikasi SNI dan TKDN. Hubungi kami untuk penawaran dan solusi terbaik bagi bisnis Anda.
+                  {t("product.securityDesc")}
                 </p>
 
                 <div className="space-y-4">
-                  {product.brochureUrl && (
+                  {productSource.brochureUrl && (
                     <a
-                      href={product.brochureUrl}
+                      href={productSource.brochureUrl}
                       download
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-white/5 hover:bg-white/10 border border-white/20 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 group/btn text-sm uppercase tracking-wide"
                     >
                       <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform" />
-                      Unduh Brosur
+                      {t("product.downloadBtn")}
                     </a>
                   )}
-
-                  {product.tokopediaUrl && (
+                  {productSource.tokopediaUrl && (
                     <a
-                      href={product.tokopediaUrl}
+                      href={productSource.tokopediaUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-[#03AC0E]/10 hover:bg-[#03AC0E]/20 border border-[#03AC0E]/30 text-white font-bold py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_15px_rgba(3,172,14,0.1)] hover:shadow-[0_0_25px_rgba(3,172,14,0.25)] hover:-translate-y-1 text-sm uppercase tracking-wide group/tokped"
                     >
                       <ShoppingCart size={18} className="text-[#03AC0E] group-hover/tokped:scale-110 transition-transform" />
-                      Beli di Tokopedia
+                      {t("product.tokopediaBtn")}
                     </a>
                   )}
-
                   <a
-                    href={`https://wa.me/6281290003278?text=Halo%20tim%20FAST,%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(product.title)}.`}
+                    href={`https://wa.me/6281290003278?text=Halo%20tim%20FAST,%20saya%20tertarik%20dengan%20produk%20Lithium%20Fire%20Killer.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full bg-accent hover:bg-accent/80 text-white font-bold py-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(56,152,212,0.4)] hover:shadow-[0_0_30px_rgba(56,152,212,0.6)] hover:-translate-y-1 text-sm uppercase tracking-wide"
                   >
                     <MessageSquare size={18} />
-                    Hubungi Sales
+                    {t("product.salesBtn")}
                   </a>
                 </div>
               </div>
@@ -205,36 +196,35 @@ export const ProductSection = () => {
         </div>
 
         {/* Variants Section */}
-        {product.variants && (
-          <div className="pt-20 mt-12 border-t border-white/10">
-            <AnimateIn direction="up" className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-white mb-4">Varian Produk</h3>
-              <p className="max-w-2xl mx-auto text-foreground-muted font-light leading-relaxed">
-                Pilih ukuran dan kapasitas silinder yang paling sesuai dengan skala kebutuhan proteksi Anda.
-              </p>
-            </AnimateIn>
+        <div className="pt-20 mt-12 border-t border-white/10">
+          <AnimateIn direction="up" className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-white mb-4">{t("product.variantTitle")}</h3>
+            <p className="max-w-2xl mx-auto text-foreground-muted font-light leading-relaxed">
+              {t("product.variantDesc")}
+            </p>
+          </AnimateIn>
 
-            <StaggerChildren staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-              {product.variants.map((variant, index) => (
-                <StaggerItem key={index}>
-                  <VariantCard variant={variant} />
-                </StaggerItem>
-              ))}
-            </StaggerChildren>
-          </div>
-        )}
+          <StaggerChildren staggerDelay={0.15} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            {variants.map((variant, index) => (
+              <StaggerItem key={index}>
+                <VariantCard 
+                  variant={{ ...productSource.variants[index], ...variant }} 
+                  weightLabel={t("product.weightLabel")} 
+                  t={t}
+                />
+              </StaggerItem>
+            ))}
+          </StaggerChildren>
+        </div>
       </div>
 
-      {/* Partner Locations Modal — portaled to body so fixed positioning isn't clipped by section overflow-hidden */}
-      {selectedPartner && createPortal(
+      {/* Partner Locations Modal */}
+      {selectedPartner && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
           onClick={() => setSelectedPartner(null)}
         >
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="partner-locations-title"
             className="bg-surface border border-accent/30 rounded-3xl p-8 max-w-md w-full shadow-[0_10px_40px_rgba(56,152,212,0.15)] relative"
             onClick={e => e.stopPropagation()}
           >
@@ -253,9 +243,9 @@ export const ProductSection = () => {
               />
             </div>
 
-            <h4 id="partner-locations-title" className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+            <h4 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
               <MapPin className="text-accent" size={24} />
-              Lokasi Tersedia
+              {t("product.locationTitle")}
             </h4>
 
             <ul className="space-y-3 mt-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
@@ -267,8 +257,7 @@ export const ProductSection = () => {
               ))}
             </ul>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </section>
   );
