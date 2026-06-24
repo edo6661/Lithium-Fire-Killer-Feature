@@ -11,10 +11,10 @@
     "stats": [
       { "value": "#1", "label": "APAR Lithium Pertama di Dunia", "sublabel": "Terdepan & Terpercaya" },
       { "value": "LFK-AF31", "label": "Formula Paten Hartindo", "sublabel": "Inovasi Eksklusif" },
-      { "value": "0 Residu", "label": "Kimia Berbahaya", "sublabel": "Ramah Lingkungan" }
+      { "value": "Ramah Lingkungan", "label": "Kimia Berbahaya", "sublabel": "Tanpa Kimia Berbahaya" }
     ],
     "badges": {
-      "zeroResidue": { "title": "ZERO RESIDUE", "subtitle": "Tanpa sisa kimia" },
+      "ecoFriendly": { "title": "RAMAH LINGKUNGAN", "subtitle": "Formula aman lingkungan" },
       "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
     }
   },

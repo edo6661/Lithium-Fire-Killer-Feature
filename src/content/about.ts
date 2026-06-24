@@ -6,7 +6,7 @@ export const ABOUT_CONTENT = {
   intro: {
     heading: "Tentang Kami",
     paragraphs: [
-      "PT. Famindo Alfa Spektrum Teknologi (FAST) adalah perusahaan yang berfokus pada penyediaan solusi keamanan terhadap risiko kebakaran. FAST merupakan distributor eksklusif APAR Lithium Fire Killer Hartindo AF31, APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion tanpa meninggalkan residu kimia berbahaya bagi manusia maupun lingkungan.",
+      "PT. Famindo Alfa Spektrum Teknologi (FAST) adalah perusahaan yang berfokus pada penyediaan solusi keamanan terhadap risiko kebakaran. FAST merupakan distributor eksklusif APAR Lithium Fire Killer Hartindo AF31, APAR pertama di dunia yang terbukti efektif memadamkan api baterai lithium-ion dengan formula ramah lingkungan yang aman bagi manusia maupun lingkungan.",
       "Selain menghadirkan produk unggulan, FAST juga berkomitmen untuk mengedukasi masyarakat tentang bahaya kebakaran, khususnya kebakaran baterai lithium-ion, serta memberikan pemahaman mengenai cara penanggulangannya secara aman dan efektif.",
     ],
     coreValues: {

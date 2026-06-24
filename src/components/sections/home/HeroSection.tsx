@@ -51,8 +51,8 @@ const HeroProductVisual = ({ t }: { t: any }) => (
       height={520}
     />
     <FeatureBadge
-      title={t("hero.badges.zeroResidue.title")}
-      subtitle={t("hero.badges.zeroResidue.subtitle")}
+      title={t("hero.badges.ecoFriendly.title")}
+      subtitle={t("hero.badges.ecoFriendly.subtitle")}
       icon="check"
       className="absolute left-0 top-[22%] z-20 max-w-[140px] sm:max-w-none"
     />
