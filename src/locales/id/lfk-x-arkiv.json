@@ -93,6 +93,7 @@
         "nominalLabel": "Nominal Tagihan",
         "docLabel": "No. dokumen:",
         "bankLabel": "Bank Tujuan",
+        "expiredLabel": "Batas Waktu Pembayaran",
         "vaLabel": "Nomor Virtual Account",
         "copyBtn": "Salin",
         "copiedBtn": "Tersalin",

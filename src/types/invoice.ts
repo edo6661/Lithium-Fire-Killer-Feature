@@ -19,6 +19,23 @@ export interface InvoiceVaData {
   virtualAccountBank: string;
   paymentChannelCode: string;
   yukkResponseCode?: string;
+  expiredDate?: string;
+}
+
+export interface SyncInvoiceStatusData {
+  orderId: string;
+  previousStatus: InvoiceVaStatus;
+  newStatus: InvoiceVaStatus;
+  updated: boolean;
+  yukkTransactionStatus?: string;
+  yukkTransactionStatusDesc?: string;
+}
+
+export interface SyncInvoiceStatusApiResponse {
+  success: boolean;
+  data?: SyncInvoiceStatusData;
+  message?: string;
+  responseCode?: string;
 }
 
 export interface InvoiceStatusData {
@@ -41,4 +58,10 @@ export interface CreateInvoiceVaApiResponse {
   data?: InvoiceVaData;
   message?: string;
   responseCode?: string;
+  hint?: string;
+}
+
+export interface YukkHealthReport {
+  ready: boolean;
+  canAttemptApi?: boolean;
 }

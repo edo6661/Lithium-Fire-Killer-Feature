@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CheckCircle2, Loader2, ShieldCheck, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ACTIVE_ARKIV_BILLING } from "../../../config/arkiv-billing";
+import { ACTIVE_ARKIV_BILLING, buildArkivOrderId } from "../../../config/arkiv-billing";
 import type { CreateInvoiceVaPayload, InvoiceVaData } from "../../../types/invoice";
 import { formatRupiah } from "../../../utils/format-currency";
 import { AnimateIn } from "../../ui/AnimateIn";
@@ -19,6 +19,7 @@ interface ArkivPaymentSectionProps {
   error: string | null;
   isPaymentComplete?: boolean;
   vaData?: InvoiceVaData | null;
+  disabled?: boolean;
 }
 
 export const ArkivPaymentSection = ({
@@ -27,6 +28,7 @@ export const ArkivPaymentSection = ({
   error,
   isPaymentComplete = false,
   vaData,
+  disabled = false,
 }: ArkivPaymentSectionProps) => {
   const { t } = useTranslation("lfk-x-arkiv");
   const [bankCode, setBankCode] = useState(ACTIVE_ARKIV_BILLING.bankCode);
@@ -36,10 +38,10 @@ export const ArkivPaymentSection = ({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isLoading) return;
+    if (isLoading || disabled) return;
 
     await onCreateVA({
-      orderId: ACTIVE_ARKIV_BILLING.orderId,
+      orderId: buildArkivOrderId(),
       grandTotal: ACTIVE_ARKIV_BILLING.grandTotal,
       bankCode,
       customerNo: ACTIVE_ARKIV_BILLING.customerNo,
@@ -76,7 +78,7 @@ export const ArkivPaymentSection = ({
                 {formatRupiah(ACTIVE_ARKIV_BILLING.grandTotal)}
               </p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                {ACTIVE_ARKIV_BILLING.orderId}
+                {ACTIVE_ARKIV_BILLING.productLabel}
               </p>
             </div>
           </div>
@@ -101,7 +103,7 @@ export const ArkivPaymentSection = ({
                   <input
                     type="text"
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || disabled}
                     value={virtualAccountName}
                     onChange={(e) => setVirtualAccountName(e.target.value)}
                     placeholder={t("payment.form.namePlaceholder")}
@@ -116,7 +118,7 @@ export const ArkivPaymentSection = ({
                   <input
                     type="email"
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || disabled}
                     value={virtualAccountEmail}
                     onChange={(e) => setVirtualAccountEmail(e.target.value)}
                     placeholder={t("payment.form.emailPlaceholder")}
@@ -131,7 +133,7 @@ export const ArkivPaymentSection = ({
                   <input
                     type="tel"
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || disabled}
                     value={virtualAccountPhone}
                     onChange={(e) => setVirtualAccountPhone(e.target.value)}
                     placeholder={t("payment.form.phonePlaceholder")}
@@ -152,7 +154,7 @@ export const ArkivPaymentSection = ({
                         <button
                           key={bank.code}
                           type="button"
-                          disabled={isLoading}
+                          disabled={isLoading || disabled}
                           onClick={() => setBankCode(bank.code)}
                           className={`rounded-2xl border px-3 py-4 text-sm font-black transition ${selected ? "border-accent bg-accent/10 text-accent ring-2 ring-accent/30" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"} disabled:opacity-60`}
                         >
@@ -176,7 +178,7 @@ export const ArkivPaymentSection = ({
                   </p>
                 )}
 
-                <Button type="submit" disabled={isLoading} className="w-full py-4 text-base bg-slate-900 text-white hover:bg-slate-800">
+                <Button type="submit" disabled={isLoading || disabled} className="w-full py-4 text-base bg-slate-900 text-white hover:bg-slate-800">
                   {isLoading ? (
                     <>
                       <Loader2 className="size-5 animate-spin" />

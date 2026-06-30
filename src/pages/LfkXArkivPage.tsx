@@ -12,9 +12,11 @@ import {
 import { FloatingBlobs } from "../components/sections/lfk-x-arkiv/FloatingBlobs";
 import { Toast } from "../components/ui/Toast";
 import { useCreateInvoiceVa } from "../hooks/useCreateInvoiceVa";
+import { useYukkBackendHealth } from "../hooks/useYukkBackendHealth";
 
 export const LfkXArkivPage = () => {
   const { t } = useTranslation("lfk-x-arkiv");
+  const { isChecking: isCheckingBackend, isBackendReachable } = useYukkBackendHealth();
   const {
     error,
     isLoading,
@@ -44,13 +46,25 @@ export const LfkXArkivPage = () => {
         <ArkivVisionarySection />
         <ArkivProductSection />
         
-        {/* Tambahkan ArkivPaymentSection di sini jika diperlukan (sesuai kode asli jika ada) */}
-        <ArkivPaymentSection 
-          onCreateVA={handleCreateVA} 
-          isLoading={isLoading} 
-          error={error} 
-          isPaymentComplete={isPaymentComplete} 
-          vaData={vaData} 
+        {!isCheckingBackend && !isBackendReachable && (
+          <div className="relative z-10 mx-auto max-w-5xl px-4 pb-4 sm:px-6 lg:px-8">
+            <p
+              role="alert"
+              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
+            >
+              Backend pembayaran belum siap. Pastikan{" "}
+              <code className="rounded bg-amber-100 px-1">lithium-fire-killer-backend</code>{" "}
+              berjalan di port 3001, lalu refresh halaman ini.
+            </p>
+          </div>
+        )}
+
+        <ArkivPaymentSection
+          onCreateVA={handleCreateVA}
+          isLoading={isLoading}
+          error={error}
+          isPaymentComplete={isPaymentComplete}
+          vaData={vaData}
         />
 
         <ArkivCtaSection />

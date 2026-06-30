@@ -6,19 +6,23 @@ export const OG_IMAGE_WIDTH = "612";
 export const OG_IMAGE_HEIGHT = "408";
 
 
+export const HOME_SEO_TITLE =
+  "Lithium Fire Killer Hartindo AF31 — Distributor Resmi FAST Indonesia";
+
+export const HOME_SEO_DESCRIPTION =
+  "PT. Famindo Alfa Spektrum Teknologi (FAST) — distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 dan solusi proteksi kebakaran baterai lithium di Indonesia.";
+
 export const DEFAULT_SEO = {
   siteName: SITE.shortName,
-  title: `${SITE.shortName} — Spesialis Perlindungan Kebakaran Baterai Lithium`,
-  description:
-    "PT. Famindo Alfa Spektrum Teknologi (FAST) — distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 dan solusi proteksi kebakaran lithium.",
+  title: HOME_SEO_TITLE,
+  description: HOME_SEO_DESCRIPTION,
 } as const;
 
 export const PAGE_SEO = {
   home: {
     path: "/",
-    title: `${SITE.shortName} — Spesialis Perlindungan Kebakaran Baterai Lithium`,
-    description:
-      "PT. Famindo Alfa Spektrum Teknologi menghadirkan teknologi perlindungan kebakaran lithium untuk mobilitas, penyimpanan energi, dan operasional bisnis.",
+    title: HOME_SEO_TITLE,
+    description: HOME_SEO_DESCRIPTION,
   },
   about: {
     path: "/about",
@@ -28,9 +32,9 @@ export const PAGE_SEO = {
   },
   lithiumFireSafety: {
     path: "/lithium-fire-safety",
-    title: `Lithium Fire Safety — ${SITE.shortName}`,
+    title: `Lithium Fire Safety — Lithium Fire Killer | ${SITE.shortName}`,
     description:
-      "Solusi proteksi kebakaran lithium: EV Safety, Business Safety, Mining Safety, dan metode EPC dari FAST.",
+      "Solusi proteksi kebakaran lithium dengan Lithium Fire Killer Hartindo AF31: EV Safety, Business Safety, Mining Safety, dan metode EPC dari FAST.",
   },
   contact: {
     path: "/contact",

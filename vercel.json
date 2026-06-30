@@ -1,5 +1,21 @@
 {
-  "redirects": [],
+  "redirects": [
+    {
+      "source": "/tentang-lithium-fire-killer",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/tentang-kami",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/kontak",
+      "destination": "/contact",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { fetchInvoiceStatus, InvoiceApiError } from "../services/invoice.service";
+import { syncInvoicePaymentStatus, InvoiceApiError } from "../services/invoice.service";
 import type { InvoiceVaStatus } from "../types/invoice";
 
 const POLL_INTERVAL_MS = 5000;
@@ -45,14 +45,14 @@ export function useInvoicePaymentStatus({
     setCheckError(null);
 
     try {
-      const data = await fetchInvoiceStatus(orderId);
-      setStatus(data.status);
+      const data = await syncInvoicePaymentStatus(orderId);
+      setStatus(data.newStatus);
 
-      if (data.status === "PAID") {
+      if (data.newStatus === "PAID") {
         onPaidRef.current?.();
       }
 
-      return data.status;
+      return data.newStatus;
     } catch (err) {
       const message =
         err instanceof InvoiceApiError

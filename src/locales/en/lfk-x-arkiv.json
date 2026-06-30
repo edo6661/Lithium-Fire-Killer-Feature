@@ -93,6 +93,7 @@
         "nominalLabel": "Billing Amount",
         "docLabel": "Doc No.:",
         "bankLabel": "Destination Bank",
+        "expiredLabel": "Payment Deadline",
         "vaLabel": "Virtual Account Number",
         "copyBtn": "Copy",
         "copiedBtn": "Copied",

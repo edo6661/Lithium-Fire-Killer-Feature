@@ -5,6 +5,7 @@ import { Building2, Check, CheckCircle2, Copy, CreditCard, Loader2, RefreshCw, X
 import { useInvoicePaymentStatus } from "../../../hooks/useInvoicePaymentStatus";
 import type { InvoiceVaData } from "../../../types/invoice";
 import { formatRupiah } from "../../../utils/format-currency";
+import { formatVaExpiredDate } from "../../../utils/format-va-expired-date";
 import { Button } from "../../ui/Button";
 
 interface PaymentInstructionModalProps {
@@ -126,6 +127,17 @@ export const PaymentInstructionModal = ({
                       {vaData.virtualAccountBank}
                     </p>
                   </div>
+
+                  {vaData.expiredDate ? (
+                    <div className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        {t("payment.modal.expiredLabel")}
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-slate-900">
+                        {formatVaExpiredDate(vaData.expiredDate)}
+                      </p>
+                    </div>
+                  ) : null}
 
                   <div className="rounded-2xl border-2 border-dashed border-accent/30 bg-accent/5 p-4">
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">

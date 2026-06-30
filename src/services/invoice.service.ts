@@ -5,21 +5,35 @@ import type {
   InvoiceStatusApiResponse,
   InvoiceStatusData,
   InvoiceVaData,
+  SyncInvoiceStatusApiResponse,
+  SyncInvoiceStatusData,
+  YukkHealthReport,
 } from "../types/invoice";
 
 export class InvoiceApiError extends Error {
   readonly statusCode: number;
   readonly responseCode?: string;
+  readonly hint?: string;
 
-  constructor(message: string, statusCode: number, responseCode?: string) {
+  constructor(
+    message: string,
+    statusCode: number,
+    responseCode?: string,
+    hint?: string,
+  ) {
     super(message);
     this.name = "InvoiceApiError";
     this.statusCode = statusCode;
     this.responseCode = responseCode;
+    this.hint = hint;
   }
 }
 
 function resolveErrorMessage(body: CreateInvoiceVaApiResponse, status: number): string {
+  if (body.message && body.hint) {
+    return `${body.message} ${body.hint}`;
+  }
+
   if (body.message) {
     return body.message;
   }
@@ -61,6 +75,50 @@ export async function createInvoiceVa(
   if (!response.ok || !body.success || !body.data) {
     throw new InvoiceApiError(
       resolveErrorMessage(body, response.status),
+      response.status,
+      body.responseCode,
+      body.hint,
+    );
+  }
+
+  return body.data;
+}
+
+export async function fetchYukkBackendHealth(): Promise<YukkHealthReport> {
+  const response = await fetch(`${API_BASE_URL}/health/yukk`, {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Backend health check failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as YukkHealthReport;
+}
+
+export async function syncInvoicePaymentStatus(
+  orderId: string,
+): Promise<SyncInvoiceStatusData> {
+  const encodedOrderId = encodeURIComponent(orderId);
+  const response = await fetch(`${API_BASE_URL}/api/invoices/${encodedOrderId}/sync-yukk`, {
+    method: "POST",
+    headers: { Accept: "application/json" },
+  });
+
+  let body: SyncInvoiceStatusApiResponse;
+
+  try {
+    body = (await response.json()) as SyncInvoiceStatusApiResponse;
+  } catch {
+    throw new InvoiceApiError(
+      "Respons server tidak valid. Pastikan backend berjalan.",
+      response.status,
+    );
+  }
+
+  if (!response.ok || !body.success || !body.data) {
+    throw new InvoiceApiError(
+      body.message ?? "Gagal menyinkronkan status pembayaran dari YUKK.",
       response.status,
       body.responseCode,
     );
