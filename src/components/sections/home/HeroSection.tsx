@@ -164,22 +164,28 @@ export const HeroSection = () => {
             </motion.div>
 
             {/* STATS — redesigned dengan card glassmorphism per item */}
-            <StaggerChildren staggerDelay={0.12} className="mt-14 grid grid-cols-3 gap-3 border-t border-white/10 pt-8">
+            <StaggerChildren
+              staggerDelay={0.12}
+              className="mt-14 grid grid-cols-1 gap-2.5 border-t border-white/10 pt-8 sm:grid-cols-3 sm:gap-3"
+            >
               {stats.map((stat, i) => (
-                <StaggerItem key={i}> 
+                <StaggerItem key={i} className="h-full">
                   <motion.div
                     whileHover={{ y: -3, scale: 1.02 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={`relative group rounded-2xl border border-white/8 bg-white/[0.03] p-4 text-center lg:text-left backdrop-blur-sm transition-colors duration-300 hover:border-accent/25 hover:bg-accent/[0.04] ${i > 0 ? "lg:pl-5" : ""}`}
+                    className={`group relative flex h-full min-w-0 items-start gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-3.5 text-left backdrop-blur-sm transition-colors duration-300 hover:border-accent/25 hover:bg-accent/[0.04] flex-col sm:items-center sm:justify-center sm:p-4 sm:text-center lg:items-start lg:text-left ${i > 0 ? "lg:pl-5" : ""}`}
                   >
-                    {/* Nomor ranking dengan shine */}
-                    <p className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl leading-none">
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80 group-hover:from-accent group-hover:to-blue-300 transition-all duration-300">
+                    <p className="flex shrink-0 items-center pt-0.5 text-lg font-extrabold leading-tight tracking-tight text-white sm:w-full sm:min-h-[3.75rem] sm:justify-center sm:pt-0 sm:text-2xl lg:min-h-[4.5rem] lg:justify-start lg:text-3xl">
+                      <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent transition-all duration-300 group-hover:from-accent group-hover:to-blue-300">
                         {stat.value}
                       </span>
                     </p>
-                    <p className="mt-1.5 text-xs font-bold leading-snug text-white/60 sm:text-[0.8rem]">{stat.label}</p>
-                    <p className="mt-0.5 text-[10px] font-medium text-accent/60 tracking-wide hidden sm:block">{stat.sublabel}</p>
+                    <div className="min-w-0 flex-1 sm:mt-1.5 sm:w-full sm:flex-none">
+                      <p className="break-words text-xs font-bold leading-snug text-white/60 sm:text-[0.8rem]">{stat.label}</p>
+                      <p className="mt-0.5 hidden text-[10px] font-medium tracking-wide text-accent/60 sm:block">
+                        {stat.sublabel}
+                      </p>
+                    </div>
                   </motion.div>
                 </StaggerItem>
               ))}

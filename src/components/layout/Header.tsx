@@ -8,13 +8,6 @@ import { SITE } from "../../config/site";
 
 const NAV_LINKS = HEADER_NAV;
 
-const NAV_ICONS: Record<string, string> = {
-  "/": "🏠",
-  "/about": "🏢",
-  "/lithium-fire-safety": "🔥",
-  // "/lfk-x-arkiv": "✨",
-  "/contact": "📞",
-};
 
 export const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -213,21 +206,9 @@ export const Header = () => {
                         }`
                       }
                     >
-                      {({ isActive }) => (
+                      {() => (
                         <>
-                          <span
-                            className={`flex size-9 shrink-0 items-center justify-center rounded-xl border text-base transition-colors ${isActive
-                                ? isArkivPage
-                                  ? "border-transparent bg-white/20"
-                                  : "border-white/5 bg-background/60"
-                                : isArkivPage
-                                  ? "border-slate-300/50 bg-slate-200/50"
-                                  : "border-white/5 bg-background/60"
-                              }`}
-                            aria-hidden
-                          >
-                            {NAV_ICONS[link.href]}
-                          </span>
+                         
                           {getNavLabel(link.href)}
                         </>
                       )}

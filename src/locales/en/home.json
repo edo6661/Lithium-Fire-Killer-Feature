@@ -11,7 +11,7 @@
         "stats": [
         { "value": "#1", "label": "World's First Lithium Extinguisher", "sublabel": "Leading & Trusted" },
         { "value": "LFK-AF31", "label": "Hartindo Patented Formula", "sublabel": "Exclusive Innovation" },
-        { "value": "Eco-Friendly", "label": "Hazardous Chemicals", "sublabel": "Safe for the Environment" }
+        { "value": "Eco-Friendly", "label": "Non-Toxic", "sublabel": "Safe for the Environment" }
         ],
         "badges": {
         "ecoFriendly": { "title": "ECO-FRIENDLY", "subtitle": "Environmentally safe formula" },
