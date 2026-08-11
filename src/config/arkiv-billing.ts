@@ -27,7 +27,7 @@ export type ArkivVaBankCode = (typeof ARKIV_VA_BANKS)[number]["code"];
  * false = sembunyikan QRIS di checkout (VA saja).
  * true  = tampilkan lagi (setelah limit dinaikkan / harga ≤ 10jt).
  */
-export const ARKIV_QRIS_ENABLED = false;
+export const ARKIV_QRIS_ENABLED = true;
 
 /**
  * Tagihan aktif LFK × Arkiv.
@@ -52,9 +52,19 @@ export const ACTIVE_ARKIV_BILLING = {
   realAmount: 11_900_000,
   defaultBankCode: "BRI" as ArkivVaBankCode,
   customerNo: "10011212",
-  productLabel: "LFK x Arkiv - SARU Edition (Tier 2)",
-  productImage: "/arkiv/siluet-tabung.png",
+  productLabel: "LFK x Arkiv - SARU Edition",
+  productImage: "/products/arkiv/front.png",
 } as const;
+
+/** Sudut produk — file di public/products/arkiv */
+export const ARKIV_PRODUCT_VIEWS = {
+  front: "/products/arkiv/front.png",
+  back: "/products/arkiv/back.png",
+  left: "/products/arkiv/left.png",
+  right: "/products/arkiv/right.png",
+} as const;
+
+export type ArkivProductView = keyof typeof ARKIV_PRODUCT_VIEWS;
 
 export function arkivAmountFor(method: ArkivPaymentMethod): number {
   return ACTIVE_ARKIV_BILLING.amounts[method];

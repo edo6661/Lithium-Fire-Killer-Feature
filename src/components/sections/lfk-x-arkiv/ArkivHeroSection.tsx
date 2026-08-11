@@ -8,9 +8,17 @@ export const ArkivHeroSection = () => {
   return (
     <section className="relative flex min-h-[100vh] flex-col items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-[#1A80C1] via-[#5a9fd4] to-[#eaeff5]">
-        <img src="/hero-lfk-x-arkiv.png" alt="" aria-hidden className="hidden h-full w-full object-cover md:block" />
-        <img src="/hero-lfk-x-arkiv.png" alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_20%] opacity-50 blur-lg md:hidden" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1A80C1]/50 via-[#1A80C1]/25 to-[#1A80C1]/55 md:from-black/5 md:via-transparent md:to-black/20" aria-hidden />
+        <img src="/bg-hero-arkiv.jpeg" alt="" aria-hidden className="hidden h-full w-full object-cover md:block" />
+        <img src="/bg-hero-arkiv.jpeg" alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_20%] opacity-50 blur-lg md:hidden" />
+        {/* Overlay gradient — cukup kelihatan, foto tetap ada */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#0d5a8c]/70 via-[#1A80C1]/45 to-[#0b3d5c]/75"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-tr from-[#1A80C1]/40 via-transparent to-[#FFCFCF]/30"
+          aria-hidden
+        />
       </div>
 
       <div className="bg-noise pointer-events-none absolute inset-0 z-[1] opacity-[0.04] mix-blend-multiply" />

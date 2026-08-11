@@ -26,8 +26,16 @@
   },
   "product": {
     "checkoutBtn": "Beli Sekarang",
+    "stockHint": "{{remaining}} / {{initial}} unit tersisa",
+    "soldOut": "Sold out",
     "badge": "ANATOMI MAHAKARYA",
     "heading": "TEMUI SARU YANG DIDEFINISIKAN ULANG",
+    "views": {
+      "front": "Depan",
+      "back": "Belakang",
+      "left": "Kiri",
+      "right": "Kanan"
+    },
     "description": "Ini bukan sekadar alat pemadam—ini adalah mahakarya bersertifikat dengan fungsi ganda. Direkayasa untuk menetralkan kebakaran baterai secara instan, dibalut dengan siluet tegas Saru karya Arkiv: figur ikonik yang terlahir dari DNA KAWS, Megaman, dan Rockman. Berbahu tegap dan kokoh dengan intensitas heroik yang tenang, Saru memancarkan ketangguhan sejati—namun di balik balutan pelindungnya tersembunyi sosok yang lembut, membuktikan bahwa kekuatan sejati adalah keberanian untuk tetap berhati lembut setelah pertempuran.",
     "statement": "Mengubah alat keselamatan menjadi karya utama yang ingin Anda pajang.",
     "whyArt": {
@@ -73,6 +81,24 @@
     "errorMessage": "Terjadi kesalahan jaringan. Silakan coba lagi.",
     "limitedTag": "Edisi Terbatas • Rilis Eksklusif"
   },
+  "buyCta": {
+    "badge": "Edisi terbatas · Hanya 100 unit",
+    "heading": "Amankan edisi terbatas Anda sekarang",
+    "description": "Ini bukan sekadar alat pemadam. Ini karya koleksi LFK × Arkiv dengan proteksi lithium AF31 — setelah 100 unit terjual, tidak akan diproduksi ulang.",
+    "points": [
+      "Fungsi ganda: seni pajangan + keselamatan nyata",
+      "Formula Hartindo AF31 untuk kebakaran lithium-ion",
+      "Nomor edisi terbatas — bukti kepemilikan eksklusif"
+    ],
+    "priceLabel": "Harga",
+    "stockLabel": "Tersisa",
+    "stockOf": "dari",
+    "soldOut": "Sold out",
+    "stockHint": "{{remaining}} unit tersisa dari {{initial}} edisi terbatas",
+    "button": "Beli Sekarang",
+    "secureNote": "Checkout aman · Virtual Account",
+    "unavailable": "Pembayaran sedang tidak tersedia — coba refresh"
+  },
   "orderComplete": {
     "heading": "Pesanan diterima",
     "body": "Pembayaran Anda sudah kami terima. Simpan nomor dokumen dan screenshot bukti pembayaran. Tim kami akan menghubungi Anda untuk pengiriman.",
@@ -97,6 +123,7 @@
       "methodVaHint": "Transfer ke nomor VA bank pilihan",
       "bankHeading": "Pilih bank",
       "summaryHeading": "Ringkasan pesanan",
+      "stockLabel": "Stok tersisa",
       "qtyBadge": "1",
       "subtotalLabel": "Subtotal",
       "payBtn": "Bayar sekarang",

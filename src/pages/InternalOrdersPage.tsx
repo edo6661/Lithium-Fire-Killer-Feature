@@ -16,6 +16,15 @@ type InvoiceRow = {
   createdAt: string;
 };
 
+type StockInfo = {
+  id: string;
+  label: string;
+  quantityInitial: number;
+  quantityRemaining: number;
+  sold: number;
+  updatedAt: string;
+};
+
 const STORAGE_KEY = "lfk-internal-key";
 
 function statusLabel(status: string): string {
@@ -51,8 +60,10 @@ export const InternalOrdersPage = () => {
   const [key, setKey] = useState(() => localStorage.getItem(STORAGE_KEY) ?? "");
   const [filter, setFilter] = useState<"ALL" | "PAID" | "PENDING">("ALL");
   const [rows, setRows] = useState<InvoiceRow[]>([]);
+  const [stock, setStock] = useState<StockInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const fetchRows = useCallback(async (authKey: string, statusFilter: string) => {
     if (!authKey) return;
@@ -66,13 +77,16 @@ export const InternalOrdersPage = () => {
         success?: boolean;
         message?: string;
         data?: InvoiceRow[];
+        stock?: StockInfo;
       };
       if (!res.ok || !body.success || !body.data) {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       setRows(body.data);
+      setStock(body.stock ?? null);
     } catch (err) {
       setRows([]);
+      setStock(null);
       setError(err instanceof Error ? err.message : "Gagal memuat data");
     } finally {
       setLoading(false);
@@ -95,6 +109,40 @@ export const InternalOrdersPage = () => {
     const next = keyInput.trim();
     localStorage.setItem(STORAGE_KEY, next);
     setKey(next);
+  };
+
+  const resetStock = async () => {
+    if (!key) return;
+    const ok = window.confirm(
+      "Reset stok LFK × Arkiv ke 100 unit?\n\nPakai setelah selesai test supaya edisi terbatas kembali penuh.",
+    );
+    if (!ok) return;
+
+    setResetting(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/internal/stock/reset?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ key, quantity: 100 }),
+        },
+      );
+      const body = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+        stock?: StockInfo;
+      };
+      if (!res.ok || !body.success || !body.stock) {
+        throw new Error(body.message ?? `HTTP ${res.status}`);
+      }
+      setStock(body.stock);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal reset stok");
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
@@ -127,6 +175,35 @@ export const InternalOrdersPage = () => {
           </form>
         ) : (
           <>
+            {stock ? (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Stok edisi terbatas
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-slate-700">{stock.label}</p>
+                  <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">
+                    {stock.quantityRemaining}
+                    <span className="text-lg font-bold text-slate-400">
+                      {" "}
+                      / {stock.quantityInitial}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">
+                    Terjual (stok): {stock.sold} · Update: {formatWhen(stock.updatedAt)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={resetting}
+                  onClick={() => void resetStock()}
+                  className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+                >
+                  {resetting ? "Resetting…" : "Reset stok ke 100"}
+                </button>
+              </div>
+            ) : null}
+
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <div className="flex gap-2 rounded-full bg-white p-1 text-sm font-bold ring-1 ring-slate-200">
                 {(["ALL", "PAID", "PENDING"] as const).map((f) => (
@@ -156,6 +233,7 @@ export const InternalOrdersPage = () => {
                   setKey("");
                   setKeyInput("");
                   setRows([]);
+                  setStock(null);
                 }}
                 className="rounded-full px-4 py-1.5 text-sm font-bold text-slate-500"
               >

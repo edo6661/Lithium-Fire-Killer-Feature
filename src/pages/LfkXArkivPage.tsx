@@ -7,17 +7,17 @@ import {
   ArkivVisionarySection,
   ArkivProductSection,
   ArkivCheckoutModal,
-  ArkivCtaSection,
+  ArkivBuyCtaSection,
 } from "../components/sections/lfk-x-arkiv";
 import { FloatingBlobs } from "../components/sections/lfk-x-arkiv/FloatingBlobs";
 import { Toast } from "../components/ui/Toast";
 import { useCreateInvoiceVa } from "../hooks/useCreateInvoiceVa";
-import { useYukkBackendHealth } from "../hooks/useYukkBackendHealth";
+import { useArkivStock } from "../hooks/useArkivStock";
 import { formatRupiah } from "../utils/format-currency";
 
 export const LfkXArkivPage = () => {
   const { t } = useTranslation("lfk-x-arkiv");
-  const { isChecking: isCheckingBackend, isBackendReachable } = useYukkBackendHealth();
+  const { stock, refresh: refreshStock } = useArkivStock();
   const {
     error,
     isLoading,
@@ -37,7 +37,10 @@ export const LfkXArkivPage = () => {
     clearToast,
   } = useCreateInvoiceVa();
 
-  const checkoutDisabled = !isCheckingBackend && !isBackendReachable;
+  const onPaymentComplete = () => {
+    handlePaymentComplete();
+    refreshStock();
+  };
 
   return (
     <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900 -mt-[72px] pt-[72px]">
@@ -52,10 +55,7 @@ export const LfkXArkivPage = () => {
       <div className="relative z-10">
         <ArkivHeroSection />
         <ArkivVisionarySection />
-        <ArkivProductSection
-          onCheckout={openCheckout}
-          checkoutDisabled={checkoutDisabled}
-        />
+        <ArkivProductSection onCheckout={openCheckout} stock={stock} />
 
         {isPaymentComplete && lastPaidOrderId ? (
           <div className="relative z-10 mx-auto max-w-5xl px-4 pb-4 sm:px-6 lg:px-8">
@@ -77,20 +77,7 @@ export const LfkXArkivPage = () => {
           </div>
         ) : null}
 
-        {checkoutDisabled && (
-          <div className="relative z-10 mx-auto max-w-5xl px-4 pb-4 sm:px-6 lg:px-8">
-            <p
-              role="alert"
-              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
-            >
-              Backend pembayaran belum siap. Pastikan{" "}
-              <code className="rounded bg-amber-100 px-1">lithium-fire-killer-backend</code>{" "}
-              berjalan, lalu refresh halaman ini.
-            </p>
-          </div>
-        )}
-
-        <ArkivCtaSection />
+        <ArkivBuyCtaSection onCheckout={openCheckout} stock={stock} />
       </div>
 
       <ArkivCheckoutModal
@@ -100,11 +87,11 @@ export const LfkXArkivPage = () => {
         onCreateVA={handleCreateVA}
         onCreateQris={handleCreateQris}
         onMarkPaid={markPaymentPaid}
-        onPaymentComplete={handlePaymentComplete}
+        onPaymentComplete={onPaymentComplete}
         isLoading={isLoading}
         error={error}
         vaData={vaData}
-        disabled={checkoutDisabled}
+        stock={stock}
       />
 
       <Toast toast={toast} onClose={clearToast} />

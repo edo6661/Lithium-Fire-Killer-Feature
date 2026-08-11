@@ -23,8 +23,16 @@
   },
   "product": {
     "checkoutBtn": "Buy Now",
+    "stockHint": "{{remaining}} / {{initial}} units left",
+    "soldOut": "Sold out",
     "badge": "ANATOMY OF A MASTERPIECE",
     "heading": "MEET SARU REIMAGINED",
+    "views": {
+      "front": "Front",
+      "back": "Back",
+      "left": "Left",
+      "right": "Right"
+    },
     "description": "This isn't just an extinguisher—it’s a certified dual-purpose masterpiece. Engineered to neutralize battery fires instantly, it is cloaked in the bold silhouette of Arkiv’s Saru: an anchor of cool built from the DNA of KAWS, Megaman, and Rockman. Broad-shouldered and steadfast with a quiet heroic intensity, Saru embodies raw resilience—yet beneath its armored exterior lies a gentle protector, proving that true strength is the courage to remain tender after the battle.",
     "statement": "Evolving safety into a centerpiece you’ll want to display.",
     "whyArt": {
@@ -73,6 +81,24 @@
     "errorMessage": "A network error occurred. Please try again.",
     "limitedTag": "Limited Edition • Exclusive Drop"
   },
+  "buyCta": {
+    "badge": "Limited edition · Only 100 units",
+    "heading": "Claim your limited edition before it's gone",
+    "description": "Not just an extinguisher — a collectible LFK × Arkiv piece with AF31 lithium protection. Once all 100 are sold, they will never be remade.",
+    "points": [
+      "Dual purpose: display art + real fire safety",
+      "Hartindo AF31 formula for lithium-ion fires",
+      "Numbered limited edition — proof of exclusive ownership"
+    ],
+    "priceLabel": "Price",
+    "stockLabel": "Remaining",
+    "stockOf": "of",
+    "soldOut": "Sold out",
+    "stockHint": "{{remaining}} units left of {{initial}} limited edition",
+    "button": "Buy Now",
+    "secureNote": "Secure checkout · Virtual Account",
+    "unavailable": "Checkout unavailable — please refresh"
+  },
   "orderComplete": {
     "heading": "Order received",
     "body": "Your payment has been received. Keep the document number and a screenshot of your payment proof. Our team will contact you about delivery.",
@@ -97,6 +123,7 @@
       "methodVaHint": "Transfer to your chosen bank VA",
       "bankHeading": "Select bank",
       "summaryHeading": "Order summary",
+      "stockLabel": "Stock left",
       "qtyBadge": "1",
       "subtotalLabel": "Subtotal",
       "payBtn": "Pay now",

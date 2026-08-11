@@ -30,6 +30,7 @@ import type {
   CreateInvoiceVaPayload,
   InvoiceVaData,
 } from "../../../types/invoice";
+import type { ArkivStockData } from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
 import { formatVaExpiredDate } from "../../../utils/format-va-expired-date";
 import { Button } from "../../ui/Button";
@@ -46,6 +47,7 @@ interface ArkivCheckoutModalProps {
   isLoading: boolean;
   error: string | null;
   vaData: InvoiceVaData | null;
+  stock?: ArkivStockData | null;
   disabled?: boolean;
 }
 
@@ -60,6 +62,7 @@ export const ArkivCheckoutModal = ({
   isLoading,
   error,
   vaData,
+  stock = null,
   disabled = false,
 }: ArkivCheckoutModalProps) => {
   const { t } = useTranslation("lfk-x-arkiv");
@@ -139,9 +142,33 @@ export const ArkivCheckoutModal = ({
 
   const orderSummary = (
     <aside className="space-y-5 rounded-[1.5rem] bg-slate-50 p-5 ring-1 ring-slate-100 lg:sticky lg:top-0">
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-        {t("payment.checkout.summaryHeading")}
-      </p>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+          {t("payment.checkout.summaryHeading")}
+        </p>
+        {stock ? (
+          <p
+            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${
+              stock.soldOut
+                ? "bg-red-100 text-red-700"
+                : "bg-accent/15 text-accent"
+            }`}
+          >
+            {stock.soldOut
+              ? t("product.soldOut")
+              : `${stock.quantityRemaining}/${stock.quantityInitial}`}
+          </p>
+        ) : null}
+      </div>
+      {stock && !stock.soldOut ? (
+        <p className="-mt-2 text-xs font-semibold text-slate-500">
+          {t("payment.checkout.stockLabel")}:{" "}
+          {t("product.stockHint", {
+            remaining: stock.quantityRemaining,
+            initial: stock.quantityInitial,
+          })}
+        </p>
+      ) : null}
       <div className="flex gap-4">
         <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-white ring-1 ring-slate-200">
           <img
@@ -149,9 +176,7 @@ export const ArkivCheckoutModal = ({
             alt=""
             className="size-full object-contain p-1"
           />
-          <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-black text-white">
-            {t("payment.checkout.qtyBadge")}
-          </span>
+          
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-black leading-snug text-slate-900">

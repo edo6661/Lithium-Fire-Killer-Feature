@@ -1,21 +1,31 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { AnimateIn } from "../../ui/AnimateIn";
 import { Button } from "../../ui/Button";
 import { Palette, ShieldCheck } from "lucide-react";
+import {
+  ARKIV_PRODUCT_VIEWS,
+  type ArkivProductView,
+} from "../../../config/arkiv-billing";
+import type { ArkivStockData } from "../../../services/invoice.service";
 
 interface ArkivProductSectionProps {
   onCheckout?: () => void;
-  checkoutDisabled?: boolean;
+  stock?: ArkivStockData | null;
 }
+
+const VIEW_KEYS = ["front", "back", "left", "right"] as const satisfies readonly ArkivProductView[];
 
 export const ArkivProductSection = ({
   onCheckout,
-  checkoutDisabled = false,
+  stock = null,
 }: ArkivProductSectionProps) => {
   const { t } = useTranslation("lfk-x-arkiv");
+  const [activeView, setActiveView] = useState<ArkivProductView>("front");
   const tags = (t("product.tags", { returnObjects: true }) || []) as string[];
   const specs = (t("product.specs", { returnObjects: true }) || []) as Array<any>;
+  const soldOut = stock?.soldOut === true;
 
   return (
     <section className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -28,14 +38,24 @@ export const ArkivProductSection = ({
             {t("product.heading")}
           </h2>
           {onCheckout ? (
-            <Button
-              type="button"
-              disabled={checkoutDisabled}
-              onClick={onCheckout}
-              className="mt-8 bg-slate-900 px-8 py-4 text-white hover:bg-slate-800"
-            >
-              {t("product.checkoutBtn")}
-            </Button>
+            <div className="mt-8 flex flex-col items-start gap-3">
+              <Button
+                type="button"
+                disabled={soldOut}
+                onClick={onCheckout}
+                className="bg-slate-900 px-8 py-4 text-white hover:bg-slate-800 disabled:opacity-50"
+              >
+                {soldOut ? t("product.soldOut") : t("product.checkoutBtn")}
+              </Button>
+              {stock && !soldOut ? (
+                <p className="text-sm font-bold text-slate-600">
+                  {t("product.stockHint", {
+                    remaining: stock.quantityRemaining,
+                    initial: stock.quantityInitial,
+                  })}
+                </p>
+              ) : null}
+            </div>
           ) : null}
         </AnimateIn>
 
@@ -56,16 +76,48 @@ export const ArkivProductSection = ({
           <AnimateIn
             direction="right"
             delay={0.4}
-            className="relative w-full lg:w-1/2 flex min-h-[420px] items-center justify-center rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-8 sm:p-10 shadow-2xl overflow-hidden"
+            className="relative w-full lg:w-1/2 flex min-h-[420px] flex-col items-center justify-center gap-5 rounded-[3rem] bg-gradient-to-b from-slate-200 to-white border border-white p-6 sm:p-8 shadow-2xl overflow-hidden"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,152,212,0.1)_0%,transparent_70%)]" />
-            <motion.img
-              animate={{ y: [0, -15, 0], rotate: [0, 1, -1, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              src="/arkiv/siluet-tabung.png"
-              alt="Saru Art Piece"
-              className="relative z-20 w-[min(92%,520px)] max-h-[min(72vh,560px)] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)] sm:w-[min(88%,480px)] lg:w-[min(95%,520px)]"
-            />
+
+            <div className="relative z-20 flex w-full flex-1 items-center justify-center">
+              <span className="absolute left-3 top-3 z-30 rounded-lg border border-slate-200 bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 backdrop-blur-md">
+                {t(`product.views.${activeView}`)}
+              </span>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeView}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1, y: [0, -12, 0] }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{
+                    opacity: { duration: 0.25 },
+                    scale: { duration: 0.25 },
+                    y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+                  }}
+                  src={ARKIV_PRODUCT_VIEWS[activeView]}
+                  alt={`Saru — ${t(`product.views.${activeView}`)}`}
+                  className="relative z-20 w-[min(92%,480px)] max-h-[min(62vh,480px)] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.2)] sm:w-[min(88%,440px)] lg:w-[min(95%,480px)]"
+                />
+              </AnimatePresence>
+            </div>
+
+            <div className="relative z-20 flex w-full max-w-md justify-center gap-2 px-1">
+              {VIEW_KEYS.map((view) => (
+                <button
+                  key={view}
+                  type="button"
+                  onClick={() => setActiveView(view)}
+                  className={`flex-1 rounded-xl px-2 py-2 text-[10px] font-black uppercase tracking-wider transition-all duration-300 sm:px-3 ${
+                    activeView === view
+                      ? "border border-accent bg-accent text-white shadow-[0_0_14px_rgba(56,152,212,0.35)]"
+                      : "border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-800"
+                  }`}
+                >
+                  {t(`product.views.${view}`)}
+                </button>
+              ))}
+            </div>
           </AnimateIn>
 
           <AnimateIn direction="left" delay={0.5} className="w-full lg:w-1/2">

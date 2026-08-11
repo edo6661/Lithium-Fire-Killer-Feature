@@ -220,3 +220,43 @@ export async function fetchInvoiceStatus(
 
   return body.data;
 }
+
+export type ArkivStockData = {
+  id: string;
+  label: string;
+  quantityInitial: number;
+  quantityRemaining: number;
+  sold: number;
+  soldOut: boolean;
+};
+
+export async function fetchArkivStock(): Promise<ArkivStockData> {
+  const response = await fetch(`${API_BASE_URL}/api/invoices/stock/arkiv`, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(8_000),
+  });
+
+  let body: { success?: boolean; message?: string; data?: ArkivStockData };
+
+  try {
+    body = (await response.json()) as {
+      success?: boolean;
+      message?: string;
+      data?: ArkivStockData;
+    };
+  } catch {
+    throw new InvoiceApiError(
+      "Respons server tidak valid. Pastikan backend berjalan.",
+      response.status,
+    );
+  }
+
+  if (!response.ok || !body.success || !body.data) {
+    throw new InvoiceApiError(
+      body.message ?? "Gagal memuat stok produk.",
+      response.status,
+    );
+  }
+
+  return body.data;
+}
