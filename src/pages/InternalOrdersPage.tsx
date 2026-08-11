@@ -2,13 +2,17 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
+  Check,
   CheckCircle2,
   Clock3,
+  Copy,
+  FlaskConical,
   KeyRound,
   LogOut,
   Package,
   RefreshCw,
   RotateCcw,
+  Search,
   Shield,
   Wallet,
 } from "lucide-react";
@@ -25,6 +29,7 @@ import {
 } from "recharts";
 import { API_BASE_URL } from "../config/api";
 import { formatRupiah } from "../utils/format-currency";
+import { ARKIV_ACCESS_KEY_STORAGE } from "../utils/arkiv-access";
 
 type InvoiceRow = {
   orderId: string;
@@ -36,6 +41,7 @@ type InvoiceRow = {
   paymentChannelCode: string | null;
   virtualAccountBank: string | null;
   virtualAccountNo: string | null;
+  expiresAt: string | null;
   paidAt: string | null;
   createdAt: string;
 };
@@ -49,8 +55,16 @@ type StockInfo = {
   updatedAt: string;
 };
 
-const STORAGE_KEY = "lfk-internal-key";
+type StatusFilter = "ALL" | "PAID" | "PENDING" | "EXPIRED" | "FAILED";
+
+const STORAGE_KEY = ARKIV_ACCESS_KEY_STORAGE;
+const DEV_TOOLS_KEY = "lfk-internal-dev-tools";
+const AUTO_REFRESH_KEY = "lfk-internal-auto-refresh";
 const ACCENT = "#1A80C1";
+const AUTO_REFRESH_MS = 15_000;
+/** Nominal di atas ini dianggap outlier test (bukan sampling VA 10rb / QRIS 1rb). */
+const OUTLIER_THRESHOLD = 100_000;
+
 const PIE_COLORS = {
   PAID: "#10b981",
   PENDING: "#f59e0b",
@@ -85,6 +99,21 @@ function formatWhen(iso: string | null): string {
   }).format(d);
 }
 
+function formatRelative(iso: string | null, nowMs: number): string {
+  if (!iso) return "—";
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return iso;
+  const diffSec = Math.round((nowMs - t) / 1000);
+  if (diffSec < 5) return "baru saja";
+  if (diffSec < 60) return `${diffSec} dtk lalu`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} mnt lalu`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} jam lalu`;
+  const diffDay = Math.floor(diffHr / 24);
+  return `${diffDay} hari lalu`;
+}
+
 function dayKey(iso: string): string {
   const d = new Date(iso);
   return new Intl.DateTimeFormat("id-ID", {
@@ -94,63 +123,221 @@ function dayKey(iso: string): string {
   }).format(d);
 }
 
+/** Start of calendar day in Asia/Jakarta as UTC Date. */
+function startOfJakartaDay(now = new Date()): Date {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const y = parts.find((p) => p.type === "year")?.value ?? "1970";
+  const m = parts.find((p) => p.type === "month")?.value ?? "01";
+  const d = parts.find((p) => p.type === "day")?.value ?? "01";
+  return new Date(`${y}-${m}-${d}T00:00:00+07:00`);
+}
+
+function startOfJakartaWeek(now = new Date()): Date {
+  const start = startOfJakartaDay(now);
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Jakarta",
+    weekday: "short",
+  }).format(now);
+  const map: Record<string, number> = {
+    Mon: 0,
+    Tue: 1,
+    Wed: 2,
+    Thu: 3,
+    Fri: 4,
+    Sat: 5,
+    Sun: 6,
+  };
+  const offset = map[weekday] ?? 0;
+  start.setTime(start.getTime() - offset * 24 * 60 * 60 * 1000);
+  return start;
+}
+
+function paidAtMs(row: InvoiceRow): number {
+  const raw = row.paidAt ?? row.createdAt;
+  return new Date(raw).getTime();
+}
+
+function Copyable({
+  value,
+  className,
+  mono,
+}: {
+  value: string;
+  className?: string;
+  mono?: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      title="Salin"
+      onClick={() => void onCopy()}
+      className={`group inline-flex max-w-full items-center gap-1.5 rounded-md text-left transition hover:text-[#1A80C1] ${
+        mono ? "font-mono" : ""
+      } ${className ?? ""}`}
+    >
+      <span className="truncate">{value}</span>
+      {copied ? (
+        <Check className="size-3 shrink-0 text-emerald-600" />
+      ) : (
+        <Copy className="size-3 shrink-0 opacity-0 transition group-hover:opacity-60" />
+      )}
+    </button>
+  );
+}
+
 export const InternalOrdersPage = () => {
   const [keyInput, setKeyInput] = useState(() => localStorage.getItem(STORAGE_KEY) ?? "");
   const [key, setKey] = useState(() => localStorage.getItem(STORAGE_KEY) ?? "");
-  const [filter, setFilter] = useState<
-    "ALL" | "PAID" | "PENDING" | "EXPIRED" | "FAILED"
-  >("ALL");
+  const [filter, setFilter] = useState<StatusFilter>("ALL");
+  const [search, setSearch] = useState("");
   const [rows, setRows] = useState<InvoiceRow[]>([]);
   const [stock, setStock] = useState<StockInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [simulatingId, setSimulatingId] = useState<string | null>(null);
+  const [lastFetchedAt, setLastFetchedAt] = useState<string | null>(null);
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  const [autoRefresh, setAutoRefresh] = useState(
+    () => localStorage.getItem(AUTO_REFRESH_KEY) === "1",
+  );
+  const [devTools, setDevTools] = useState(
+    () => localStorage.getItem(DEV_TOOLS_KEY) === "1",
+  );
+  const [hideOutliers, setHideOutliers] = useState(true);
 
-  const fetchRows = useCallback(async (authKey: string, statusFilter: string) => {
-    if (!authKey) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams({ key: authKey, limit: "200" });
-      if (statusFilter !== "ALL") params.set("status", statusFilter);
-      const res = await fetch(`${API_BASE_URL}/api/internal/invoices?${params}`);
-      const body = (await res.json()) as {
-        success?: boolean;
-        message?: string;
-        data?: InvoiceRow[];
-        stock?: StockInfo;
-      };
-      if (!res.ok || !body.success || !body.data) {
-        throw new Error(body.message ?? `HTTP ${res.status}`);
+  const fetchRows = useCallback(
+    async (authKey: string, statusFilter: string, opts?: { silent?: boolean }) => {
+      if (!authKey) return;
+      const silent = opts?.silent ?? false;
+      if (!silent) setLoading(true);
+      setError(null);
+      try {
+        const params = new URLSearchParams({ key: authKey, limit: "200" });
+        if (statusFilter !== "ALL") params.set("status", statusFilter);
+        const res = await fetch(`${API_BASE_URL}/api/internal/invoices?${params}`);
+        const body = (await res.json()) as {
+          success?: boolean;
+          message?: string;
+          data?: InvoiceRow[];
+          stock?: StockInfo;
+        };
+        if (!res.ok || !body.success || !body.data) {
+          throw new Error(body.message ?? `HTTP ${res.status}`);
+        }
+        setRows(body.data);
+        setStock(body.stock ?? null);
+        setLastFetchedAt(new Date().toISOString());
+      } catch (err) {
+        if (!silent) {
+          setRows([]);
+          setStock(null);
+        }
+        setError(err instanceof Error ? err.message : "Gagal memuat data");
+      } finally {
+        if (!silent) setLoading(false);
       }
-      setRows(body.data);
-      setStock(body.stock ?? null);
-    } catch (err) {
-      setRows([]);
-      setStock(null);
-      setError(err instanceof Error ? err.message : "Gagal memuat data");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!key) return;
     void fetchRows(key, filter);
   }, [key, filter, fetchRows]);
 
+  useEffect(() => {
+    localStorage.setItem(AUTO_REFRESH_KEY, autoRefresh ? "1" : "0");
+  }, [autoRefresh]);
+
+  useEffect(() => {
+    localStorage.setItem(DEV_TOOLS_KEY, devTools ? "1" : "0");
+  }, [devTools]);
+
+  useEffect(() => {
+    if (!key || !autoRefresh) return;
+    const id = window.setInterval(() => {
+      void fetchRows(key, filter, { silent: true });
+    }, AUTO_REFRESH_MS);
+    return () => window.clearInterval(id);
+  }, [key, filter, autoRefresh, fetchRows]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNowTick(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    if (!notice) return;
+    const id = window.setTimeout(() => setNotice(null), 3200);
+    return () => window.clearTimeout(id);
+  }, [notice]);
+
+  const filteredRows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((row) => {
+      const hay = [
+        row.orderId,
+        row.customerName,
+        row.customerEmail,
+        row.customerPhone,
+        row.paymentChannelCode,
+        row.virtualAccountBank,
+        row.virtualAccountNo,
+        row.status,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [rows, search]);
+
   const stats = useMemo(() => {
-    const paidRows = rows.filter((r) => r.status === "PAID");
-    const pending = rows.filter((r) => r.status === "PENDING").length;
-    const revenue = paidRows.reduce((sum, r) => sum + r.grandTotal, 0);
+    const paidAll = rows.filter((r) => r.status === "PAID");
+    const paidForRevenue = hideOutliers
+      ? paidAll.filter((r) => r.grandTotal <= OUTLIER_THRESHOLD)
+      : paidAll;
+    const dayStart = startOfJakartaDay().getTime();
+    const weekStart = startOfJakartaWeek().getTime();
+
+    const sumPaid = (list: InvoiceRow[]) =>
+      list.reduce((sum, r) => sum + r.grandTotal, 0);
+
+    const todayRows = paidForRevenue.filter((r) => paidAtMs(r) >= dayStart);
+    const weekRows = paidForRevenue.filter((r) => paidAtMs(r) >= weekStart);
+    const outlierCount = paidAll.filter((r) => r.grandTotal > OUTLIER_THRESHOLD).length;
+
     return {
       total: rows.length,
-      paid: paidRows.length,
-      pending,
-      revenue,
+      paid: paidAll.length,
+      pending: rows.filter((r) => r.status === "PENDING").length,
+      revenueToday: sumPaid(todayRows),
+      revenueWeek: sumPaid(weekRows),
+      revenueAll: sumPaid(paidForRevenue),
+      outlierCount,
+      revenueAllRaw: sumPaid(paidAll),
     };
-  }, [rows]);
+  }, [rows, hideOutliers]);
 
   const pieData = useMemo(() => {
     const paid = rows.filter((r) => r.status === "PAID").length;
@@ -220,6 +407,7 @@ export const InternalOrdersPage = () => {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       setStock(body.stock);
+      setNotice("Stok di-reset ke 100.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal reset stok");
     } finally {
@@ -249,6 +437,7 @@ export const InternalOrdersPage = () => {
       if (!res.ok || !body.success) {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
+      setNotice(`Status ${orderId} → ${status}`);
       await fetchRows(key, filter);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal simulasi status");
@@ -263,7 +452,10 @@ export const InternalOrdersPage = () => {
     setKeyInput("");
     setRows([]);
     setStock(null);
+    setLastFetchedAt(null);
   };
+
+  const colCount = devTools ? 7 : 6;
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#e8eef5] text-slate-900">
@@ -290,7 +482,25 @@ export const InternalOrdersPage = () => {
             </div>
           </div>
           {key ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {lastFetchedAt ? (
+                <p className="mr-1 text-xs font-semibold text-slate-500">
+                  Update {formatRelative(lastFetchedAt, nowTick)}
+                  {autoRefresh ? " · auto 15s" : ""}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setAutoRefresh((v) => !v)}
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition ${
+                  autoRefresh
+                    ? "bg-[#1A80C1] text-white shadow-sm"
+                    : "border border-white/70 bg-white/80 text-slate-700 shadow-sm backdrop-blur hover:bg-white"
+                }`}
+              >
+                <RefreshCw className={`size-4 ${autoRefresh ? "animate-spin" : ""}`} />
+                Auto
+              </button>
               <button
                 type="button"
                 onClick={() => void fetchRows(key, filter)}
@@ -364,52 +574,108 @@ export const InternalOrdersPage = () => {
                   {error}
                 </div>
               ) : null}
+              {notice ? (
+                <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
+                  {notice}
+                </div>
+              ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {[
-                  {
-                    label: "Total invoice",
-                    value: String(stats.total),
-                    icon: Wallet,
-                    tone: "bg-slate-900 text-white",
-                  },
-                  {
-                    label: "Lunas",
-                    value: String(stats.paid),
-                    icon: CheckCircle2,
-                    tone: "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100",
-                  },
-                  {
-                    label: "Pending",
-                    value: String(stats.pending),
-                    icon: Clock3,
-                    tone: "bg-amber-50 text-amber-900 ring-1 ring-amber-100",
-                  },
-                  {
-                    label: "Revenue (lunas)",
-                    value: formatRupiah(stats.revenue),
-                    icon: Wallet,
-                    tone: "bg-[#1A80C1]/10 text-[#0d5a8c] ring-1 ring-[#1A80C1]/15",
-                  },
-                ].map((card, i) => (
-                  <motion.div
-                    key={card.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className={`rounded-[1.5rem] p-5 shadow-sm ${card.tone}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-black uppercase tracking-[0.16em] opacity-70">
-                        {card.label}
-                      </p>
-                      <card.icon className="size-4 opacity-70" />
-                    </div>
-                    <p className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
-                      {card.value}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-[1.5rem] bg-slate-900 p-5 text-white shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] opacity-70">
+                      Total invoice
                     </p>
-                  </motion.div>
-                ))}
+                    <Wallet className="size-4 opacity-70" />
+                  </div>
+                  <p className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+                    {stats.total}
+                  </p>
+                  <p className="mt-2 text-xs font-semibold text-white/60">
+                    Filter aktif: {filter === "ALL" ? "semua status" : statusLabel(filter)}
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="rounded-[1.5rem] bg-emerald-50 p-5 text-emerald-800 shadow-sm ring-1 ring-emerald-100"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] opacity-70">
+                      Lunas
+                    </p>
+                    <CheckCircle2 className="size-4 opacity-70" />
+                  </div>
+                  <p className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+                    {stats.paid}
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-[1.5rem] bg-amber-50 p-5 text-amber-900 shadow-sm ring-1 ring-amber-100"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] opacity-70">
+                      Pending
+                    </p>
+                    <Clock3 className="size-4 opacity-70" />
+                  </div>
+                  <p className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+                    {stats.pending}
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="rounded-[1.5rem] bg-[#1A80C1]/10 p-5 text-[#0d5a8c] shadow-sm ring-1 ring-[#1A80C1]/15"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em] opacity-70">
+                      Revenue hari ini
+                    </p>
+                    <Wallet className="size-4 opacity-70" />
+                  </div>
+                  <p className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+                    {formatRupiah(stats.revenueToday)}
+                  </p>
+                  <p className="mt-2 text-[11px] font-bold leading-relaxed opacity-80">
+                    Minggu: {formatRupiah(stats.revenueWeek)}
+                    <br />
+                    All-time: {formatRupiah(stats.revenueAll)}
+                  </p>
+                </motion.div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/80 bg-white/70 px-4 py-3 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur">
+                <label className="inline-flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={hideOutliers}
+                    onChange={(e) => setHideOutliers(e.target.checked)}
+                    className="size-3.5 rounded border-slate-300 text-[#1A80C1] focus:ring-[#1A80C1]"
+                  />
+                  Sembunyikan outlier &gt; {formatRupiah(OUTLIER_THRESHOLD)} dari revenue
+                </label>
+                {stats.outlierCount > 0 ? (
+                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-amber-900">
+                    {stats.outlierCount} invoice test besar (raw all-time{" "}
+                    {formatRupiah(stats.revenueAllRaw)})
+                  </span>
+                ) : (
+                  <span className="text-slate-400">Termasuk nominal sampling VA/QRIS.</span>
+                )}
               </div>
 
               <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -448,7 +714,11 @@ export const InternalOrdersPage = () => {
                         initial={{ width: 0 }}
                         animate={{ width: `${stockPct}%` }}
                         transition={{ duration: 0.7, ease: "easeOut" }}
-                        className="h-full rounded-full bg-gradient-to-r from-[#1A80C1] to-[#5eb3e8]"
+                        className={`h-full rounded-full ${
+                          stockPct <= 10
+                            ? "bg-gradient-to-r from-red-500 to-orange-400"
+                            : "bg-gradient-to-r from-[#1A80C1] to-[#5eb3e8]"
+                        }`}
                       />
                     </div>
                     <p className="mt-2 text-right text-xs font-bold text-slate-500">
@@ -585,9 +855,30 @@ export const InternalOrdersPage = () => {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs font-semibold text-slate-500">
-                  QA: row PENDING → tombol Expire / Fail untuk uji checkout.
-                </p>
+
+                <div className="relative min-w-[220px] flex-1">
+                  <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Cari nama, email, phone, order, VA…"
+                    className="w-full rounded-full border border-white/80 bg-white/90 py-2.5 pr-4 pl-10 text-sm font-semibold text-slate-800 shadow-sm outline-none transition focus:border-[#1A80C1] focus:ring-4 focus:ring-[#1A80C1]/15"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setDevTools((v) => !v)}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition ${
+                    devTools
+                      ? "bg-orange-500 text-white shadow-sm"
+                      : "border border-white/70 bg-white/80 text-slate-600 shadow-sm backdrop-blur hover:bg-white"
+                  }`}
+                >
+                  <FlaskConical className="size-4" />
+                  Dev tools
+                </button>
               </div>
 
               <div className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 shadow-[0_20px_60px_rgba(15,23,42,0.06)] backdrop-blur">
@@ -601,109 +892,154 @@ export const InternalOrdersPage = () => {
                         <th className="px-5 py-4">Channel</th>
                         <th className="px-5 py-4">Nominal</th>
                         <th className="px-5 py-4">Order</th>
-                        <th className="px-5 py-4">QA</th>
+                        {devTools ? <th className="px-5 py-4">QA</th> : null}
                       </tr>
                     </thead>
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan={7} className="px-5 py-14 text-center text-slate-500">
+                          <td colSpan={colCount} className="px-5 py-14 text-center text-slate-500">
                             <RefreshCw className="mx-auto mb-2 size-5 animate-spin text-[#1A80C1]" />
                             Memuat data…
                           </td>
                         </tr>
-                      ) : rows.length === 0 ? (
+                      ) : filteredRows.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="px-5 py-14 text-center font-semibold text-slate-400">
-                            Belum ada invoice
+                          <td
+                            colSpan={colCount}
+                            className="px-5 py-14 text-center font-semibold text-slate-400"
+                          >
+                            {search.trim() ? "Tidak ada hasil pencarian" : "Belum ada invoice"}
                           </td>
                         </tr>
                       ) : (
-                        rows.map((row, index) => (
-                          <motion.tr
-                            key={row.orderId}
-                            initial={{ opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: Math.min(index * 0.02, 0.3) }}
-                            className="border-b border-slate-50 align-top transition hover:bg-[#1A80C1]/[0.03]"
-                          >
-                            <td className="px-5 py-4 whitespace-nowrap text-xs text-slate-500">
-                              {formatWhen(row.createdAt)}
-                              {row.paidAt ? (
-                                <div className="mt-1 font-semibold text-emerald-700">
-                                  Bayar: {formatWhen(row.paidAt)}
+                        filteredRows.map((row, index) => {
+                          const isOutlier = row.grandTotal > OUTLIER_THRESHOLD;
+                          return (
+                            <motion.tr
+                              key={row.orderId}
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: Math.min(index * 0.02, 0.3) }}
+                              className="border-b border-slate-50 align-top transition hover:bg-[#1A80C1]/[0.03]"
+                            >
+                              <td className="px-5 py-4 whitespace-nowrap text-xs text-slate-500">
+                                <div className="font-semibold text-slate-700">
+                                  {formatRelative(row.createdAt, nowTick)}
                                 </div>
-                              ) : null}
-                            </td>
-                            <td className="px-5 py-4">
-                              <span
-                                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${
-                                  row.status === "PAID"
-                                    ? "bg-emerald-100 text-emerald-800"
-                                    : row.status === "PENDING"
-                                      ? "bg-amber-100 text-amber-900"
-                                      : row.status === "EXPIRED"
-                                        ? "bg-orange-100 text-orange-900"
-                                        : row.status === "FAILED"
-                                          ? "bg-red-100 text-red-800"
-                                          : "bg-slate-100 text-slate-700"
-                                }`}
-                              >
-                                {statusLabel(row.status)}
-                              </span>
-                            </td>
-                            <td className="px-5 py-4">
-                              <div className="font-bold text-slate-900">
-                                {row.customerName ?? "—"}
-                              </div>
-                              <div className="text-xs text-slate-500">{row.customerEmail ?? "—"}</div>
-                              <div className="text-xs text-slate-500">{row.customerPhone ?? "—"}</div>
-                            </td>
-                            <td className="px-5 py-4 text-xs font-semibold">
-                              {row.paymentChannelCode ?? "—"}
-                              {row.virtualAccountBank ? (
-                                <div className="text-slate-500">{row.virtualAccountBank}</div>
-                              ) : null}
-                              {row.virtualAccountNo ? (
-                                <div className="font-mono text-slate-500">{row.virtualAccountNo}</div>
-                              ) : null}
-                            </td>
-                            <td className="px-5 py-4 font-black whitespace-nowrap text-slate-900">
-                              {formatRupiah(row.grandTotal)}
-                            </td>
-                            <td className="px-5 py-4 font-mono text-xs text-slate-500">
-                              {row.orderId}
-                            </td>
-                            <td className="px-5 py-4">
-                              {row.status === "PENDING" ? (
-                                <div className="flex flex-col gap-1.5">
-                                  <button
-                                    type="button"
-                                    disabled={simulatingId === row.orderId}
-                                    onClick={() => void simulateStatus(row.orderId, "EXPIRED")}
-                                    className="rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-orange-900 disabled:opacity-50"
-                                  >
-                                    Expire
-                                  </button>
-                                  <button
-                                    type="button"
-                                    disabled={simulatingId === row.orderId}
-                                    onClick={() => void simulateStatus(row.orderId, "FAILED")}
-                                    className="rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-red-800 disabled:opacity-50"
-                                  >
-                                    Fail
-                                  </button>
+                                <div className="mt-0.5 text-slate-400">{formatWhen(row.createdAt)}</div>
+                                {row.expiresAt ? (
+                                  <div className="mt-1 text-slate-400">
+                                    Exp: {formatWhen(row.expiresAt)}
+                                  </div>
+                                ) : null}
+                                {row.paidAt ? (
+                                  <div className="mt-1 font-semibold text-emerald-700">
+                                    Bayar: {formatRelative(row.paidAt, nowTick)}
+                                  </div>
+                                ) : null}
+                              </td>
+                              <td className="px-5 py-4">
+                                <span
+                                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${
+                                    row.status === "PAID"
+                                      ? "bg-emerald-100 text-emerald-800"
+                                      : row.status === "PENDING"
+                                        ? "bg-amber-100 text-amber-900"
+                                        : row.status === "EXPIRED"
+                                          ? "bg-orange-100 text-orange-900"
+                                          : row.status === "FAILED"
+                                            ? "bg-red-100 text-red-800"
+                                            : "bg-slate-100 text-slate-700"
+                                  }`}
+                                >
+                                  {statusLabel(row.status)}
+                                </span>
+                                {isOutlier ? (
+                                  <div className="mt-1.5 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-900">
+                                    Outlier
+                                  </div>
+                                ) : null}
+                              </td>
+                              <td className="px-5 py-4">
+                                <div className="font-bold text-slate-900">
+                                  {row.customerName ?? "—"}
                                 </div>
-                              ) : (
-                                <span className="text-xs text-slate-300">—</span>
-                              )}
-                            </td>
-                          </motion.tr>
-                        ))
+                                {row.customerEmail ? (
+                                  <Copyable
+                                    value={row.customerEmail}
+                                    className="mt-0.5 text-xs text-slate-500"
+                                  />
+                                ) : (
+                                  <div className="text-xs text-slate-500">—</div>
+                                )}
+                                {row.customerPhone ? (
+                                  <Copyable
+                                    value={row.customerPhone}
+                                    className="text-xs text-slate-500"
+                                  />
+                                ) : (
+                                  <div className="text-xs text-slate-500">—</div>
+                                )}
+                              </td>
+                              <td className="px-5 py-4 text-xs font-semibold">
+                                {row.paymentChannelCode ?? "—"}
+                                {row.virtualAccountBank ? (
+                                  <div className="text-slate-500">{row.virtualAccountBank}</div>
+                                ) : null}
+                                {row.virtualAccountNo ? (
+                                  <Copyable
+                                    value={row.virtualAccountNo}
+                                    mono
+                                    className="text-slate-500"
+                                  />
+                                ) : null}
+                              </td>
+                              <td className="px-5 py-4 font-black whitespace-nowrap text-slate-900">
+                                {formatRupiah(row.grandTotal)}
+                              </td>
+                              <td className="px-5 py-4 text-xs text-slate-500">
+                                <Copyable value={row.orderId} mono />
+                              </td>
+                              {devTools ? (
+                                <td className="px-5 py-4">
+                                  {row.status === "PENDING" ? (
+                                    <div className="flex flex-col gap-1.5">
+                                      <button
+                                        type="button"
+                                        disabled={simulatingId === row.orderId}
+                                        onClick={() => void simulateStatus(row.orderId, "EXPIRED")}
+                                        className="rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-orange-900 disabled:opacity-50"
+                                      >
+                                        Expire
+                                      </button>
+                                      <button
+                                        type="button"
+                                        disabled={simulatingId === row.orderId}
+                                        onClick={() => void simulateStatus(row.orderId, "FAILED")}
+                                        className="rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-red-800 disabled:opacity-50"
+                                      >
+                                        Fail
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-xs text-slate-300">—</span>
+                                  )}
+                                </td>
+                              ) : null}
+                            </motion.tr>
+                          );
+                        })
                       )}
                     </tbody>
                   </table>
                 </div>
+                {filteredRows.length > 0 ? (
+                  <div className="border-t border-slate-100 px-5 py-3 text-xs font-semibold text-slate-400">
+                    Menampilkan {filteredRows.length}
+                    {search.trim() ? ` dari ${rows.length}` : ""} invoice
+                  </div>
+                ) : null}
               </div>
             </motion.div>
           )}

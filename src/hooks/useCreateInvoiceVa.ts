@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   createInvoiceQris,
@@ -10,6 +10,13 @@ import type {
   CreateInvoiceVaPayload,
   InvoiceVaData,
 } from "../types/invoice";
+import {
+  clearArkivPendingPayment,
+  isResumableCheckoutStep,
+  readArkivPendingPayment,
+  writeArkivPendingPayment,
+  type ArkivCheckoutStep,
+} from "../utils/arkiv-pending-payment";
 
 export type ToastVariant = "error" | "success";
 
@@ -18,7 +25,7 @@ export interface ToastState {
   variant: ToastVariant;
 }
 
-export type CheckoutStep = "form" | "paying" | "success" | "expired" | "failed";
+export type CheckoutStep = ArkivCheckoutStep;
 
 export interface UseCreateInvoiceVaResult {
   isLoading: boolean;
@@ -30,7 +37,11 @@ export interface UseCreateInvoiceVaResult {
   lastPaidOrderId: string | null;
   lastPaidAmount: number | null;
   toast: ToastState | null;
+  /** Ada sesi pembayaran yang bisa dilanjutkan (modal tertutup). */
+  hasPendingSession: boolean;
   openCheckout: () => void;
+  resumeCheckout: () => void;
+  dismissPendingSession: () => void;
   handleCreateVA: (payload: CreateInvoiceVaPayload) => Promise<void>;
   handleCreateQris: (payload: CreateInvoiceQrisPayload) => Promise<void>;
   markPaymentPaid: () => void;
@@ -43,12 +54,24 @@ export interface UseCreateInvoiceVaResult {
   clearError: () => void;
 }
 
+function loadInitialSession(): {
+  vaData: InvoiceVaData | null;
+  checkoutStep: CheckoutStep;
+} {
+  const saved = readArkivPendingPayment();
+  if (!saved || !isResumableCheckoutStep(saved.step)) {
+    return { vaData: null, checkoutStep: "form" };
+  }
+  return { vaData: saved.vaData, checkoutStep: saved.step };
+}
+
 export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
+  const initial = loadInitialSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [vaData, setVaData] = useState<InvoiceVaData | null>(null);
+  const [vaData, setVaData] = useState<InvoiceVaData | null>(initial.vaData);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>("form");
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>(initial.checkoutStep);
   const [isPaymentComplete, setIsPaymentComplete] = useState(false);
   const [lastPaidOrderId, setLastPaidOrderId] = useState<string | null>(null);
   const [lastPaidAmount, setLastPaidAmount] = useState<number | null>(null);
@@ -57,18 +80,45 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
   const clearToast = useCallback(() => setToast(null), []);
   const clearError = useCallback(() => setError(null), []);
 
+  useEffect(() => {
+    if (vaData && isResumableCheckoutStep(checkoutStep)) {
+      writeArkivPendingPayment({ vaData, step: checkoutStep });
+      return;
+    }
+    if (checkoutStep === "form" && !vaData) {
+      clearArkivPendingPayment();
+    }
+  }, [vaData, checkoutStep]);
+
+  const hasPendingSession =
+    !isCheckoutOpen && Boolean(vaData) && isResumableCheckoutStep(checkoutStep);
+
+  /** Buka modal — resume otomatis jika masih ada sesi pembayaran. */
   const openCheckout = useCallback(() => {
     setError(null);
-    setVaData(null);
     setIsPaymentComplete(false);
-    setCheckoutStep("form");
     setIsCheckoutOpen(true);
+  }, []);
+
+  const resumeCheckout = useCallback(() => {
+    setError(null);
+    setIsCheckoutOpen(true);
+  }, []);
+
+  const dismissPendingSession = useCallback(() => {
+    const ok = window.confirm(
+      "Tutup pengingat pembayaran ini?\n\nTagihan di bank/YUKK tetap ada sampai kadaluarsa. Anda bisa buat pesanan baru nanti.",
+    );
+    if (!ok) return;
+    clearArkivPendingPayment();
+    setVaData(null);
+    setCheckoutStep("form");
+    setIsCheckoutOpen(false);
+    setError(null);
   }, []);
 
   const closeCheckout = useCallback(() => {
     setIsCheckoutOpen(false);
-    // Tutup selalu kembali ke form bersih; transaksi lama tidak dibawa lagi
-    setCheckoutStep("form");
     setError(null);
   }, []);
 
@@ -88,6 +138,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
   }, []);
 
   const retryCheckout = useCallback(() => {
+    clearArkivPendingPayment();
     setVaData(null);
     setError(null);
     setCheckoutStep("form");
@@ -97,6 +148,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     setIsPaymentComplete(true);
     setLastPaidOrderId(vaData?.orderId ?? null);
     setLastPaidAmount(vaData?.grandTotal ?? null);
+    clearArkivPendingPayment();
     setIsCheckoutOpen(false);
     setCheckoutStep("form");
     setVaData(null);
@@ -120,6 +172,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
         setVaData(data);
         setCheckoutStep("paying");
         setIsCheckoutOpen(true);
+        writeArkivPendingPayment({ vaData: data, step: "paying" });
         setToast({
           message: "Virtual Account berhasil dibuat. Silakan selesaikan pembayaran.",
           variant: "success",
@@ -155,6 +208,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
         setVaData(data);
         setCheckoutStep("paying");
         setIsCheckoutOpen(true);
+        writeArkivPendingPayment({ vaData: data, step: "paying" });
         setToast({
           message: "QRIS berhasil dibuat. Silakan scan dan bayar.",
           variant: "success",
@@ -186,7 +240,10 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     lastPaidOrderId,
     lastPaidAmount,
     toast,
+    hasPendingSession,
     openCheckout,
+    resumeCheckout,
+    dismissPendingSession,
     handleCreateVA,
     handleCreateQris,
     markPaymentPaid,

@@ -9,6 +9,8 @@ import {
   ArkivCheckoutModal,
   ArkivBuyCtaSection,
 } from "../components/sections/lfk-x-arkiv";
+import { ArkivAccessGateModal, useArkivAccessGate } from "../components/sections/lfk-x-arkiv/ArkivAccessGateModal";
+import { ArkivPendingPaymentChip } from "../components/sections/lfk-x-arkiv/ArkivPendingPaymentChip";
 import { FloatingBlobs } from "../components/sections/lfk-x-arkiv/FloatingBlobs";
 import { Toast } from "../components/ui/Toast";
 import { useCreateInvoiceVa } from "../hooks/useCreateInvoiceVa";
@@ -28,7 +30,10 @@ export const LfkXArkivPage = () => {
     lastPaidOrderId,
     lastPaidAmount,
     toast,
+    hasPendingSession,
     openCheckout,
+    resumeCheckout,
+    dismissPendingSession,
     handleCreateVA,
     handleCreateQris,
     markPaymentPaid,
@@ -39,6 +44,13 @@ export const LfkXArkivPage = () => {
     closeCheckout,
     clearToast,
   } = useCreateInvoiceVa();
+
+  const {
+    gateOpen,
+    requestAccess,
+    closeGate,
+    handleUnlocked,
+  } = useArkivAccessGate(openCheckout);
 
   const onPaymentComplete = () => {
     handlePaymentComplete();
@@ -58,7 +70,7 @@ export const LfkXArkivPage = () => {
       <div className="relative z-10">
         <ArkivHeroSection />
         <ArkivVisionarySection />
-        <ArkivProductSection onCheckout={openCheckout} stock={stock} />
+        <ArkivProductSection onCheckout={() => void requestAccess()} stock={stock} />
 
         {isPaymentComplete && lastPaidOrderId ? (
           <div className="relative z-10 mx-auto max-w-5xl px-4 pb-4 sm:px-6 lg:px-8">
@@ -80,8 +92,14 @@ export const LfkXArkivPage = () => {
           </div>
         ) : null}
 
-        <ArkivBuyCtaSection onCheckout={openCheckout} stock={stock} />
+        <ArkivBuyCtaSection onCheckout={() => void requestAccess()} stock={stock} />
       </div>
+
+      <ArkivAccessGateModal
+        open={gateOpen}
+        onClose={closeGate}
+        onUnlocked={handleUnlocked}
+      />
 
       <ArkivCheckoutModal
         open={isCheckoutOpen}
@@ -99,6 +117,16 @@ export const LfkXArkivPage = () => {
         vaData={vaData}
         stock={stock}
       />
+
+      {vaData && hasPendingSession ? (
+        <ArkivPendingPaymentChip
+          open
+          step={checkoutStep}
+          vaData={vaData}
+          onResume={resumeCheckout}
+          onDismiss={dismissPendingSession}
+        />
+      ) : null}
 
       <Toast toast={toast} onClose={clearToast} />
     </div>

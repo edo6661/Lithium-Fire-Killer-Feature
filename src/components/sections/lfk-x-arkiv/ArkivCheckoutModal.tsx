@@ -27,6 +27,7 @@ import {
   type ArkivVaBankCode,
 } from "../../../config/arkiv-billing";
 import { useInvoicePaymentStatus } from "../../../hooks/useInvoicePaymentStatus";
+import { usePaymentCountdown } from "../../../hooks/usePaymentCountdown";
 import type { CheckoutStep } from "../../../hooks/useCreateInvoiceVa";
 import type {
   CreateInvoiceQrisPayload,
@@ -104,9 +105,17 @@ export const ArkivCheckoutModal = ({
     onFailed: onMarkFailed,
   });
 
+  const countdown = usePaymentCountdown(
+    open && step === "paying" ? (vaData?.expiredDate ?? null) : null,
+  );
+
   const showSuccess = step === "success";
   const showExpired = step === "expired";
   const showFailed = step === "failed";
+  const countdownUrgent =
+    countdown.remainingMs != null &&
+    countdown.remainingMs > 0 &&
+    countdown.remainingMs <= 5 * 60 * 1000;
 
   useEffect(() => {
     if (step === "paying") setCancelError(null);
@@ -366,10 +375,29 @@ export const ArkivCheckoutModal = ({
                         : t("payment.checkout.payingVaHeading")}
                     </h2>
 
-                    <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
-                      <CreditCard className="size-4" />
-                      {t("payment.modal.waitingBadge")}
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200">
+                        <CreditCard className="size-4" />
+                        {t("payment.modal.waitingBadge")}
+                      </div>
+                      {countdown.label ? (
+                        <div
+                          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider ring-1 ${
+                            countdownUrgent
+                              ? "bg-red-50 text-red-700 ring-red-200"
+                              : "bg-slate-900 text-white ring-slate-900"
+                          }`}
+                        >
+                          <TimerOff className="size-3.5" />
+                          {t("payment.modal.countdownLabel")} {countdown.label}
+                        </div>
+                      ) : null}
                     </div>
+                    {countdownUrgent ? (
+                      <p className="mt-2 text-xs font-bold text-red-600">
+                        {t("payment.modal.countdownUrgent")}
+                      </p>
+                    ) : null}
 
                     <div className="mt-5 space-y-4">
                       <div className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
@@ -384,13 +412,44 @@ export const ArkivCheckoutModal = ({
                         </p>
                       </div>
 
+                      {countdown.label ? (
+                        <div
+                          className={`rounded-2xl p-4 ring-1 ${
+                            countdownUrgent
+                              ? "bg-red-50 ring-red-100"
+                              : "bg-[#1A80C1]/8 ring-[#1A80C1]/20"
+                          }`}
+                        >
+                          <p
+                            className={`text-[10px] font-black uppercase tracking-widest ${
+                              countdownUrgent ? "text-red-500" : "text-[#1A80C1]"
+                            }`}
+                          >
+                            {t("payment.modal.countdownLabel")}
+                          </p>
+                          <p
+                            className={`mt-1 font-mono text-4xl font-black tracking-tight tabular-nums ${
+                              countdownUrgent ? "text-red-700" : "text-slate-900"
+                            }`}
+                          >
+                            {countdown.label}
+                          </p>
+                          {vaData.expiredDate ? (
+                            <p className="mt-2 text-xs font-semibold text-slate-500">
+                              {t("payment.modal.expiredLabel")}:{" "}
+                              {formatVaExpiredDate(vaData.expiredDate)}
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : null}
+
                       {isQrisPayment && vaData.qrisContent ? (
                         <div className="flex flex-col items-center rounded-2xl border border-dashed border-accent/30 bg-accent/5 p-5">
                           <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
                             {t("payment.modal.qrisLabel")}
                           </p>
                           <QrisQrImage content={vaData.qrisContent} size={260} />
-                          {vaData.expiredDate ? (
+                          {!countdown.label && vaData.expiredDate ? (
                             <p className="mt-3 text-xs font-semibold text-slate-500">
                               {t("payment.modal.expiredLabel")}:{" "}
                               {formatVaExpiredDate(vaData.expiredDate)}
@@ -409,7 +468,7 @@ export const ArkivCheckoutModal = ({
                             </p>
                           </div>
 
-                          {vaData.expiredDate ? (
+                          {!countdown.label && vaData.expiredDate ? (
                             <div className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
                               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                 {t("payment.modal.expiredLabel")}

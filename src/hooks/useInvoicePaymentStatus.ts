@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { syncInvoicePaymentStatus, InvoiceApiError } from "../services/invoice.service";
+import {
+  expireInvoiceIfDue,
+  syncInvoicePaymentStatus,
+  InvoiceApiError,
+} from "../services/invoice.service";
 import type { InvoiceVaStatus } from "../types/invoice";
 
 const POLL_INTERVAL_MS = 5000;
@@ -21,7 +25,7 @@ export interface UseInvoicePaymentStatusOptions {
   orderId: string | null;
   /** Aktifkan polling saat modal terbuka */
   enabled: boolean;
-  /** ISO deadline dari VA/QRIS — jika lewat, anggap kadaluarsa di UI */
+  /** ISO deadline dari VA/QRIS — jika lewat, persist EXPIRED ke DB */
   expiredDate?: string | null;
   onPaid?: () => void;
   onExpired?: () => void;
@@ -120,9 +124,9 @@ export function useInvoicePaymentStatus({
     return () => window.clearInterval(intervalId);
   }, [enabled, orderId, isTerminal, checkStatus]);
 
-  /** Soft-expire di UI saat deadline lewat (sebelum/ tanpa webhook YUKK). */
+  /** Saat deadline lewat: persist EXPIRED ke DB, lalu update UI. */
   useEffect(() => {
-    if (!enabled || !expiredDate || isTerminal || localExpiredFiredRef.current) {
+    if (!enabled || !orderId || !expiredDate || isTerminal || localExpiredFiredRef.current) {
       return;
     }
 
@@ -133,10 +137,28 @@ export function useInvoicePaymentStatus({
       if (localExpiredFiredRef.current) return;
       localExpiredFiredRef.current = true;
       void (async () => {
-        const synced = await checkStatus();
-        if (synced === "PAID" || synced === "FAILED" || synced === "EXPIRED") {
-          return;
+        try {
+          const expired = await expireInvoiceIfDue(orderId);
+          if (
+            expired.newStatus === "EXPIRED" ||
+            expired.newStatus === "FAILED" ||
+            expired.newStatus === "PAID"
+          ) {
+            applyStatus(expired.newStatus);
+            return;
+          }
+        } catch {
+          // fallback sync YUKK (juga apply deadline di server)
         }
+
+        try {
+          const synced = await syncInvoicePaymentStatus(orderId);
+          applyStatus(synced.newStatus);
+          if (isTerminalInvoiceStatus(synced.newStatus)) return;
+        } catch {
+          // last resort: UI only — status DB mungkin belum update
+        }
+
         applyStatus("EXPIRED");
       })();
     };
@@ -149,7 +171,7 @@ export function useInvoicePaymentStatus({
 
     const timeoutId = window.setTimeout(fireLocalExpire, remaining);
     return () => window.clearTimeout(timeoutId);
-  }, [enabled, expiredDate, isTerminal, checkStatus, applyStatus]);
+  }, [enabled, orderId, expiredDate, isTerminal, applyStatus]);
 
   useEffect(() => {
     if (!enabled) {

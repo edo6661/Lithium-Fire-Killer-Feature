@@ -113,6 +113,28 @@
     "successDescPart1": "Tagihan",
     "successDescPart2": "sebesar",
     "successDescPart3": "telah berhasil dibayar.",
+    "pendingChip": {
+      "eyebrow": "Pembayaran berlangsung",
+      "statusPaying": "Menunggu pembayaran Anda",
+      "statusSuccess": "Pembayaran berhasil — buka detail",
+      "statusExpired": "Pembayaran kadaluarsa",
+      "statusFailed": "Pembayaran gagal",
+      "channelQris": "QRIS",
+      "channelVa": "Virtual Account",
+      "timeLeft": "Sisa",
+      "tapHint": "Ketuk untuk buka kembali",
+      "dismissAria": "Tutup pengingat"
+    },
+    "accessGate": {
+      "heading": "Akses early preview",
+      "description": "Checkout LFK × Arkiv masih terbatas. Masukkan INTERNAL_DASHBOARD_KEY untuk melanjutkan pembelian.",
+      "keyLabel": "Access key",
+      "keyPlaceholder": "Paste INTERNAL_DASHBOARD_KEY",
+      "submit": "Lanjut ke checkout",
+      "verifying": "Memverifikasi…",
+      "closeAria": "Tutup",
+      "errorGeneric": "Gagal memverifikasi key."
+    },
     "checkout": {
       "brand": "LFK × Arkiv",
       "contactHeading": "Kontak",
@@ -158,6 +180,8 @@
       "docLabel": "No. dokumen:",
       "bankLabel": "Bank Tujuan",
       "expiredLabel": "Batas Waktu Pembayaran",
+      "countdownLabel": "Sisa waktu",
+      "countdownUrgent": "Segera bayar — hampir habis",
       "vaLabel": "Nomor Virtual Account",
       "qrisLabel": "Kode QRIS",
       "copyBtn": "Salin",

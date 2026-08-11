@@ -7,6 +7,7 @@ import type {
   InvoiceStatusApiResponse,
   InvoiceStatusData,
   InvoiceVaData,
+  InvoiceVaStatus,
   SyncInvoiceStatusApiResponse,
   SyncInvoiceStatusData,
   YukkHealthReport,
@@ -182,6 +183,56 @@ export async function syncInvoicePaymentStatus(
       body.message ?? "Gagal menyinkronkan status pembayaran dari YUKK.",
       response.status,
       body.responseCode,
+    );
+  }
+
+  return body.data;
+}
+
+/** Persist EXPIRED ke DB jika deadline sudah lewat (tanpa YUKK). */
+export async function expireInvoiceIfDue(
+  orderId: string,
+): Promise<{
+  orderId: string;
+  previousStatus: InvoiceVaStatus;
+  newStatus: InvoiceVaStatus;
+  updated: boolean;
+  reason: string;
+}> {
+  const encodedOrderId = encodeURIComponent(orderId);
+  const response = await fetch(
+    `${API_BASE_URL}/api/invoices/${encodedOrderId}/expire-if-due`,
+    {
+      method: "POST",
+      headers: { Accept: "application/json" },
+    },
+  );
+
+  let body: {
+    success?: boolean;
+    message?: string;
+    data?: {
+      orderId: string;
+      previousStatus: InvoiceVaStatus;
+      newStatus: InvoiceVaStatus;
+      updated: boolean;
+      reason: string;
+    };
+  };
+
+  try {
+    body = (await response.json()) as typeof body;
+  } catch {
+    throw new InvoiceApiError(
+      "Respons server tidak valid. Pastikan backend berjalan.",
+      response.status,
+    );
+  }
+
+  if (!response.ok || !body.success || !body.data) {
+    throw new InvoiceApiError(
+      body.message ?? "Gagal menandai invoice kadaluarsa.",
+      response.status,
     );
   }
 

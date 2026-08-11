@@ -113,6 +113,28 @@
     "successDescPart1": "The bill",
     "successDescPart2": "for",
     "successDescPart3": "has been successfully paid.",
+    "pendingChip": {
+      "eyebrow": "Payment in progress",
+      "statusPaying": "Waiting for your payment",
+      "statusSuccess": "Paid — open details",
+      "statusExpired": "Payment expired",
+      "statusFailed": "Payment failed",
+      "channelQris": "QRIS",
+      "channelVa": "Virtual Account",
+      "timeLeft": "Left",
+      "tapHint": "Tap to open again",
+      "dismissAria": "Dismiss reminder"
+    },
+    "accessGate": {
+      "heading": "Early preview access",
+      "description": "LFK × Arkiv checkout is limited. Enter INTERNAL_DASHBOARD_KEY to continue.",
+      "keyLabel": "Access key",
+      "keyPlaceholder": "Paste INTERNAL_DASHBOARD_KEY",
+      "submit": "Continue to checkout",
+      "verifying": "Verifying…",
+      "closeAria": "Close",
+      "errorGeneric": "Could not verify key."
+    },
     "checkout": {
       "brand": "LFK × Arkiv",
       "contactHeading": "Contact",
@@ -158,6 +180,8 @@
       "docLabel": "Doc No.:",
       "bankLabel": "Destination Bank",
       "expiredLabel": "Payment Deadline",
+      "countdownLabel": "Time left",
+      "countdownUrgent": "Pay now — almost expired",
       "vaLabel": "Virtual Account Number",
       "qrisLabel": "QRIS Code",
       "copyBtn": "Copy",
