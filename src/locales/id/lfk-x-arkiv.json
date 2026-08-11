@@ -25,6 +25,7 @@
     "quoteAuthor": "— MANIFESTO LITHIUM FIRE KILLER X ARKIV"
   },
   "product": {
+    "checkoutBtn": "Beli Sekarang",
     "badge": "ANATOMI MAHAKARYA",
     "heading": "TEMUI SARU YANG DIDEFINISIKAN ULANG",
     "description": "Ini bukan sekadar alat pemadam—ini adalah mahakarya bersertifikat dengan fungsi ganda. Direkayasa untuk menetralkan kebakaran baterai secara instan, dibalut dengan siluet tegas Saru karya Arkiv: figur ikonik yang terlahir dari DNA KAWS, Megaman, dan Rockman. Berbahu tegap dan kokoh dengan intensitas heroik yang tenang, Saru memancarkan ketangguhan sejati—namun di balik balutan pelindungnya tersembunyi sosok yang lembut, membuktikan bahwa kekuatan sejati adalah keberanian untuk tetap berhati lembut setelah pertempuran.",
@@ -72,15 +73,38 @@
     "errorMessage": "Terjadi kesalahan jaringan. Silakan coba lagi.",
     "limitedTag": "Edisi Terbatas • Rilis Eksklusif"
   },
+  "orderComplete": {
+    "heading": "Pesanan diterima",
+    "body": "Pembayaran Anda sudah kami terima. Simpan nomor dokumen dan screenshot bukti pembayaran. Tim kami akan menghubungi Anda untuk pengiriman.",
+    "docLabel": "No. dokumen:"
+  },
   "payment": {
     "badge": "Pembayaran Aman",
     "heading": "Selesaikan Pembelian Anda",
-    "description": "Buat Virtual Account untuk mengamankan karya LFK × Arkiv edisi terbatas Anda. Pembayaran diproses secara aman melalui YUKK Payment Gateway.",
-    "totalLabel": "Total Tagihan",
+    "description": "Pilih metode pembayaran untuk mengamankan karya LFK × Arkiv edisi terbatas Anda. Diproses aman melalui YUKK Payment Gateway.",
+    "totalLabel": "Total",
     "successHeading": "Pembayaran Lunas",
     "successDescPart1": "Tagihan",
     "successDescPart2": "sebesar",
     "successDescPart3": "telah berhasil dibayar.",
+    "checkout": {
+      "brand": "LFK × Arkiv",
+      "contactHeading": "Kontak",
+      "methodHeading": "Metode pembayaran",
+      "methodQris": "QRIS",
+      "methodQrisHint": "Scan dengan e-wallet / m-banking",
+      "methodVa": "Transfer Virtual Account",
+      "methodVaHint": "Transfer ke nomor VA bank pilihan",
+      "bankHeading": "Pilih bank",
+      "summaryHeading": "Ringkasan pesanan",
+      "qtyBadge": "1",
+      "subtotalLabel": "Subtotal",
+      "payBtn": "Bayar sekarang",
+      "payingVaHeading": "Instruksi Virtual Account",
+      "payingQrisHeading": "Scan QRIS untuk bayar",
+      "closeAria": "Tutup checkout",
+      "secureNote": "Pembayaran aman melalui YUKK Payment Gateway."
+    },
     "form": {
       "nameLabel": "Nama Lengkap",
       "namePlaceholder": "Nama sesuai rekening",
@@ -91,7 +115,7 @@
       "bankLegend": "Pilih Bank Virtual Account",
       "secureNote": "Pembayaran aman melalui YUKK Payment Gateway. Nomor VA unik untuk transaksi ini.",
       "submitBtn": "Buat Virtual Account",
-      "loadingBtn": "Membuat Virtual Account..."
+      "loadingBtn": "Memproses..."
     },
     "modal": {
       "successHeading": "Pembayaran Berhasil Diterima!",
@@ -99,6 +123,7 @@
       "successDescPart2": "sebesar",
       "successDescPart3": "telah kami terima.",
       "finishBtn": "Selesai",
+      "successTip": "Simpan nomor dokumen ini. Screenshot halaman ini atau bukti pembayaran dari e-wallet/bank sebagai arsip. Email konfirmasi akan dikirim ke alamat yang Anda isi (setelah fitur email aktif).",
       "instructionBadge": "Instruksi Pembayaran",
       "instructionHeading": "Virtual Account",
       "waitingBadge": "Menunggu Pembayaran",
@@ -107,11 +132,12 @@
       "bankLabel": "Bank Tujuan",
       "expiredLabel": "Batas Waktu Pembayaran",
       "vaLabel": "Nomor Virtual Account",
+      "qrisLabel": "Kode QRIS",
       "copyBtn": "Salin",
       "copiedBtn": "Tersalin",
       "checkBtn": "Cek Status Pembayaran",
       "checkingBtn": "Memeriksa Status...",
-      "autoUpdateNote": "Status diperbarui otomatis setiap 5 detik setelah Anda transfer."
+      "autoUpdateNote": "Status diperbarui otomatis setiap 5 detik setelah Anda bayar."
     }
   }
 }

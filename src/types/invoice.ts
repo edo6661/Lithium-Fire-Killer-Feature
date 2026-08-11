@@ -11,6 +11,16 @@ export interface CreateInvoiceVaPayload {
   notes?: string;
 }
 
+export interface CreateInvoiceQrisPayload {
+  orderId: string;
+  grandTotal: number;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  notes?: string;
+}
+
+/** Unified payment invoice payload returned by VA or QRIS create. */
 export interface InvoiceVaData {
   orderId: string;
   grandTotal: number;
@@ -18,8 +28,11 @@ export interface InvoiceVaData {
   virtualAccountNo: string;
   virtualAccountBank: string;
   paymentChannelCode: string;
+  paymentChannelName?: string;
   yukkResponseCode?: string;
   expiredDate?: string;
+  qrisReferenceNo?: string | null;
+  qrisContent?: string | null;
 }
 
 export interface SyncInvoiceStatusData {
@@ -54,6 +67,14 @@ export interface InvoiceStatusApiResponse {
 }
 
 export interface CreateInvoiceVaApiResponse {
+  success: boolean;
+  data?: InvoiceVaData;
+  message?: string;
+  responseCode?: string;
+  hint?: string;
+}
+
+export interface CreateInvoiceQrisApiResponse {
   success: boolean;
   data?: InvoiceVaData;
   message?: string;

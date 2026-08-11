@@ -70,8 +70,8 @@ export const LFK_X_ARKIV_CONTENT = {
     badge: "Secure Checkout",
     heading: "Complete Your Purchase",
     description:
-      "Generate a Virtual Account to secure your limited-edition LFK × Arkiv piece. Payment is processed securely via YUKK Payment Gateway.",
-    button: "Buat Virtual Account",
-    secureNote: "Pembayaran aman melalui YUKK Payment Gateway. Nomor VA unik untuk transaksi ini.",
+      "Choose QRIS or Virtual Account to secure your limited-edition LFK × Arkiv piece. Payment is processed securely via YUKK Payment Gateway.",
+    button: "Checkout",
+    secureNote: "Pembayaran aman melalui YUKK Payment Gateway.",
   },
 } as const;

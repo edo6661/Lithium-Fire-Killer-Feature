@@ -22,6 +22,7 @@
     "quoteAuthor": "— LITHIUM FIRE KILLER X ARKIV MANIFEST"
   },
   "product": {
+    "checkoutBtn": "Buy Now",
     "badge": "ANATOMY OF A MASTERPIECE",
     "heading": "MEET SARU REIMAGINED",
     "description": "This isn't just an extinguisher—it’s a certified dual-purpose masterpiece. Engineered to neutralize battery fires instantly, it is cloaked in the bold silhouette of Arkiv’s Saru: an anchor of cool built from the DNA of KAWS, Megaman, and Rockman. Broad-shouldered and steadfast with a quiet heroic intensity, Saru embodies raw resilience—yet beneath its armored exterior lies a gentle protector, proving that true strength is the courage to remain tender after the battle.",
@@ -72,15 +73,38 @@
     "errorMessage": "A network error occurred. Please try again.",
     "limitedTag": "Limited Edition • Exclusive Drop"
   },
+  "orderComplete": {
+    "heading": "Order received",
+    "body": "Your payment has been received. Keep the document number and a screenshot of your payment proof. Our team will contact you about delivery.",
+    "docLabel": "Doc No.:"
+  },
   "payment": {
     "badge": "Secure Checkout",
     "heading": "Complete Your Purchase",
-    "description": "Generate a Virtual Account to secure your limited-edition LFK × Arkiv piece. Payment is processed securely via YUKK Payment Gateway.",
-    "totalLabel": "Total Due",
+    "description": "Choose a payment method to secure your limited-edition LFK × Arkiv piece. Processed securely via YUKK Payment Gateway.",
+    "totalLabel": "Total",
     "successHeading": "Payment Successful",
     "successDescPart1": "The bill",
     "successDescPart2": "for",
     "successDescPart3": "has been successfully paid.",
+    "checkout": {
+      "brand": "LFK × Arkiv",
+      "contactHeading": "Contact",
+      "methodHeading": "Payment method",
+      "methodQris": "QRIS",
+      "methodQrisHint": "Scan with e-wallet / m-banking",
+      "methodVa": "Virtual Account Transfer",
+      "methodVaHint": "Transfer to your chosen bank VA",
+      "bankHeading": "Select bank",
+      "summaryHeading": "Order summary",
+      "qtyBadge": "1",
+      "subtotalLabel": "Subtotal",
+      "payBtn": "Pay now",
+      "payingVaHeading": "Virtual Account instructions",
+      "payingQrisHeading": "Scan QRIS to pay",
+      "closeAria": "Close checkout",
+      "secureNote": "Secure payment via YUKK Payment Gateway."
+    },
     "form": {
       "nameLabel": "Full Name",
       "namePlaceholder": "Name on bank account",
@@ -91,7 +115,7 @@
       "bankLegend": "Select Virtual Account Bank",
       "secureNote": "Secure payment via YUKK Payment Gateway. Unique VA number for this transaction.",
       "submitBtn": "Generate Virtual Account",
-      "loadingBtn": "Generating Virtual Account..."
+      "loadingBtn": "Processing..."
     },
     "modal": {
       "successHeading": "Payment Successfully Received!",
@@ -99,6 +123,7 @@
       "successDescPart2": "of",
       "successDescPart3": "has been received.",
       "finishBtn": "Done",
+      "successTip": "Save this document number. Screenshot this page or your e-wallet/bank receipt for your records. A confirmation email will be sent to the address you entered (once email is enabled).",
       "instructionBadge": "Payment Instructions",
       "instructionHeading": "Virtual Account",
       "waitingBadge": "Awaiting Payment",
@@ -107,11 +132,12 @@
       "bankLabel": "Destination Bank",
       "expiredLabel": "Payment Deadline",
       "vaLabel": "Virtual Account Number",
+      "qrisLabel": "QRIS Code",
       "copyBtn": "Copy",
       "copiedBtn": "Copied",
       "checkBtn": "Check Payment Status",
       "checkingBtn": "Checking Status...",
-      "autoUpdateNote": "Status updates automatically every 5 seconds after you transfer."
+      "autoUpdateNote": "Status updates automatically every 5 seconds after you pay."
     }
   }
 }

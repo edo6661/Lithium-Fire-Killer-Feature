@@ -4,11 +4,14 @@ import { AboutPage } from "../pages/AboutPage";
 import { HomePage } from "../pages/HomePage";
 import { ContactPage } from "../pages/ContactPage";
 import { LithiumFireSafetyPage } from "../pages/LithiumFireSafetyPage";
-import { LfkXArkivPage } from "../pages/LfkXArkivPage"; // <-- Import ini
+import { LfkXArkivPage } from "../pages/LfkXArkivPage";
+import { InternalOrdersPage } from "../pages/InternalOrdersPage";
 
 export const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="internal" element={<InternalOrdersPage />} />
+
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
@@ -21,10 +24,7 @@ export const AppRoutes = () => {
           element={<LithiumFireSafetyPage />}
         />
         <Route path="contact" element={<ContactPage />} />
-
-        {/* Update rute lfk-x-arkiv di sini */}
         <Route path="lfk-x-arkiv" element={<LfkXArkivPage />} />
-
         <Route
           path="kontak"
           element={<Navigate to="/contact" replace />}

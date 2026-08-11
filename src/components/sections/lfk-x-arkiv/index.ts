@@ -1,6 +1,5 @@
 export { ArkivHeroSection } from "./ArkivHeroSection";
 export { ArkivVisionarySection } from "./ArkivVisionarySection";
 export { ArkivProductSection } from "./ArkivProductSection";
-export { ArkivPaymentSection } from "./ArkivPaymentSection";
-export { PaymentInstructionModal } from "./PaymentInstructionModal";
+export { ArkivCheckoutModal } from "./ArkivCheckoutModal";
 export { ArkivCtaSection } from "./ArkivCtaSection";

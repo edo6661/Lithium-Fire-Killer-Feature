@@ -1,5 +1,7 @@
 import { API_BASE_URL } from "../config/api";
 import type {
+  CreateInvoiceQrisApiResponse,
+  CreateInvoiceQrisPayload,
   CreateInvoiceVaApiResponse,
   CreateInvoiceVaPayload,
   InvoiceStatusApiResponse,
@@ -29,7 +31,11 @@ export class InvoiceApiError extends Error {
   }
 }
 
-function resolveErrorMessage(body: CreateInvoiceVaApiResponse, status: number): string {
+function resolveErrorMessage(
+  body: { message?: string; hint?: string },
+  status: number,
+  fallback: string,
+): string {
   if (body.message && body.hint) {
     return `${body.message} ${body.hint}`;
   }
@@ -46,7 +52,7 @@ function resolveErrorMessage(body: CreateInvoiceVaApiResponse, status: number): 
     return "Server sedang bermasalah. Silakan coba beberapa saat lagi.";
   }
 
-  return "Gagal membuat Virtual Account. Periksa data Anda dan coba lagi.";
+  return fallback;
 }
 
 export async function createInvoiceVa(
@@ -74,19 +80,71 @@ export async function createInvoiceVa(
 
   if (!response.ok || !body.success || !body.data) {
     throw new InvoiceApiError(
-      resolveErrorMessage(body, response.status),
+      resolveErrorMessage(
+        body,
+        response.status,
+        "Gagal membuat Virtual Account. Periksa data Anda dan coba lagi.",
+      ),
       response.status,
       body.responseCode,
       body.hint,
     );
   }
 
-  return body.data;
+  return {
+    ...body.data,
+    virtualAccountNo: body.data.virtualAccountNo ?? "",
+    virtualAccountBank: body.data.virtualAccountBank ?? "",
+  };
+}
+
+export async function createInvoiceQris(
+  payload: CreateInvoiceQrisPayload,
+): Promise<InvoiceVaData> {
+  const response = await fetch(`${API_BASE_URL}/api/invoices/qris`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  let body: CreateInvoiceQrisApiResponse;
+
+  try {
+    body = (await response.json()) as CreateInvoiceQrisApiResponse;
+  } catch {
+    throw new InvoiceApiError(
+      "Respons server tidak valid. Pastikan backend berjalan.",
+      response.status,
+    );
+  }
+
+  if (!response.ok || !body.success || !body.data) {
+    throw new InvoiceApiError(
+      resolveErrorMessage(
+        body,
+        response.status,
+        "Gagal membuat QRIS. Periksa data Anda dan coba lagi.",
+      ),
+      response.status,
+      body.responseCode,
+      body.hint,
+    );
+  }
+
+  return {
+    ...body.data,
+    virtualAccountNo: body.data.virtualAccountNo ?? "",
+    virtualAccountBank: body.data.virtualAccountBank ?? "QRIS",
+  };
 }
 
 export async function fetchYukkBackendHealth(): Promise<YukkHealthReport> {
   const response = await fetch(`${API_BASE_URL}/health/yukk`, {
     headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(8_000),
   });
 
   if (!response.ok) {
@@ -100,10 +158,13 @@ export async function syncInvoicePaymentStatus(
   orderId: string,
 ): Promise<SyncInvoiceStatusData> {
   const encodedOrderId = encodeURIComponent(orderId);
-  const response = await fetch(`${API_BASE_URL}/api/invoices/${encodedOrderId}/sync-yukk`, {
-    method: "POST",
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/invoices/${encodedOrderId}/sync-yukk`,
+    {
+      method: "POST",
+      headers: { Accept: "application/json" },
+    },
+  );
 
   let body: SyncInvoiceStatusApiResponse;
 
@@ -127,12 +188,17 @@ export async function syncInvoicePaymentStatus(
   return body.data;
 }
 
-export async function fetchInvoiceStatus(orderId: string): Promise<InvoiceStatusData> {
+export async function fetchInvoiceStatus(
+  orderId: string,
+): Promise<InvoiceStatusData> {
   const encodedOrderId = encodeURIComponent(orderId);
-  const response = await fetch(`${API_BASE_URL}/api/invoices/${encodedOrderId}/status`, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/invoices/${encodedOrderId}/status`,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    },
+  );
 
   let body: InvoiceStatusApiResponse;
 
