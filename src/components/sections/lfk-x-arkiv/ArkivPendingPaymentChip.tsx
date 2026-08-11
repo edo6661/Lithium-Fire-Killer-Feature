@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -36,6 +37,7 @@ export const ArkivPendingPaymentChip = ({
   onDismiss,
 }: ArkivPendingPaymentChipProps) => {
   const { t } = useTranslation("lfk-x-arkiv");
+  const [showTip, setShowTip] = useState(true);
   const countdown = usePaymentCountdown(
     step === "paying" ? (vaData.expiredDate ?? null) : null,
   );
@@ -59,45 +61,52 @@ export const ArkivPendingPaymentChip = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.7, y: 20 }}
           transition={{ type: "spring", stiffness: 320, damping: 24 }}
-          className="fixed right-5 bottom-[5.75rem] z-[60] flex flex-col items-end gap-2 sm:right-8 sm:bottom-[6.5rem]"
+          className="fixed bottom-6 left-5 z-[60] flex flex-col items-start gap-3 sm:bottom-8 sm:left-8"
         >
-          {/* Bubble info — di atas FAB, mirip tooltip WA */}
-          <motion.button
-            type="button"
-            onClick={onResume}
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="relative w-[min(240px,calc(100vw-5.5rem))] rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-left shadow-[0_12px_40px_rgba(15,23,42,0.18)]"
-          >
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A80C1]">
-              {t("payment.pendingChip.eyebrow")}
-            </p>
-            <p className="mt-1 text-sm font-black leading-snug tracking-tight text-slate-900">
-              {statusText}
-            </p>
-            <p className="mt-1.5 truncate text-xs font-semibold text-slate-500">
-              {isQris
-                ? t("payment.pendingChip.channelQris")
-                : `${t("payment.pendingChip.channelVa")} · ${vaData.virtualAccountBank || "VA"}`}
-              {" · "}
-              {formatRupiah(vaData.grandTotal)}
-            </p>
-            {step === "paying" && countdown.label ? (
-              <p className="mt-1 font-mono text-xs font-bold tabular-nums text-slate-800">
-                {t("payment.pendingChip.timeLeft")} {countdown.label}
-              </p>
+          {/* Tooltip di atas FAB kiri — tidak bentrok dengan WA kanan */}
+          <AnimatePresence>
+            {showTip ? (
+              <motion.button
+                type="button"
+                onClick={onResume}
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                transition={{ duration: 0.22 }}
+                className="relative w-[min(230px,calc(100vw-5.5rem))] rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-left shadow-[0_12px_40px_rgba(15,23,42,0.18)]"
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A80C1]">
+                  {t("payment.pendingChip.eyebrow")}
+                </p>
+                <p className="mt-1 text-sm font-black leading-snug tracking-tight text-slate-900">
+                  {statusText}
+                </p>
+                <p className="mt-1.5 truncate text-xs font-semibold text-slate-500">
+                  {isQris
+                    ? t("payment.pendingChip.channelQris")
+                    : `${t("payment.pendingChip.channelVa")} · ${vaData.virtualAccountBank || "VA"}`}
+                  {" · "}
+                  {formatRupiah(vaData.grandTotal)}
+                </p>
+                {step === "paying" && countdown.label ? (
+                  <p className="mt-1 font-mono text-xs font-bold tabular-nums text-slate-800">
+                    {t("payment.pendingChip.timeLeft")} {countdown.label}
+                  </p>
+                ) : null}
+                <p className="mt-2 text-[11px] font-bold text-[#1A80C1]">
+                  {t("payment.pendingChip.tapHint")}
+                </p>
+                <div className="absolute -bottom-[5px] left-7 size-2.5 rotate-45 border-r border-b border-slate-200/80 bg-white" />
+              </motion.button>
             ) : null}
-            <p className="mt-2 text-[11px] font-bold text-[#1A80C1]">
-              {t("payment.pendingChip.tapHint")}
-            </p>
-            <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-r border-b border-slate-200/80 bg-white" />
-          </motion.button>
+          </AnimatePresence>
 
           <div className="relative">
             <motion.button
               type="button"
               aria-label={statusText}
               onClick={onResume}
+              onMouseEnter={() => setShowTip(true)}
               whileHover={{ scale: 1.12, y: -3 }}
               whileTap={{ scale: 0.94 }}
               transition={{ type: "spring", stiffness: 380, damping: 22 }}
