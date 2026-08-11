@@ -6,6 +6,7 @@ import {
   arkivAmountFor,
 } from "../../../config/arkiv-billing";
 import type { ArkivStockData } from "../../../services/invoice.service";
+import { isArkivPurchaseUnavailable } from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
 
 interface ArkivBuyCtaSectionProps {
@@ -19,7 +20,18 @@ export const ArkivBuyCtaSection = ({
 }: ArkivBuyCtaSectionProps) => {
   const { t } = useTranslation("lfk-x-arkiv");
   const price = arkivAmountFor("VA");
-  const soldOut = stock?.soldOut === true;
+  const unavailable = isArkivPurchaseUnavailable(stock);
+  const dailyFull = !stock?.soldOut && stock?.dailyQuota?.exhausted === true;
+  const unavailableLabel = stock?.soldOut
+    ? t("buyCta.soldOut")
+    : dailyFull
+      ? t("buyCta.dailyLimitReached")
+      : t("buyCta.unavailable");
+  const unavailableHint = stock?.soldOut
+    ? t("buyCta.soldOut")
+    : dailyFull
+      ? t("buyCta.dailyLimitHint")
+      : t("buyCta.unavailable");
 
   return (
     <section className="relative z-10 mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
@@ -69,15 +81,15 @@ export const ArkivBuyCtaSection = ({
               {stock ? (
                 <div
                   className={`mt-5 rounded-2xl px-4 py-3 ${
-                    soldOut
+                    unavailable
                       ? "bg-red-500/15 ring-1 ring-red-400/30"
                       : "bg-white/8 ring-1 ring-white/10"
                   }`}
                 >
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/45">
-                    {soldOut ? t("buyCta.soldOut") : t("buyCta.stockLabel")}
+                    {unavailable ? unavailableLabel : t("buyCta.stockLabel")}
                   </p>
-                  {!soldOut ? (
+                  {!unavailable ? (
                     <p className="mt-1 text-2xl font-black tracking-tight">
                       {stock.quantityRemaining}
                       <span className="text-base font-bold text-white/45">
@@ -87,8 +99,8 @@ export const ArkivBuyCtaSection = ({
                     </p>
                   ) : null}
                   <p className="mt-1 text-xs font-semibold text-white/55">
-                    {soldOut
-                      ? t("buyCta.soldOut")
+                    {unavailable
+                      ? unavailableHint
                       : t("buyCta.stockHint", {
                           remaining: stock.quantityRemaining,
                           initial: stock.quantityInitial,
@@ -99,12 +111,12 @@ export const ArkivBuyCtaSection = ({
 
               <button
                 type="button"
-                disabled={soldOut}
+                disabled={unavailable}
                 onClick={onCheckout}
                 className="mt-8 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent px-7 py-5 text-base font-black tracking-wide text-white shadow-[0_8px_28px_rgba(56,152,212,0.45)] transition hover:bg-[#2d85bf] hover:shadow-[0_10px_32px_rgba(56,152,212,0.55)] disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/50 disabled:shadow-none sm:text-lg"
               >
-                {soldOut ? t("buyCta.soldOut") : t("buyCta.button")}
-                {!soldOut ? <ArrowRight className="size-5" /> : null}
+                {unavailable ? unavailableLabel : t("buyCta.button")}
+                {!unavailable ? <ArrowRight className="size-5" /> : null}
               </button>
 
               <p className="mt-4 text-center text-[11px] font-bold uppercase tracking-wider text-white/45">

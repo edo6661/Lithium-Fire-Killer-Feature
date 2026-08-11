@@ -17,26 +17,37 @@ export class InvoiceApiError extends Error {
   readonly statusCode: number;
   readonly responseCode?: string;
   readonly hint?: string;
+  /** Business code from backend, e.g. SOLD_OUT | DAILY_LIMIT */
+  readonly code?: string;
 
   constructor(
     message: string,
     statusCode: number,
     responseCode?: string,
     hint?: string,
+    code?: string,
   ) {
     super(message);
     this.name = "InvoiceApiError";
     this.statusCode = statusCode;
     this.responseCode = responseCode;
     this.hint = hint;
+    this.code = code;
   }
 }
 
 function resolveErrorMessage(
-  body: { message?: string; hint?: string },
+  body: { message?: string; hint?: string; code?: string },
   status: number,
   fallback: string,
 ): string {
+  if (body.code === "SOLD_OUT") {
+    return "Stok edisi terbatas sudah habis. Pembelian tidak bisa dilanjutkan.";
+  }
+  if (body.code === "DAILY_LIMIT") {
+    return "Kuota pembayaran hari ini sudah penuh. Silakan coba lagi besok.";
+  }
+
   if (body.message && body.hint) {
     return `${body.message} ${body.hint}`;
   }
@@ -47,6 +58,10 @@ function resolveErrorMessage(
 
   if (status === 409) {
     return "Tagihan dengan nomor dokumen ini sudah pernah dibuat. Silakan cek instruksi pembayaran Anda.";
+  }
+
+  if (status === 429) {
+    return "Kuota pembayaran hari ini sudah penuh. Silakan coba lagi besok.";
   }
 
   if (status >= 500) {
@@ -89,6 +104,7 @@ export async function createInvoiceVa(
       response.status,
       body.responseCode,
       body.hint,
+      body.code,
     );
   }
 
@@ -132,6 +148,7 @@ export async function createInvoiceQris(
       response.status,
       body.responseCode,
       body.hint,
+      body.code,
     );
   }
 
@@ -279,7 +296,20 @@ export type ArkivStockData = {
   quantityRemaining: number;
   sold: number;
   soldOut: boolean;
+  dailyQuota?: {
+    usedCount: number;
+    limitPerDay: number;
+    remaining: number;
+    exhausted: boolean;
+    dayKey: string;
+  };
 };
+
+/** Tidak bisa mulai checkout baru: stok habis atau limit lunas harian penuh. */
+export function isArkivPurchaseUnavailable(stock: ArkivStockData | null | undefined): boolean {
+  if (!stock) return false;
+  return stock.soldOut || stock.dailyQuota?.exhausted === true;
+}
 
 export async function cancelInvoiceVa(
   orderId: string,

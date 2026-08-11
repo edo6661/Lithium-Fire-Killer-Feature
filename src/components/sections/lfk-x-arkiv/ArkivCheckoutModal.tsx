@@ -5,11 +5,13 @@ import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   Building2,
+  CalendarClock,
   Check,
   CheckCircle2,
   Copy,
   CreditCard,
   Loader2,
+  PackageX,
   QrCode,
   RefreshCw,
   ShieldCheck,
@@ -38,6 +40,7 @@ import type {
 import {
   cancelInvoiceVa,
   InvoiceApiError,
+  isArkivPurchaseUnavailable,
   type ArkivStockData,
 } from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
@@ -54,6 +57,8 @@ interface ArkivCheckoutModalProps {
   onMarkPaid: () => void;
   onMarkExpired: () => void;
   onMarkFailed: () => void;
+  onMarkDailyLimit: () => void;
+  onMarkSoldOut: () => void;
   onRetry: () => void;
   onPaymentComplete: () => void;
   isLoading: boolean;
@@ -72,6 +77,8 @@ export const ArkivCheckoutModal = ({
   onMarkPaid,
   onMarkExpired,
   onMarkFailed,
+  onMarkDailyLimit,
+  onMarkSoldOut,
   onRetry,
   onPaymentComplete,
   isLoading,
@@ -99,6 +106,9 @@ export const ArkivCheckoutModal = ({
   const paidBank =
     getArkivVaBank(vaData?.virtualAccountBank) ??
     getArkivVaBank(vaData?.paymentChannelCode);
+  const purchaseUnavailable = isArkivPurchaseUnavailable(stock);
+  const dailyFull = !stock?.soldOut && stock?.dailyQuota?.exhausted === true;
+  const formLocked = disabled || purchaseUnavailable;
 
   const { isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
     orderId: vaData?.orderId ?? null,
@@ -107,6 +117,8 @@ export const ArkivCheckoutModal = ({
     onPaid: onMarkPaid,
     onExpired: onMarkExpired,
     onFailed: onMarkFailed,
+    onDailyLimit: onMarkDailyLimit,
+    onSoldOut: onMarkSoldOut,
   });
 
   const countdown = usePaymentCountdown(
@@ -116,10 +128,13 @@ export const ArkivCheckoutModal = ({
   const showSuccess = step === "success";
   const showExpired = step === "expired";
   const showFailed = step === "failed";
+  const showDailyLimit = step === "daily_limit";
+  const showSoldOut = step === "sold_out";
+  const showTerminalBlock = showExpired || showFailed || showDailyLimit || showSoldOut;
   const countdownUrgent =
     countdown.remainingMs != null &&
     countdown.remainingMs > 0 &&
-    countdown.remainingMs <= 5 * 60 * 1000;
+    countdown.remainingMs <= 2 * 60 * 1000;
 
   useEffect(() => {
     if (step === "paying") setCancelError(null);
@@ -154,24 +169,24 @@ export const ArkivCheckoutModal = ({
     setCancelling(true);
     setCancelError(null);
     try {
-      // VA: batalkan di YUKK dulu. QRIS: tidak ada cancel API — cukup reset sesi lokal.
-      if (!isQrisPayment) {
-        try {
-          await cancelInvoiceVa(vaData.orderId);
-        } catch (err) {
-          // Tagihan mungkin sudah expired di YUKK — tetap izinkan pilih ulang
-          console.warn("Cancel VA failed, continuing to restart checkout", err);
-        }
-      }
+      await cancelInvoiceVa(vaData.orderId);
       onRetry();
     } catch (err) {
-      setCancelError(
+      const message =
         err instanceof InvoiceApiError
           ? err.message
           : err instanceof Error
             ? err.message
-            : "Gagal membatalkan pembayaran.",
-      );
+            : "Gagal membatalkan pembayaran.";
+      // Sudah expired di server — boleh lanjut buat tagihan baru.
+      if (
+        err instanceof InvoiceApiError &&
+        (err.statusCode === 409 || /cannot be cancelled|EXPIRED|FAILED/i.test(message))
+      ) {
+        onRetry();
+        return;
+      }
+      setCancelError(message);
     } finally {
       setCancelling(false);
     }
@@ -179,7 +194,7 @@ export const ArkivCheckoutModal = ({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isLoading || disabled) return;
+    if (isLoading || formLocked) return;
 
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
@@ -218,24 +233,30 @@ export const ArkivCheckoutModal = ({
         {stock ? (
           <p
             className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${
-              stock.soldOut
+              purchaseUnavailable
                 ? "bg-red-100 text-red-700"
                 : "bg-accent/15 text-accent"
             }`}
           >
             {stock.soldOut
               ? t("product.soldOut")
-              : `${stock.quantityRemaining}/${stock.quantityInitial}`}
+              : dailyFull
+                ? t("product.dailyLimitReached")
+                : `${stock.quantityRemaining}/${stock.quantityInitial}`}
           </p>
         ) : null}
       </div>
-      {stock && !stock.soldOut ? (
+      {stock && !purchaseUnavailable ? (
         <p className="-mt-2 text-xs font-semibold text-slate-500">
           {t("payment.checkout.stockLabel")}:{" "}
           {t("product.stockHint", {
             remaining: stock.quantityRemaining,
             initial: stock.quantityInitial,
           })}
+        </p>
+      ) : stock && dailyFull ? (
+        <p className="-mt-2 text-xs font-semibold text-red-600">
+          {t("product.dailyLimitHint")}
         </p>
       ) : null}
       <div className="flex gap-4">
@@ -334,48 +355,83 @@ export const ArkivCheckoutModal = ({
                     {t("payment.modal.finishBtn")}
                   </Button>
                 </div>
-              ) : (showExpired || showFailed) && vaData ? (
+              ) : showTerminalBlock && (vaData || showDailyLimit || showSoldOut) ? (
                 <div className="mx-auto flex max-w-md flex-col items-center py-8 text-center">
                   <div
                     className={`mb-6 flex size-20 items-center justify-center rounded-full ring-8 ${
-                      showExpired
-                        ? "bg-amber-100 ring-amber-50"
-                        : "bg-red-100 ring-red-50"
+                      showDailyLimit
+                        ? "bg-sky-100 ring-sky-50"
+                        : showSoldOut
+                          ? "bg-slate-100 ring-slate-50"
+                          : showExpired
+                            ? "bg-amber-100 ring-amber-50"
+                            : "bg-red-100 ring-red-50"
                     }`}
                   >
-                    {showExpired ? (
+                    {showDailyLimit ? (
+                      <CalendarClock className="size-10 text-sky-700" />
+                    ) : showSoldOut ? (
+                      <PackageX className="size-10 text-slate-700" />
+                    ) : showExpired ? (
                       <TimerOff className="size-10 text-amber-700" />
                     ) : (
                       <XCircle className="size-10 text-red-600" />
                     )}
                   </div>
                   <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                    {showExpired
-                      ? t("payment.modal.expiredHeading")
-                      : t("payment.modal.failedHeading")}
+                    {showDailyLimit
+                      ? t("payment.modal.dailyLimitHeading")
+                      : showSoldOut
+                        ? t("payment.modal.soldOutHeading")
+                        : showExpired
+                          ? t("payment.modal.expiredHeading")
+                          : t("payment.modal.failedHeading")}
                   </h2>
                   <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600">
-                    {showExpired
-                      ? t("payment.modal.expiredDesc")
-                      : t("payment.modal.failedDesc")}
+                    {showDailyLimit
+                      ? t("payment.modal.dailyLimitDesc")
+                      : showSoldOut
+                        ? t("payment.modal.soldOutDesc")
+                        : showExpired
+                          ? t("payment.modal.expiredDesc")
+                          : t("payment.modal.failedDesc")}
                   </p>
-                  <p className="mt-4 text-xs font-bold text-slate-500">
-                    {t("payment.modal.docLabel")} {vaData.orderId}
-                  </p>
+                  {showDailyLimit || showSoldOut ? (
+                    <p className="mt-4 max-w-sm rounded-2xl bg-slate-50 px-4 py-3 text-left text-xs font-medium leading-relaxed text-slate-600 ring-1 ring-slate-100">
+                      {showDailyLimit
+                        ? t("payment.modal.dailyLimitTip")
+                        : t("payment.modal.soldOutTip")}
+                    </p>
+                  ) : null}
+                  {vaData ? (
+                    <p className="mt-4 text-xs font-bold text-slate-500">
+                      {t("payment.modal.docLabel")} {vaData.orderId}
+                    </p>
+                  ) : null}
                   <div className="mt-8 flex w-full flex-col gap-3">
-                    <Button
-                      type="button"
-                      className="w-full bg-slate-900 py-4 text-white hover:bg-slate-800"
-                      onClick={onRetry}
-                    >
-                      {t("payment.modal.retryBtn")}
-                    </Button>
+                    {showDailyLimit || showSoldOut ? null : (
+                      <Button
+                        type="button"
+                        className="w-full bg-slate-900 py-4 text-white hover:bg-slate-800"
+                        onClick={onRetry}
+                      >
+                        {t("payment.modal.retryBtn")}
+                      </Button>
+                    )}
                     <button
                       type="button"
                       onClick={onClose}
-                      className="w-full rounded-full py-3 text-sm font-bold text-slate-500 transition hover:text-slate-800"
+                      className={`w-full rounded-full py-3 text-sm font-bold transition ${
+                        showDailyLimit || showSoldOut
+                          ? "bg-slate-900 py-4 text-white hover:bg-slate-800"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
                     >
-                      {t("payment.modal.closeFailBtn")}
+                      {showDailyLimit
+                        ? t("payment.modal.dailyLimitCloseBtn")
+                        : showSoldOut
+                          ? t("payment.modal.soldOutCloseBtn")
+                          : t("payment.modal.closeFailBtn")}
                     </button>
                   </div>
                 </div>
@@ -483,7 +539,7 @@ export const ArkivCheckoutModal = ({
                                 <img
                                   src={paidBank.logo}
                                   alt={paidBank.label}
-                                  className="h-7 w-auto max-w-[5.5rem] object-contain"
+                                  className="h-10 w-auto max-w-[7.5rem] object-contain"
                                 />
                               ) : (
                                 <Building2 className="size-5 text-accent" />
@@ -602,7 +658,7 @@ export const ArkivCheckoutModal = ({
                           <input
                             type="text"
                             required
-                            disabled={isLoading || disabled}
+                            disabled={isLoading || formLocked}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder={t("payment.form.namePlaceholder")}
@@ -616,7 +672,7 @@ export const ArkivCheckoutModal = ({
                           <input
                             type="email"
                             required
-                            disabled={isLoading || disabled}
+                            disabled={isLoading || formLocked}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder={t("payment.form.emailPlaceholder")}
@@ -630,7 +686,7 @@ export const ArkivCheckoutModal = ({
                           <input
                             type="tel"
                             required
-                            disabled={isLoading || disabled}
+                            disabled={isLoading || formLocked}
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder={t("payment.form.phonePlaceholder")}
@@ -652,7 +708,7 @@ export const ArkivCheckoutModal = ({
                         {ARKIV_QRIS_ENABLED ? (
                           <button
                             type="button"
-                            disabled={isLoading || disabled}
+                            disabled={isLoading || formLocked}
                             onClick={() => setMethod("QRIS")}
                             className={`rounded-2xl border px-4 py-4 text-left transition ${
                               method === "QRIS"
@@ -674,7 +730,7 @@ export const ArkivCheckoutModal = ({
                         ) : null}
                         <button
                           type="button"
-                          disabled={isLoading || disabled}
+                          disabled={isLoading || formLocked}
                           onClick={() => setMethod("VA")}
                           className={`rounded-2xl border px-4 py-4 text-left transition ${
                             effectiveMethod === "VA"
@@ -707,7 +763,7 @@ export const ArkivCheckoutModal = ({
                                 <button
                                   key={bank.code}
                                   type="button"
-                                  disabled={isLoading || disabled}
+                                  disabled={isLoading || formLocked}
                                   onClick={() => setBankCode(bank.code)}
                                   className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-3 text-sm font-black transition ${
                                     selected
@@ -715,11 +771,11 @@ export const ArkivCheckoutModal = ({
                                       : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                                   } disabled:opacity-60`}
                                 >
-                                  <span className="flex h-9 w-full items-center justify-center">
+                                  <span className="flex h-12 w-full items-center justify-center">
                                     <img
                                       src={bank.logo}
                                       alt=""
-                                      className="max-h-8 max-w-[5.5rem] object-contain"
+                                      className="max-h-11 max-w-[7.5rem] object-contain"
                                     />
                                   </span>
                                   <span>{bank.label}</span>
@@ -747,7 +803,7 @@ export const ArkivCheckoutModal = ({
 
                     <Button
                       type="submit"
-                      disabled={isLoading || disabled}
+                      disabled={isLoading || formLocked}
                       className="w-full bg-slate-900 py-4 text-base text-white hover:bg-slate-800"
                     >
                       {isLoading ? (

@@ -2,7 +2,14 @@ import type { InvoiceVaData } from "../types/invoice";
 
 const STORAGE_KEY = "lfk-arkiv-pending-payment";
 
-export type ArkivCheckoutStep = "form" | "paying" | "success" | "expired" | "failed";
+export type ArkivCheckoutStep =
+  | "form"
+  | "paying"
+  | "success"
+  | "expired"
+  | "failed"
+  | "daily_limit"
+  | "sold_out";
 
 export type ArkivPendingPaymentSession = {
   vaData: InvoiceVaData;
@@ -50,6 +57,8 @@ export function isResumableCheckoutStep(step: ArkivCheckoutStep): boolean {
     step === "paying" ||
     step === "success" ||
     step === "expired" ||
-    step === "failed"
+    step === "failed" ||
+    step === "daily_limit" ||
+    step === "sold_out"
   );
 }

@@ -35,6 +35,9 @@ export function getArkivVaBank(code: string | null | undefined) {
  */
 export const ARKIV_QRIS_ENABLED = true;
 
+/** Hold VA/QRIS: stok + kuota dipotong saat generate, dikembalikan jika expire/cancel. */
+export const ARKIV_CHECKOUT_HOLD_MINUTES = 10;
+
 /**
  * Tagihan aktif LFK × Arkiv.
  *

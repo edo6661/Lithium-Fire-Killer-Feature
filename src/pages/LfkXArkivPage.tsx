@@ -39,6 +39,8 @@ export const LfkXArkivPage = () => {
     markPaymentPaid,
     markPaymentExpired,
     markPaymentFailed,
+    markPaymentDailyLimit,
+    markPaymentSoldOut,
     retryCheckout,
     handlePaymentComplete,
     closeCheckout,
@@ -55,6 +57,41 @@ export const LfkXArkivPage = () => {
   const onPaymentComplete = () => {
     handlePaymentComplete();
     refreshStock();
+  };
+
+  const onMarkDailyLimit = () => {
+    markPaymentDailyLimit();
+    refreshStock();
+  };
+
+  const onMarkSoldOut = () => {
+    markPaymentSoldOut();
+    refreshStock();
+  };
+
+  const onMarkExpired = () => {
+    markPaymentExpired();
+    refreshStock();
+  };
+
+  const onCreateVA = async (
+    ...args: Parameters<typeof handleCreateVA>
+  ) => {
+    try {
+      await handleCreateVA(...args);
+    } finally {
+      refreshStock();
+    }
+  };
+
+  const onCreateQris = async (
+    ...args: Parameters<typeof handleCreateQris>
+  ) => {
+    try {
+      await handleCreateQris(...args);
+    } finally {
+      refreshStock();
+    }
   };
 
   return (
@@ -105,11 +142,13 @@ export const LfkXArkivPage = () => {
         open={isCheckoutOpen}
         step={checkoutStep}
         onClose={closeCheckout}
-        onCreateVA={handleCreateVA}
-        onCreateQris={handleCreateQris}
+        onCreateVA={onCreateVA}
+        onCreateQris={onCreateQris}
         onMarkPaid={markPaymentPaid}
-        onMarkExpired={markPaymentExpired}
+        onMarkExpired={onMarkExpired}
         onMarkFailed={markPaymentFailed}
+        onMarkDailyLimit={onMarkDailyLimit}
+        onMarkSoldOut={onMarkSoldOut}
         onRetry={retryCheckout}
         onPaymentComplete={onPaymentComplete}
         isLoading={isLoading}

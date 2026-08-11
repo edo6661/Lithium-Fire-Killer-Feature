@@ -441,7 +441,7 @@ export const InternalOrdersPage = () => {
   const resetDailyQuota = async () => {
     if (!key) return;
     const ok = window.confirm(
-      "Reset limit checkout hari ini ke 10?\n\nPemakaian hari ini dikembalikan ke 0 — checkout bisa dilanjutkan.",
+      "Reset limit lunas hari ini ke 10?\n\nCounter PAID hari ini dikembalikan ke 0.",
     );
     if (!ok) return;
 
@@ -783,7 +783,7 @@ export const InternalOrdersPage = () => {
                       <div>
                         <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-amber-900">
                           <Gauge className="size-3.5" />
-                          Limit checkout / hari
+                          Limit lunas / hari
                         </div>
                         <p className="mt-3 text-sm font-bold text-slate-600">{dailyQuota.label}</p>
                         <p className="mt-2 text-4xl font-black tracking-tight text-slate-900">
@@ -794,7 +794,7 @@ export const InternalOrdersPage = () => {
                           </span>
                         </p>
                         <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Terpakai {dailyQuota.usedCount} · Hari {dailyQuota.dayKey} (WIB)
+                          Lunas {dailyQuota.usedCount} · Hari {dailyQuota.dayKey} (WIB)
                           {dailyQuota.exhausted ? " · penuh" : ""}
                         </p>
                       </div>
@@ -1010,9 +1010,9 @@ export const InternalOrdersPage = () => {
               </div>
 
               <div className="overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/90 shadow-[0_20px_60px_rgba(15,23,42,0.06)] backdrop-blur">
-                <div className="overflow-x-auto">
+                <div className="max-h-[min(28rem,55vh)] overflow-auto">
                   <table className="min-w-full text-left text-sm">
-                    <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    <thead className="sticky top-0 z-10 border-b border-slate-100 bg-slate-50/95 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400 backdrop-blur">
                       <tr>
                         <th className="px-5 py-4">
                           <button

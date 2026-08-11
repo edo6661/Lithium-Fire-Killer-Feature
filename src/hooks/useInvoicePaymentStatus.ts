@@ -30,6 +30,8 @@ export interface UseInvoicePaymentStatusOptions {
   onPaid?: () => void;
   onExpired?: () => void;
   onFailed?: () => void;
+  onDailyLimit?: () => void;
+  onSoldOut?: () => void;
 }
 
 export interface UseInvoicePaymentStatusResult {
@@ -50,6 +52,8 @@ export function useInvoicePaymentStatus({
   onPaid,
   onExpired,
   onFailed,
+  onDailyLimit,
+  onSoldOut,
 }: UseInvoicePaymentStatusOptions): UseInvoicePaymentStatusResult {
   const [status, setStatus] = useState<InvoiceVaStatus | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -57,6 +61,8 @@ export function useInvoicePaymentStatus({
   const onPaidRef = useRef(onPaid);
   const onExpiredRef = useRef(onExpired);
   const onFailedRef = useRef(onFailed);
+  const onDailyLimitRef = useRef(onDailyLimit);
+  const onSoldOutRef = useRef(onSoldOut);
   const localExpiredFiredRef = useRef(false);
 
   useEffect(() => {
@@ -71,17 +77,35 @@ export function useInvoicePaymentStatus({
     onFailedRef.current = onFailed;
   }, [onFailed]);
 
+  useEffect(() => {
+    onDailyLimitRef.current = onDailyLimit;
+  }, [onDailyLimit]);
+
+  useEffect(() => {
+    onSoldOutRef.current = onSoldOut;
+  }, [onSoldOut]);
+
   const isPaid = status === "PAID";
   const isExpired = status === "EXPIRED";
   const isFailed = status === "FAILED";
   const isTerminal = isTerminalInvoiceStatus(status);
 
-  const applyStatus = useCallback((next: InvoiceVaStatus) => {
-    setStatus(next);
-    if (next === "PAID") onPaidRef.current?.();
-    if (next === "EXPIRED") onExpiredRef.current?.();
-    if (next === "FAILED") onFailedRef.current?.();
-  }, []);
+  const applyStatus = useCallback(
+    (
+      next: InvoiceVaStatus,
+      blockReason?: "SOLD_OUT" | "DAILY_LIMIT" | null,
+    ) => {
+      setStatus(next);
+      if (next === "PAID") onPaidRef.current?.();
+      if (next === "EXPIRED") onExpiredRef.current?.();
+      if (next === "FAILED") {
+        if (blockReason === "SOLD_OUT") onSoldOutRef.current?.();
+        else if (blockReason === "DAILY_LIMIT") onDailyLimitRef.current?.();
+        else onFailedRef.current?.();
+      }
+    },
+    [],
+  );
 
   const checkStatus = useCallback(async (): Promise<InvoiceVaStatus | null> => {
     if (!orderId) {
@@ -93,7 +117,7 @@ export function useInvoicePaymentStatus({
 
     try {
       const data = await syncInvoicePaymentStatus(orderId);
-      applyStatus(data.newStatus);
+      applyStatus(data.newStatus, data.blockReason);
       return data.newStatus;
     } catch (err) {
       const message =

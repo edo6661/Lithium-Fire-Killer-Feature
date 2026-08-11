@@ -25,6 +25,8 @@
     "checkoutBtn": "Buy Now",
     "stockHint": "{{remaining}} / {{initial}} units left",
     "soldOut": "Sold out",
+    "dailyLimitReached": "Daily quota full",
+    "dailyLimitHint": "Today's payment quota is full. Please try again tomorrow.",
     "badge": "ANATOMY OF A MASTERPIECE",
     "heading": "MEET SARU REIMAGINED",
     "views": {
@@ -95,6 +97,8 @@
     "stockOf": "of",
     "soldOut": "Sold out",
     "stockHint": "{{remaining}} units left of {{initial}} limited edition",
+    "dailyLimitReached": "Daily quota full",
+    "dailyLimitHint": "Today's paid checkout limit has been reached. Please try again tomorrow.",
     "button": "Buy Now",
     "secureNote": "Secure checkout · Virtual Account",
     "unavailable": "Checkout unavailable — please refresh"
@@ -119,6 +123,8 @@
       "statusSuccess": "Paid — open details",
       "statusExpired": "Payment expired",
       "statusFailed": "Payment failed",
+      "statusDailyLimit": "Today's quota is full",
+      "statusSoldOut": "Edition sold out",
       "channelQris": "QRIS",
       "channelVa": "Virtual Account",
       "timeLeft": "Left",
@@ -197,6 +203,14 @@
       "expiredDesc": "The payment window has ended. Create a new invoice to try again.",
       "failedHeading": "Payment Failed",
       "failedDesc": "The transaction could not be completed. Please create a new invoice or try another method.",
+      "dailyLimitHeading": "Today's quota is full",
+      "dailyLimitDesc": "Today's payment slots just filled up. This invoice can't continue — please come back tomorrow.",
+      "dailyLimitTip": "Don't pay this VA/QR anymore. Tomorrow you can create a new invoice when quota opens.",
+      "dailyLimitCloseBtn": "Got it, see you tomorrow",
+      "soldOutHeading": "Limited edition sold out",
+      "soldOutDesc": "All LFK × Arkiv units are gone. This invoice can no longer be paid.",
+      "soldOutTip": "Please don't transfer to this VA/QR. Thank you for your interest.",
+      "soldOutCloseBtn": "Close",
       "retryBtn": "Try again",
       "closeFailBtn": "Close"
     }

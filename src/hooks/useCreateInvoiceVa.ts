@@ -47,6 +47,8 @@ export interface UseCreateInvoiceVaResult {
   markPaymentPaid: () => void;
   markPaymentExpired: () => void;
   markPaymentFailed: () => void;
+  markPaymentDailyLimit: () => void;
+  markPaymentSoldOut: () => void;
   retryCheckout: () => void;
   handlePaymentComplete: () => void;
   closeCheckout: () => void;
@@ -120,6 +122,14 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
   const closeCheckout = useCallback(() => {
     setIsCheckoutOpen(false);
     setError(null);
+    setCheckoutStep((current) => {
+      if (current === "daily_limit" || current === "sold_out") {
+        clearArkivPendingPayment();
+        setVaData(null);
+        return "form";
+      }
+      return current;
+    });
   }, []);
 
   const markPaymentPaid = useCallback(() => {
@@ -135,6 +145,16 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
   const markPaymentFailed = useCallback(() => {
     setVaData((prev) => (prev ? { ...prev, status: "FAILED" } : prev));
     setCheckoutStep("failed");
+  }, []);
+
+  const markPaymentDailyLimit = useCallback(() => {
+    setVaData((prev) => (prev ? { ...prev, status: "FAILED" } : prev));
+    setCheckoutStep("daily_limit");
+  }, []);
+
+  const markPaymentSoldOut = useCallback(() => {
+    setVaData((prev) => (prev ? { ...prev, status: "FAILED" } : prev));
+    setCheckoutStep("sold_out");
   }, []);
 
   const retryCheckout = useCallback(() => {
@@ -179,6 +199,17 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
           variant: "success",
         });
       } catch (err) {
+        if (err instanceof InvoiceApiError && err.code === "SOLD_OUT") {
+          setCheckoutStep("sold_out");
+          setToast({ message: err.message, variant: "error" });
+          return;
+        }
+        if (err instanceof InvoiceApiError && err.code === "DAILY_LIMIT") {
+          setCheckoutStep("daily_limit");
+          setToast({ message: err.message, variant: "error" });
+          return;
+        }
+
         const message =
           err instanceof InvoiceApiError
             ? err.message
@@ -215,6 +246,17 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
           variant: "success",
         });
       } catch (err) {
+        if (err instanceof InvoiceApiError && err.code === "SOLD_OUT") {
+          setCheckoutStep("sold_out");
+          setToast({ message: err.message, variant: "error" });
+          return;
+        }
+        if (err instanceof InvoiceApiError && err.code === "DAILY_LIMIT") {
+          setCheckoutStep("daily_limit");
+          setToast({ message: err.message, variant: "error" });
+          return;
+        }
+
         const message =
           err instanceof InvoiceApiError
             ? err.message
@@ -250,6 +292,8 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     markPaymentPaid,
     markPaymentExpired,
     markPaymentFailed,
+    markPaymentDailyLimit,
+    markPaymentSoldOut,
     retryCheckout,
     handlePaymentComplete,
     closeCheckout,

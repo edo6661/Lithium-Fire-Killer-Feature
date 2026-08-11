@@ -28,6 +28,8 @@
     "checkoutBtn": "Beli Sekarang",
     "stockHint": "{{remaining}} / {{initial}} unit tersisa",
     "soldOut": "Sold out",
+    "dailyLimitReached": "Kuota hari ini penuh",
+    "dailyLimitHint": "Kuota pembayaran hari ini sudah penuh. Coba lagi besok.",
     "badge": "ANATOMI MAHAKARYA",
     "heading": "TEMUI SARU YANG DIDEFINISIKAN ULANG",
     "views": {
@@ -95,6 +97,8 @@
     "stockOf": "dari",
     "soldOut": "Sold out",
     "stockHint": "{{remaining}} unit tersisa dari {{initial}} edisi terbatas",
+    "dailyLimitReached": "Kuota hari ini penuh",
+    "dailyLimitHint": "Batas pembayaran lunas hari ini sudah tercapai. Coba lagi besok.",
     "button": "Beli Sekarang",
     "secureNote": "Checkout aman · Virtual Account",
     "unavailable": "Pembayaran sedang tidak tersedia — coba refresh"
@@ -119,6 +123,8 @@
       "statusSuccess": "Pembayaran berhasil — buka detail",
       "statusExpired": "Pembayaran kadaluarsa",
       "statusFailed": "Pembayaran gagal",
+      "statusDailyLimit": "Kuota hari ini penuh",
+      "statusSoldOut": "Stok edisi habis",
       "channelQris": "QRIS",
       "channelVa": "Virtual Account",
       "timeLeft": "Sisa",
@@ -197,6 +203,14 @@
       "expiredDesc": "Batas waktu atau sesi pembayaran sudah berakhir. Buat tagihan baru untuk mencoba lagi.",
       "failedHeading": "Pembayaran Gagal",
       "failedDesc": "Transaksi tidak berhasil diproses. Silakan buat tagihan baru atau pilih metode lain.",
+      "dailyLimitHeading": "Kuota hari ini sudah habis",
+      "dailyLimitDesc": "Slot pembayaran hari ini baru saja terisi penuh. Tagihan ini tidak bisa dilanjutkan — silakan kembali lagi besok.",
+      "dailyLimitTip": "Jangan bayar nomor VA/QR ini lagi. Besok Anda bisa buat tagihan baru saat kuota tersedia.",
+      "dailyLimitCloseBtn": "Mengerti, kembali besok",
+      "soldOutHeading": "Stok edisi terbatas habis",
+      "soldOutDesc": "Unit LFK × Arkiv sudah terjual habis. Pembayaran untuk tagihan ini tidak bisa dilanjutkan.",
+      "soldOutTip": "Jangan transfer ke nomor VA/QR ini. Terima kasih sudah berminat.",
+      "soldOutCloseBtn": "Tutup",
       "retryBtn": "Coba lagi",
       "closeFailBtn": "Tutup"
     }

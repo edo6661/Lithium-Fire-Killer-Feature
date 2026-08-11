@@ -9,6 +9,7 @@ import {
   type ArkivProductView,
 } from "../../../config/arkiv-billing";
 import type { ArkivStockData } from "../../../services/invoice.service";
+import { isArkivPurchaseUnavailable } from "../../../services/invoice.service";
 
 interface ArkivProductSectionProps {
   onCheckout?: () => void;
@@ -25,7 +26,13 @@ export const ArkivProductSection = ({
   const [activeView, setActiveView] = useState<ArkivProductView>("front");
   const tags = (t("product.tags", { returnObjects: true }) || []) as string[];
   const specs = (t("product.specs", { returnObjects: true }) || []) as Array<any>;
-  const soldOut = stock?.soldOut === true;
+  const unavailable = isArkivPurchaseUnavailable(stock);
+  const dailyFull = !stock?.soldOut && stock?.dailyQuota?.exhausted === true;
+  const unavailableLabel = stock?.soldOut
+    ? t("product.soldOut")
+    : dailyFull
+      ? t("product.dailyLimitReached")
+      : t("product.soldOut");
 
   return (
     <section className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -41,18 +48,22 @@ export const ArkivProductSection = ({
             <div className="mt-8 flex flex-col items-start gap-3">
               <Button
                 type="button"
-                disabled={soldOut}
+                disabled={unavailable}
                 onClick={onCheckout}
                 className="bg-slate-900 px-8 py-4 text-white hover:bg-slate-800 disabled:opacity-50"
               >
-                {soldOut ? t("product.soldOut") : t("product.checkoutBtn")}
+                {unavailable ? unavailableLabel : t("product.checkoutBtn")}
               </Button>
-              {stock && !soldOut ? (
+              {stock && !unavailable ? (
                 <p className="text-sm font-bold text-slate-600">
                   {t("product.stockHint", {
                     remaining: stock.quantityRemaining,
                     initial: stock.quantityInitial,
                   })}
+                </p>
+              ) : stock && dailyFull ? (
+                <p className="text-sm font-bold text-slate-600">
+                  {t("product.dailyLimitHint")}
                 </p>
               ) : null}
             </div>

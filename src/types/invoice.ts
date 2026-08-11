@@ -42,6 +42,8 @@ export interface SyncInvoiceStatusData {
   updated: boolean;
   yukkTransactionStatus?: string;
   yukkTransactionStatusDesc?: string;
+  /** Set when SUCCESS was blocked (stok/kuota). */
+  blockReason?: "SOLD_OUT" | "DAILY_LIMIT" | null;
 }
 
 export interface SyncInvoiceStatusApiResponse {
@@ -72,6 +74,7 @@ export interface CreateInvoiceVaApiResponse {
   message?: string;
   responseCode?: string;
   hint?: string;
+  code?: string;
 }
 
 export interface CreateInvoiceQrisApiResponse {
@@ -80,6 +83,7 @@ export interface CreateInvoiceQrisApiResponse {
   message?: string;
   responseCode?: string;
   hint?: string;
+  code?: string;
 }
 
 export interface YukkHealthReport {
