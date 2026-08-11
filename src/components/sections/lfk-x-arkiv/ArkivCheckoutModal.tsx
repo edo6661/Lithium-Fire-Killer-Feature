@@ -41,6 +41,7 @@ import {
   cancelInvoiceVa,
   InvoiceApiError,
   isArkivPurchaseUnavailable,
+  syncInvoicePaymentStatus,
   type ArkivStockData,
 } from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
@@ -112,8 +113,12 @@ export const ArkivCheckoutModal = ({
 
   const { isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
     orderId: vaData?.orderId ?? null,
-    enabled: open && step === "paying",
-    expiredDate: vaData?.expiredDate ?? null,
+    // Soft-terminal (expired/failed): tetap poll sebentar untuk late PAID.
+    enabled:
+      open &&
+      (step === "paying" || step === "expired" || step === "failed"),
+    expiredDate:
+      open && step === "paying" ? (vaData?.expiredDate ?? null) : null,
     onPaid: onMarkPaid,
     onExpired: onMarkExpired,
     onFailed: onMarkFailed,
@@ -178,14 +183,37 @@ export const ArkivCheckoutModal = ({
           : err instanceof Error
             ? err.message
             : "Gagal membatalkan pembayaran.";
-      // Sudah expired di server — boleh lanjut buat tagihan baru.
+
+      // Race: mungkin sudah PAID / EXPIRED di server — cek dulu, jangan langsung buat tagihan baru.
       if (
         err instanceof InvoiceApiError &&
-        (err.statusCode === 409 || /cannot be cancelled|EXPIRED|FAILED/i.test(message))
+        (err.statusCode === 409 || /cannot be cancelled/i.test(message))
       ) {
-        onRetry();
+        try {
+          const synced = await syncInvoicePaymentStatus(vaData.orderId);
+          if (synced.newStatus === "PAID") {
+            onMarkPaid();
+            return;
+          }
+          if (
+            synced.newStatus === "EXPIRED" ||
+            synced.newStatus === "FAILED"
+          ) {
+            if (synced.blockReason === "SOLD_OUT") onMarkSoldOut();
+            else if (synced.blockReason === "DAILY_LIMIT") onMarkDailyLimit();
+            else if (synced.newStatus === "EXPIRED") onMarkExpired();
+            else onMarkFailed();
+            return;
+          }
+        } catch {
+          /* fall through */
+        }
+        setCancelError(
+          "Tagihan tidak bisa dibatalkan (mungkin sudah berstatus akhir). Cek status pembayaran dulu.",
+        );
         return;
       }
+
       setCancelError(message);
     } finally {
       setCancelling(false);

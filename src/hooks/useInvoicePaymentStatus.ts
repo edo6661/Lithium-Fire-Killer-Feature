@@ -8,6 +8,8 @@ import {
 import type { InvoiceVaStatus } from "../types/invoice";
 
 const POLL_INTERVAL_MS = 5000;
+/** Setelah EXPIRED/FAILED, tetap sync sebentar agar late PAID sempat masuk UI. */
+const SOFT_TERMINAL_GRACE_MS = 90_000;
 
 const TERMINAL_STATUSES: ReadonlySet<InvoiceVaStatus> = new Set([
   "PAID",
@@ -64,6 +66,8 @@ export function useInvoicePaymentStatus({
   const onDailyLimitRef = useRef(onDailyLimit);
   const onSoldOutRef = useRef(onSoldOut);
   const localExpiredFiredRef = useRef(false);
+  const softTerminalSinceRef = useRef<number | null>(null);
+  const [, setGraceTick] = useState(0);
 
   useEffect(() => {
     onPaidRef.current = onPaid;
@@ -96,13 +100,29 @@ export function useInvoicePaymentStatus({
       blockReason?: "SOLD_OUT" | "DAILY_LIMIT" | null,
     ) => {
       setStatus(next);
-      if (next === "PAID") onPaidRef.current?.();
-      if (next === "EXPIRED") onExpiredRef.current?.();
-      if (next === "FAILED") {
-        if (blockReason === "SOLD_OUT") onSoldOutRef.current?.();
-        else if (blockReason === "DAILY_LIMIT") onDailyLimitRef.current?.();
-        else onFailedRef.current?.();
+      // Late-PAID ditolak: BE bisa kirim EXPIRED + blockReason — prioritaskan alasan bisnis.
+      if (blockReason === "SOLD_OUT") {
+        softTerminalSinceRef.current = null;
+        onSoldOutRef.current?.();
+        return;
       }
+      if (blockReason === "DAILY_LIMIT") {
+        softTerminalSinceRef.current = null;
+        onDailyLimitRef.current?.();
+        return;
+      }
+      if (next === "PAID") {
+        softTerminalSinceRef.current = null;
+        onPaidRef.current?.();
+        return;
+      }
+      if (next === "EXPIRED" || next === "FAILED") {
+        if (softTerminalSinceRef.current == null) {
+          softTerminalSinceRef.current = Date.now();
+        }
+      }
+      if (next === "EXPIRED") onExpiredRef.current?.();
+      if (next === "FAILED") onFailedRef.current?.();
     },
     [],
   );
@@ -135,7 +155,21 @@ export function useInvoicePaymentStatus({
   }, [orderId, applyStatus]);
 
   useEffect(() => {
-    if (!enabled || !orderId || isTerminal) {
+    if (!enabled || !orderId) {
+      return;
+    }
+
+    // PAID = hard stop. EXPIRED/FAILED = soft stop setelah grace (late settlement).
+    if (status === "PAID") {
+      return;
+    }
+
+    const softSince = softTerminalSinceRef.current;
+    const softExpired =
+      (status === "EXPIRED" || status === "FAILED") &&
+      softSince != null &&
+      Date.now() - softSince >= SOFT_TERMINAL_GRACE_MS;
+    if (softExpired) {
       return;
     }
 
@@ -143,12 +177,18 @@ export function useInvoicePaymentStatus({
 
     const intervalId = window.setInterval(() => {
       void checkStatus();
+      if (
+        softTerminalSinceRef.current != null &&
+        Date.now() - softTerminalSinceRef.current >= SOFT_TERMINAL_GRACE_MS
+      ) {
+        setGraceTick((n) => n + 1);
+      }
     }, POLL_INTERVAL_MS);
 
     return () => window.clearInterval(intervalId);
-  }, [enabled, orderId, isTerminal, checkStatus]);
+  }, [enabled, orderId, status, checkStatus]);
 
-  /** Saat deadline lewat: persist EXPIRED ke DB, lalu update UI. */
+  /** Saat deadline lewat: sync → expire → sync lagi (tangkap late PAID). */
   useEffect(() => {
     if (!enabled || !orderId || !expiredDate || isTerminal || localExpiredFiredRef.current) {
       return;
@@ -161,26 +201,47 @@ export function useInvoicePaymentStatus({
       if (localExpiredFiredRef.current) return;
       localExpiredFiredRef.current = true;
       void (async () => {
+        // 1) Sync dulu — bisa saja sudah PAID di bank sebelum countdown lokal.
+        try {
+          const syncedFirst = await syncInvoicePaymentStatus(orderId);
+          applyStatus(syncedFirst.newStatus, syncedFirst.blockReason);
+          if (isTerminalInvoiceStatus(syncedFirst.newStatus)) return;
+        } catch {
+          /* lanjut expire lokal */
+        }
+
+        // 2) Persist EXPIRED di DB + release hold.
         try {
           const expired = await expireInvoiceIfDue(orderId);
+          if (expired.newStatus === "PAID") {
+            applyStatus("PAID");
+            return;
+          }
           if (
             expired.newStatus === "EXPIRED" ||
-            expired.newStatus === "FAILED" ||
-            expired.newStatus === "PAID"
+            expired.newStatus === "FAILED"
           ) {
+            // 3) Sync sekali lagi (late webhook / reclaim).
+            try {
+              const synced = await syncInvoicePaymentStatus(orderId);
+              applyStatus(synced.newStatus, synced.blockReason);
+              if (isTerminalInvoiceStatus(synced.newStatus)) return;
+            } catch {
+              /* ignore */
+            }
             applyStatus(expired.newStatus);
             return;
           }
         } catch {
-          // fallback sync YUKK (juga apply deadline di server)
+          // fallback sync
         }
 
         try {
           const synced = await syncInvoicePaymentStatus(orderId);
-          applyStatus(synced.newStatus);
+          applyStatus(synced.newStatus, synced.blockReason);
           if (isTerminalInvoiceStatus(synced.newStatus)) return;
         } catch {
-          // last resort: UI only — status DB mungkin belum update
+          /* last resort UI */
         }
 
         applyStatus("EXPIRED");
@@ -202,6 +263,7 @@ export function useInvoicePaymentStatus({
       setStatus(null);
       setCheckError(null);
       localExpiredFiredRef.current = false;
+      softTerminalSinceRef.current = null;
     }
   }, [enabled]);
 
