@@ -191,6 +191,7 @@
       "vaLabel": "Virtual Account Number",
       "qrisLabel": "QRIS Code",
       "copyBtn": "Copy",
+      "copyAmountBtn": "Copy amount",
       "copiedBtn": "Copied",
       "checkBtn": "Check Payment Status",
       "checkingBtn": "Checking Status...",

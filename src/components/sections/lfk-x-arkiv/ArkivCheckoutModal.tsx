@@ -96,7 +96,7 @@ export const ArkivCheckoutModal = ({
   const [bankCode, setBankCode] = useState<ArkivVaBankCode>(
     ACTIVE_ARKIV_BILLING.defaultBankCode,
   );
-  const [copied, setCopied] = useState(false);
+  const [copiedField, setCopiedField] = useState<"va" | "amount" | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
 
@@ -158,10 +158,22 @@ export const ArkivCheckoutModal = ({
     if (!vaData?.virtualAccountNo) return;
     try {
       await navigator.clipboard.writeText(vaData.virtualAccountNo);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopiedField("va");
+      window.setTimeout(() => setCopiedField(null), 2000);
     } catch {
-      setCopied(false);
+      setCopiedField(null);
+    }
+  };
+
+  const handleCopyAmount = async () => {
+    if (vaData?.grandTotal == null) return;
+    try {
+      // Angka polos (tanpa Rp / titik) — cocok tempel di form transfer bank.
+      await navigator.clipboard.writeText(String(vaData.grandTotal));
+      setCopiedField("amount");
+      window.setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      setCopiedField(null);
     }
   };
 
@@ -504,9 +516,29 @@ export const ArkivCheckoutModal = ({
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                           {t("payment.modal.nominalLabel")}
                         </p>
-                        <p className="mt-1 text-3xl font-black tracking-tight text-slate-900">
-                          {formatRupiah(vaData.grandTotal)}
-                        </p>
+                        <div className="mt-1 flex items-center gap-3">
+                          <p className="flex-1 text-3xl font-black tracking-tight text-slate-900">
+                            {formatRupiah(vaData.grandTotal)}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleCopyAmount}
+                            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-800"
+                            aria-label={t("payment.modal.copyAmountBtn")}
+                          >
+                            {copiedField === "amount" ? (
+                              <>
+                                <Check className="size-4 text-green-400" />{" "}
+                                {t("payment.modal.copiedBtn")}
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="size-4" />{" "}
+                                {t("payment.modal.copyAmountBtn")}
+                              </>
+                            )}
+                          </button>
+                        </div>
                         <p className="mt-1 text-xs font-medium text-slate-500">
                           {t("payment.modal.docLabel")} {vaData.orderId}
                         </p>
@@ -600,7 +632,7 @@ export const ArkivCheckoutModal = ({
                                 onClick={handleCopyVa}
                                 className="inline-flex shrink-0 items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-800"
                               >
-                                {copied ? (
+                                {copiedField === "va" ? (
                                   <>
                                     <Check className="size-4 text-green-400" />{" "}
                                     {t("payment.modal.copiedBtn")}

@@ -191,6 +191,7 @@
       "vaLabel": "Nomor Virtual Account",
       "qrisLabel": "Kode QRIS",
       "copyBtn": "Salin",
+      "copyAmountBtn": "Salin nominal",
       "copiedBtn": "Tersalin",
       "checkBtn": "Cek Status Pembayaran",
       "checkingBtn": "Memeriksa Status...",
