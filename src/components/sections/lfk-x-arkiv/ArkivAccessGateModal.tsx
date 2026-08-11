@@ -7,7 +7,7 @@ import {
   readArkivAccessKey,
   verifyArkivAccessKey,
   writeArkivAccessKey,
-} from "../../utils/arkiv-access";
+} from "../../../utils/arkiv-access";
 
 interface ArkivAccessGateModalProps {
   open: boolean;

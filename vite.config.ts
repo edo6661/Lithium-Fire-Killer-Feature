@@ -6,7 +6,11 @@ import Sitemap from "vite-plugin-sitemap";
 
 const SITE_ROUTES = ["/", "/about", "/lithium-fire-safety", "/contact", "/lfk-x-arkiv"];
 
-
+/**
+ * robots.txt sudah ada di public/ — jangan generate lagi.
+ * vite-plugin-sitemap + generateRobotsTxt di Vercel sering ENOENT
+ * saat write dist/robots.txt di closeBundle.
+ */
 export default defineConfig({
   plugins: [
     react(),
@@ -14,7 +18,8 @@ export default defineConfig({
     Sitemap({
       hostname: "https://www.lithiumfirekiller.com",
       dynamicRoutes: SITE_ROUTES.filter((route) => route !== "/"),
-      generateRobotsTxt: true,
+      generateRobotsTxt: false,
+      outDir: "dist",
     }),
     viteCompression({
       algorithm: "gzip",

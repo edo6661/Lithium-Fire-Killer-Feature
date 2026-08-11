@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 
 Disallow: /*.json$
+Disallow: /internal
 
 Sitemap: https://www.lithiumfirekiller.com/sitemap.xml
