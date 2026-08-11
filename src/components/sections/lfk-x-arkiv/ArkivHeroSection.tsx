@@ -35,7 +35,7 @@ export const ArkivHeroSection = () => {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.08, ease: [0.21, 0.47, 0.32, 0.98] }} className="mb-6 flex w-full justify-center sm:mb-8">
-          <img src="/logo/arkiv.png" alt="Arkiv x Lithium Fire Killer" width={2001} height={672} decoding="async" className="h-auto w-[min(100%,17.5rem)] drop-shadow-[0_8px_28px_rgba(0,0,0,0.35)] sm:w-[min(100%,24rem)] md:w-[min(100%,28rem)] lg:w-[min(100%,32rem)]" />
+          <img src="/logo/arkiv-new.png" alt="Arkiv x Lithium Fire Killer" width={2001} height={672} decoding="async" className="h-auto w-[min(100%,17.5rem)] drop-shadow-[0_8px_28px_rgba(0,0,0,0.35)] sm:w-[min(100%,24rem)] md:w-[min(100%,28rem)] lg:w-[min(100%,32rem)]" />
         </motion.div>
 
         <motion.h1
