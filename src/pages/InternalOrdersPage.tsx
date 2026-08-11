@@ -11,6 +11,7 @@ import {
   Clock3,
   Copy,
   FlaskConical,
+  Gauge,
   KeyRound,
   LogOut,
   Package,
@@ -56,6 +57,17 @@ type StockInfo = {
   quantityInitial: number;
   quantityRemaining: number;
   sold: number;
+  updatedAt: string;
+};
+
+type DailyQuotaInfo = {
+  id: string;
+  label: string;
+  dayKey: string;
+  usedCount: number;
+  limitPerDay: number;
+  remaining: number;
+  exhausted: boolean;
   updatedAt: string;
 };
 
@@ -198,10 +210,12 @@ export const InternalOrdersPage = () => {
   const [meta, setMeta] = useState<ListMeta | null>(null);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [stock, setStock] = useState<StockInfo | null>(null);
+  const [dailyQuota, setDailyQuota] = useState<DailyQuotaInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [resettingQuota, setResettingQuota] = useState(false);
   const [simulatingId, setSimulatingId] = useState<string | null>(null);
   const [lastFetchedAt, setLastFetchedAt] = useState<string | null>(null);
   const [nowTick, setNowTick] = useState(() => Date.now());
@@ -247,6 +261,7 @@ export const InternalOrdersPage = () => {
           message?: string;
           data?: InvoiceRow[];
           stock?: StockInfo;
+          dailyQuota?: DailyQuotaInfo;
           meta?: ListMeta;
           summary?: DashboardSummary;
         };
@@ -257,6 +272,7 @@ export const InternalOrdersPage = () => {
         setMeta(body.meta ?? null);
         setSummary(body.summary ?? null);
         setStock(body.stock ?? null);
+        setDailyQuota(body.dailyQuota ?? null);
         setLastFetchedAt(new Date().toISOString());
       } catch (err) {
         if (!silent) {
@@ -264,6 +280,7 @@ export const InternalOrdersPage = () => {
           setMeta(null);
           setSummary(null);
           setStock(null);
+          setDailyQuota(null);
         }
         setError(err instanceof Error ? err.message : "Gagal memuat data");
       } finally {
@@ -356,6 +373,10 @@ export const InternalOrdersPage = () => {
     ? Math.round((stock.quantityRemaining / Math.max(stock.quantityInitial, 1)) * 100)
     : 0;
 
+  const quotaPct = dailyQuota
+    ? Math.round((dailyQuota.remaining / Math.max(dailyQuota.limitPerDay, 1)) * 100)
+    : 0;
+
   const toggleSort = (field: SortBy) => {
     if (sortBy === field) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -417,6 +438,41 @@ export const InternalOrdersPage = () => {
     }
   };
 
+  const resetDailyQuota = async () => {
+    if (!key) return;
+    const ok = window.confirm(
+      "Reset limit checkout hari ini ke 10?\n\nPemakaian hari ini dikembalikan ke 0 — checkout bisa dilanjutkan.",
+    );
+    if (!ok) return;
+
+    setResettingQuota(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/internal/quota/reset?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ key, limitPerDay: 10 }),
+        },
+      );
+      const body = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+        dailyQuota?: DailyQuotaInfo;
+      };
+      if (!res.ok || !body.success || !body.dailyQuota) {
+        throw new Error(body.message ?? `HTTP ${res.status}`);
+      }
+      setDailyQuota(body.dailyQuota);
+      setNotice(body.message ?? "Limit harian di-reset.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal reset limit");
+    } finally {
+      setResettingQuota(false);
+    }
+  };
+
   const simulateStatus = async (orderId: string, status: "EXPIRED" | "FAILED") => {
     if (!key) return;
     const ok = window.confirm(
@@ -456,6 +512,7 @@ export const InternalOrdersPage = () => {
     setMeta(null);
     setSummary(null);
     setStock(null);
+    setDailyQuota(null);
     setLastFetchedAt(null);
   };
 
@@ -556,10 +613,11 @@ export const InternalOrdersPage = () => {
                   type="password"
                   value={keyInput}
                   onChange={(e) => setKeyInput(e.target.value)}
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold outline-none transition focus:border-[#1A80C1] focus:ring-4 focus:ring-[#1A80C1]/15"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold text-slate-900 caret-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1A80C1] focus:ring-4 focus:ring-[#1A80C1]/15 [-webkit-text-fill-color:#0f172a] [&:-webkit-autofill]:[-webkit-text-fill-color:#0f172a] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#fff]"
                   placeholder="Paste INTERNAL_DASHBOARD_KEY"
                   required
-                  autoComplete="current-password"
+                  autoComplete="off"
+                  spellCheck={false}
                 />
                 <button
                   type="submit"
@@ -666,7 +724,7 @@ export const InternalOrdersPage = () => {
                 </motion.div>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+              <div className="grid gap-6 lg:grid-cols-2">
                 {stock ? (
                   <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)] backdrop-blur">
                     <div className="flex flex-wrap items-start justify-between gap-4">
@@ -719,7 +777,61 @@ export const InternalOrdersPage = () => {
                   </div>
                 )}
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                {dailyQuota ? (
+                  <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)] backdrop-blur">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-amber-900">
+                          <Gauge className="size-3.5" />
+                          Limit checkout / hari
+                        </div>
+                        <p className="mt-3 text-sm font-bold text-slate-600">{dailyQuota.label}</p>
+                        <p className="mt-2 text-4xl font-black tracking-tight text-slate-900">
+                          {dailyQuota.remaining}
+                          <span className="text-xl font-bold text-slate-400">
+                            {" "}
+                            / {dailyQuota.limitPerDay}
+                          </span>
+                        </p>
+                        <p className="mt-2 text-xs font-semibold text-slate-500">
+                          Terpakai {dailyQuota.usedCount} · Hari {dailyQuota.dayKey} (WIB)
+                          {dailyQuota.exhausted ? " · penuh" : ""}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={resettingQuota}
+                        onClick={() => void resetDailyQuota()}
+                        className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+                      >
+                        <RotateCcw className={`size-4 ${resettingQuota ? "animate-spin" : ""}`} />
+                        {resettingQuota ? "Resetting…" : "Reset limit"}
+                      </button>
+                    </div>
+                    <div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${quotaPct}%` }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
+                        className={`h-full rounded-full ${
+                          quotaPct <= 20
+                            ? "bg-gradient-to-r from-red-500 to-orange-400"
+                            : "bg-gradient-to-r from-amber-500 to-amber-300"
+                        }`}
+                      />
+                    </div>
+                    <p className="mt-2 text-right text-xs font-bold text-slate-500">
+                      {quotaPct}% kuota tersisa
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white/50 p-6 text-sm font-semibold text-slate-500">
+                    Limit harian belum tersedia.
+                  </div>
+                )}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur">
                     <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
                       Status mix
@@ -815,7 +927,6 @@ export const InternalOrdersPage = () => {
                       )}
                     </div>
                   </div>
-                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">

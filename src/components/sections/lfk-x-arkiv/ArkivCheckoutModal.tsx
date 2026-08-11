@@ -23,6 +23,7 @@ import {
   ARKIV_VA_BANKS,
   arkivAmountFor,
   buildArkivOrderId,
+  getArkivVaBank,
   type ArkivPaymentMethod,
   type ArkivVaBankCode,
 } from "../../../config/arkiv-billing";
@@ -95,6 +96,9 @@ export const ArkivCheckoutModal = ({
     ARKIV_QRIS_ENABLED && method === "QRIS" ? "QRIS" : "VA";
   const total = arkivAmountFor(effectiveMethod);
   const isQrisPayment = vaData?.paymentChannelCode === "QRIS";
+  const paidBank =
+    getArkivVaBank(vaData?.virtualAccountBank) ??
+    getArkivVaBank(vaData?.paymentChannelCode);
 
   const { isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
     orderId: vaData?.orderId ?? null,
@@ -474,9 +478,17 @@ export const ArkivCheckoutModal = ({
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                               {t("payment.modal.bankLabel")}
                             </p>
-                            <p className="mt-1 flex items-center gap-2 text-lg font-black text-slate-900">
-                              <Building2 className="size-5 text-accent" />
-                              {vaData.virtualAccountBank}
+                            <p className="mt-1 flex items-center gap-2.5 text-lg font-black text-slate-900">
+                              {paidBank ? (
+                                <img
+                                  src={paidBank.logo}
+                                  alt={paidBank.label}
+                                  className="h-7 w-auto max-w-[5.5rem] object-contain"
+                                />
+                              ) : (
+                                <Building2 className="size-5 text-accent" />
+                              )}
+                              <span>{vaData.virtualAccountBank}</span>
                             </p>
                           </div>
 
@@ -697,13 +709,20 @@ export const ArkivCheckoutModal = ({
                                   type="button"
                                   disabled={isLoading || disabled}
                                   onClick={() => setBankCode(bank.code)}
-                                  className={`rounded-xl border px-3 py-3 text-sm font-black transition ${
+                                  className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-3 text-sm font-black transition ${
                                     selected
                                       ? "border-accent bg-accent/10 text-accent ring-2 ring-accent/30"
                                       : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                                   } disabled:opacity-60`}
                                 >
-                                  {bank.label}
+                                  <span className="flex h-9 w-full items-center justify-center">
+                                    <img
+                                      src={bank.logo}
+                                      alt=""
+                                      className="max-h-8 max-w-[5.5rem] object-contain"
+                                    />
+                                  </span>
+                                  <span>{bank.label}</span>
                                 </button>
                               );
                             })}

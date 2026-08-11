@@ -89,10 +89,11 @@ export const ArkivAccessGateModal = ({
                 value={keyInput}
                 onChange={(e) => setKeyInput(e.target.value)}
                 required
-                autoComplete="current-password"
+                autoComplete="off"
+                spellCheck={false}
                 disabled={loading}
                 placeholder={t("payment.accessGate.keyPlaceholder")}
-                className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pr-4 pl-11 text-sm font-semibold outline-none transition focus:border-[#1A80C1] focus:ring-4 focus:ring-[#1A80C1]/15 disabled:opacity-60"
+                className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pr-4 pl-11 text-sm font-semibold text-slate-900 caret-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1A80C1] focus:ring-4 focus:ring-[#1A80C1]/15 disabled:opacity-60 [-webkit-text-fill-color:#0f172a] [&:-webkit-autofill]:[-webkit-text-fill-color:#0f172a] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#fff]"
               />
             </div>
 

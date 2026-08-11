@@ -11,16 +11,22 @@ export function buildArkivOrderId(): string {
 export type ArkivPaymentMethod = "VA" | "QRIS";
 
 export const ARKIV_VA_BANKS = [
-  { code: "BRI", label: "BRI" },
-  { code: "MANDIRI", label: "Mandiri" },
-  { code: "BNI", label: "BNI" },
-  { code: "PERMATA", label: "Permata" },
-  { code: "CIMB", label: "CIMB" },
+  { code: "BRI", label: "BRI", logo: "/bank/bri.png" },
+  { code: "MANDIRI", label: "Mandiri", logo: "/bank/mandiri.png" },
+  { code: "BNI", label: "BNI", logo: "/bank/bni.png" },
+  { code: "PERMATA", label: "Permata", logo: "/bank/permata.png" },
+  { code: "CIMB", label: "CIMB", logo: "/bank/cimb.png" },
   // BCA di-hide — early go-live VA non-BCA saja
-  // { code: "BCA", label: "BCA" },
+  // { code: "BCA", label: "BCA", logo: "/bank/bca.png" },
 ] as const;
 
 export type ArkivVaBankCode = (typeof ARKIV_VA_BANKS)[number]["code"];
+
+export function getArkivVaBank(code: string | null | undefined) {
+  if (!code) return null;
+  const normalized = code.replace(/^VA_/i, "").toUpperCase();
+  return ARKIV_VA_BANKS.find((bank) => bank.code === normalized) ?? null;
+}
 
 /**
  * QRIS YUKK limit ~Rp 10.000.000 — produk real Rp 11.900.000 tidak muat.
@@ -35,7 +41,6 @@ export const ARKIV_QRIS_ENABLED = true;
  * REMINDER early go-live:
  * - Batasi ±10 transaksi / hari agar tidak ternotice BI (kesepakatan YUKK).
  * - Masih harus test VA end-to-end di local sebelum andalkan prod.
- * - Logo bank belum ditambah (opsional).
  *
  * Harga real (saat go-live / user bilang siap): Rp 11.900.000
  */
