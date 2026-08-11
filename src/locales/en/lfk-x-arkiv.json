@@ -164,7 +164,15 @@
       "copiedBtn": "Copied",
       "checkBtn": "Check Payment Status",
       "checkingBtn": "Checking Status...",
-      "autoUpdateNote": "Status updates automatically every 5 seconds after you pay."
+      "autoUpdateNote": "Status updates automatically every 5 seconds after you pay.",
+      "cancelBtn": "Cancel payment",
+      "cancellingBtn": "Cancelling...",
+      "expiredHeading": "Payment Expired",
+      "expiredDesc": "The payment window has ended. Create a new invoice to try again.",
+      "failedHeading": "Payment Failed",
+      "failedDesc": "The transaction could not be completed. Please create a new invoice or try another method.",
+      "retryBtn": "Try again",
+      "closeFailBtn": "Close"
     }
   }
 }

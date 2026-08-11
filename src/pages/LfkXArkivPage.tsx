@@ -32,6 +32,9 @@ export const LfkXArkivPage = () => {
     handleCreateVA,
     handleCreateQris,
     markPaymentPaid,
+    markPaymentExpired,
+    markPaymentFailed,
+    retryCheckout,
     handlePaymentComplete,
     closeCheckout,
     clearToast,
@@ -87,6 +90,9 @@ export const LfkXArkivPage = () => {
         onCreateVA={handleCreateVA}
         onCreateQris={handleCreateQris}
         onMarkPaid={markPaymentPaid}
+        onMarkExpired={markPaymentExpired}
+        onMarkFailed={markPaymentFailed}
+        onRetry={retryCheckout}
         onPaymentComplete={onPaymentComplete}
         isLoading={isLoading}
         error={error}

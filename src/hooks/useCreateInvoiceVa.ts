@@ -18,7 +18,7 @@ export interface ToastState {
   variant: ToastVariant;
 }
 
-export type CheckoutStep = "form" | "paying" | "success";
+export type CheckoutStep = "form" | "paying" | "success" | "expired" | "failed";
 
 export interface UseCreateInvoiceVaResult {
   isLoading: boolean;
@@ -34,6 +34,9 @@ export interface UseCreateInvoiceVaResult {
   handleCreateVA: (payload: CreateInvoiceVaPayload) => Promise<void>;
   handleCreateQris: (payload: CreateInvoiceQrisPayload) => Promise<void>;
   markPaymentPaid: () => void;
+  markPaymentExpired: () => void;
+  markPaymentFailed: () => void;
+  retryCheckout: () => void;
   handlePaymentComplete: () => void;
   closeCheckout: () => void;
   clearToast: () => void;
@@ -72,6 +75,22 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
   const markPaymentPaid = useCallback(() => {
     setVaData((prev) => (prev ? { ...prev, status: "PAID" } : prev));
     setCheckoutStep("success");
+  }, []);
+
+  const markPaymentExpired = useCallback(() => {
+    setVaData((prev) => (prev ? { ...prev, status: "EXPIRED" } : prev));
+    setCheckoutStep("expired");
+  }, []);
+
+  const markPaymentFailed = useCallback(() => {
+    setVaData((prev) => (prev ? { ...prev, status: "FAILED" } : prev));
+    setCheckoutStep("failed");
+  }, []);
+
+  const retryCheckout = useCallback(() => {
+    setVaData(null);
+    setError(null);
+    setCheckoutStep("form");
   }, []);
 
   const handlePaymentComplete = useCallback(() => {
@@ -171,6 +190,9 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     handleCreateVA,
     handleCreateQris,
     markPaymentPaid,
+    markPaymentExpired,
+    markPaymentFailed,
+    retryCheckout,
     handlePaymentComplete,
     closeCheckout,
     clearToast,

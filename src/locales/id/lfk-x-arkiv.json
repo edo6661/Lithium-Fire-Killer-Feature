@@ -164,7 +164,15 @@
       "copiedBtn": "Tersalin",
       "checkBtn": "Cek Status Pembayaran",
       "checkingBtn": "Memeriksa Status...",
-      "autoUpdateNote": "Status diperbarui otomatis setiap 5 detik setelah Anda bayar."
+      "autoUpdateNote": "Status diperbarui otomatis setiap 5 detik setelah Anda bayar.",
+      "cancelBtn": "Batalkan pembayaran",
+      "cancellingBtn": "Membatalkan...",
+      "expiredHeading": "Pembayaran Kadaluarsa",
+      "expiredDesc": "Batas waktu atau sesi pembayaran sudah berakhir. Buat tagihan baru untuk mencoba lagi.",
+      "failedHeading": "Pembayaran Gagal",
+      "failedDesc": "Transaksi tidak berhasil diproses. Silakan buat tagihan baru atau pilih metode lain.",
+      "retryBtn": "Coba lagi",
+      "closeFailBtn": "Tutup"
     }
   }
 }

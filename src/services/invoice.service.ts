@@ -230,6 +230,48 @@ export type ArkivStockData = {
   soldOut: boolean;
 };
 
+export async function cancelInvoiceVa(
+  orderId: string,
+  reason = "Dibatalkan dari checkout",
+): Promise<{ orderId: string; status: string; previousStatus: string }> {
+  const encodedOrderId = encodeURIComponent(orderId);
+  const response = await fetch(
+    `${API_BASE_URL}/api/invoices/${encodedOrderId}/cancel`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ reason }),
+    },
+  );
+
+  let body: {
+    success?: boolean;
+    message?: string;
+    data?: { orderId: string; status: string; previousStatus: string };
+  };
+
+  try {
+    body = (await response.json()) as typeof body;
+  } catch {
+    throw new InvoiceApiError(
+      "Respons server tidak valid. Pastikan backend berjalan.",
+      response.status,
+    );
+  }
+
+  if (!response.ok || !body.success || !body.data) {
+    throw new InvoiceApiError(
+      body.message ?? "Gagal membatalkan tagihan.",
+      response.status,
+    );
+  }
+
+  return body.data;
+}
+
 export async function fetchArkivStock(): Promise<ArkivStockData> {
   const response = await fetch(`${API_BASE_URL}/api/invoices/stock/arkiv`, {
     headers: { Accept: "application/json" },

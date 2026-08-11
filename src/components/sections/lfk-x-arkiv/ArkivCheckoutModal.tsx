@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import {
+  AlertTriangle,
   Building2,
   Check,
   CheckCircle2,
@@ -12,7 +13,9 @@ import {
   QrCode,
   RefreshCw,
   ShieldCheck,
+  TimerOff,
   X,
+  XCircle,
 } from "lucide-react";
 import {
   ACTIVE_ARKIV_BILLING,
@@ -30,7 +33,11 @@ import type {
   CreateInvoiceVaPayload,
   InvoiceVaData,
 } from "../../../types/invoice";
-import type { ArkivStockData } from "../../../services/invoice.service";
+import {
+  cancelInvoiceVa,
+  InvoiceApiError,
+  type ArkivStockData,
+} from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
 import { formatVaExpiredDate } from "../../../utils/format-va-expired-date";
 import { Button } from "../../ui/Button";
@@ -43,6 +50,9 @@ interface ArkivCheckoutModalProps {
   onCreateVA: (payload: CreateInvoiceVaPayload) => Promise<void>;
   onCreateQris: (payload: CreateInvoiceQrisPayload) => Promise<void>;
   onMarkPaid: () => void;
+  onMarkExpired: () => void;
+  onMarkFailed: () => void;
+  onRetry: () => void;
   onPaymentComplete: () => void;
   isLoading: boolean;
   error: string | null;
@@ -58,6 +68,9 @@ export const ArkivCheckoutModal = ({
   onCreateVA,
   onCreateQris,
   onMarkPaid,
+  onMarkExpired,
+  onMarkFailed,
+  onRetry,
   onPaymentComplete,
   isLoading,
   error,
@@ -74,19 +87,30 @@ export const ArkivCheckoutModal = ({
     ACTIVE_ARKIV_BILLING.defaultBankCode,
   );
   const [copied, setCopied] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   const effectiveMethod: ArkivPaymentMethod =
     ARKIV_QRIS_ENABLED && method === "QRIS" ? "QRIS" : "VA";
   const total = arkivAmountFor(effectiveMethod);
   const isQrisPayment = vaData?.paymentChannelCode === "QRIS";
 
-  const { isPaid, isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
+  const { isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
     orderId: vaData?.orderId ?? null,
-    enabled: open && step === "paying" && vaData?.status !== "PAID",
+    enabled: open && step === "paying",
+    expiredDate: vaData?.expiredDate ?? null,
     onPaid: onMarkPaid,
+    onExpired: onMarkExpired,
+    onFailed: onMarkFailed,
   });
 
   const showSuccess = step === "success";
+  const showExpired = step === "expired";
+  const showFailed = step === "failed";
+
+  useEffect(() => {
+    if (step === "paying") setCancelError(null);
+  }, [step]);
 
   useEffect(() => {
     if (!open) return;
@@ -105,6 +129,26 @@ export const ArkivCheckoutModal = ({
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
+    }
+  };
+
+  const handleCancelPayment = async () => {
+    if (!vaData?.orderId || cancelling || isQrisPayment) return;
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      await cancelInvoiceVa(vaData.orderId);
+      onMarkExpired();
+    } catch (err) {
+      setCancelError(
+        err instanceof InvoiceApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : "Gagal membatalkan pembayaran.",
+      );
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -265,6 +309,51 @@ export const ArkivCheckoutModal = ({
                     {t("payment.modal.finishBtn")}
                   </Button>
                 </div>
+              ) : (showExpired || showFailed) && vaData ? (
+                <div className="mx-auto flex max-w-md flex-col items-center py-8 text-center">
+                  <div
+                    className={`mb-6 flex size-20 items-center justify-center rounded-full ring-8 ${
+                      showExpired
+                        ? "bg-amber-100 ring-amber-50"
+                        : "bg-red-100 ring-red-50"
+                    }`}
+                  >
+                    {showExpired ? (
+                      <TimerOff className="size-10 text-amber-700" />
+                    ) : (
+                      <XCircle className="size-10 text-red-600" />
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-black tracking-tight text-slate-900">
+                    {showExpired
+                      ? t("payment.modal.expiredHeading")
+                      : t("payment.modal.failedHeading")}
+                  </h2>
+                  <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600">
+                    {showExpired
+                      ? t("payment.modal.expiredDesc")
+                      : t("payment.modal.failedDesc")}
+                  </p>
+                  <p className="mt-4 text-xs font-bold text-slate-500">
+                    {t("payment.modal.docLabel")} {vaData.orderId}
+                  </p>
+                  <div className="mt-8 flex w-full flex-col gap-3">
+                    <Button
+                      type="button"
+                      className="w-full bg-slate-900 py-4 text-white hover:bg-slate-800"
+                      onClick={onRetry}
+                    >
+                      {t("payment.modal.retryBtn")}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="w-full rounded-full py-3 text-sm font-bold text-slate-500 transition hover:text-slate-800"
+                    >
+                      {t("payment.modal.closeFailBtn")}
+                    </button>
+                  </div>
+                </div>
               ) : step === "paying" && vaData ? (
                 <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
                   <div>
@@ -365,7 +454,7 @@ export const ArkivCheckoutModal = ({
                       <button
                         type="button"
                         onClick={() => checkStatus()}
-                        disabled={isChecking}
+                        disabled={isChecking || cancelling}
                         className="flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3.5 text-sm font-bold text-slate-800 transition hover:border-accent hover:text-accent disabled:opacity-60"
                       >
                         {isChecking ? (
@@ -379,9 +468,29 @@ export const ArkivCheckoutModal = ({
                           </>
                         )}
                       </button>
-                      {checkError ? (
+                      {!isQrisPayment ? (
+                        <button
+                          type="button"
+                          onClick={() => void handleCancelPayment()}
+                          disabled={cancelling || isChecking}
+                          className="flex w-full items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:opacity-60"
+                        >
+                          {cancelling ? (
+                            <>
+                              <Loader2 className="size-4 animate-spin" />{" "}
+                              {t("payment.modal.cancellingBtn")}
+                            </>
+                          ) : (
+                            <>
+                              <AlertTriangle className="size-4" />{" "}
+                              {t("payment.modal.cancelBtn")}
+                            </>
+                          )}
+                        </button>
+                      ) : null}
+                      {checkError || cancelError ? (
                         <p className="text-center text-xs font-semibold text-red-600">
-                          {checkError}
+                          {cancelError ?? checkError}
                         </p>
                       ) : (
                         <p className="text-center text-xs leading-relaxed text-slate-500">
