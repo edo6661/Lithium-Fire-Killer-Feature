@@ -142,12 +142,24 @@ export const ArkivCheckoutModal = ({
   };
 
   const handleCancelPayment = async () => {
-    if (!vaData?.orderId || cancelling || isQrisPayment) return;
+    if (!vaData?.orderId || cancelling) return;
+
+    const ok = window.confirm(t("payment.modal.cancelConfirm"));
+    if (!ok) return;
+
     setCancelling(true);
     setCancelError(null);
     try {
-      await cancelInvoiceVa(vaData.orderId);
-      onMarkExpired();
+      // VA: batalkan di YUKK dulu. QRIS: tidak ada cancel API — cukup reset sesi lokal.
+      if (!isQrisPayment) {
+        try {
+          await cancelInvoiceVa(vaData.orderId);
+        } catch (err) {
+          // Tagihan mungkin sudah expired di YUKK — tetap izinkan pilih ulang
+          console.warn("Cancel VA failed, continuing to restart checkout", err);
+        }
+      }
+      onRetry();
     } catch (err) {
       setCancelError(
         err instanceof InvoiceApiError
@@ -527,32 +539,32 @@ export const ArkivCheckoutModal = ({
                           </>
                         )}
                       </button>
-                      {!isQrisPayment ? (
-                        <button
-                          type="button"
-                          onClick={() => void handleCancelPayment()}
-                          disabled={cancelling || isChecking}
-                          className="flex w-full items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:opacity-60"
-                        >
-                          {cancelling ? (
-                            <>
-                              <Loader2 className="size-4 animate-spin" />{" "}
-                              {t("payment.modal.cancellingBtn")}
-                            </>
-                          ) : (
-                            <>
-                              <AlertTriangle className="size-4" />{" "}
-                              {t("payment.modal.cancelBtn")}
-                            </>
-                          )}
-                        </button>
-                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => void handleCancelPayment()}
+                        disabled={cancelling || isChecking}
+                        className="flex w-full items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 py-3.5 text-sm font-bold text-red-700 transition hover:bg-red-100 disabled:opacity-60"
+                      >
+                        {cancelling ? (
+                          <>
+                            <Loader2 className="size-4 animate-spin" />{" "}
+                            {t("payment.modal.cancellingBtn")}
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle className="size-4" />{" "}
+                            {t("payment.modal.cancelBtn")}
+                          </>
+                        )}
+                      </button>
                       {checkError || cancelError ? (
                         <p className="text-center text-xs font-semibold text-red-600">
                           {cancelError ?? checkError}
                         </p>
                       ) : (
                         <p className="text-center text-xs leading-relaxed text-slate-500">
+                          {t("payment.modal.cancelHint")}
+                          <br />
                           {t("payment.modal.autoUpdateNote")}
                         </p>
                       )}

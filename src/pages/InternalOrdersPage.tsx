@@ -2,8 +2,12 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
+  ArrowDown,
+  ArrowUp,
   Check,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   Copy,
   FlaskConical,
@@ -56,12 +60,38 @@ type StockInfo = {
 };
 
 type StatusFilter = "ALL" | "PAID" | "PENDING" | "EXPIRED" | "FAILED";
+type ChannelFilter = "ALL" | "QRIS" | "VA";
+type SortBy = "createdAt" | "paidAt" | "grandTotal" | "status" | "orderId";
+type SortDir = "asc" | "desc";
+
+type ListMeta = {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  sortBy: SortBy;
+  sortDir: SortDir;
+};
+
+type DashboardSummary = {
+  total: number;
+  paid: number;
+  pending: number;
+  expired: number;
+  failed: number;
+  revenueToday: number;
+  revenueWeek: number;
+  revenueAll: number;
+  trend: Array<{ day: string; count: number; sort: number }>;
+};
 
 const STORAGE_KEY = ARKIV_ACCESS_KEY_STORAGE;
 const DEV_TOOLS_KEY = "lfk-internal-dev-tools";
 const AUTO_REFRESH_KEY = "lfk-internal-auto-refresh";
 const ACCENT = "#1A80C1";
 const AUTO_REFRESH_MS = 15_000;
+const PAGE_SIZE = 20;
+const SEARCH_DEBOUNCE_MS = 350;
 /** Nominal di atas ini dianggap outlier test (bukan sampling VA 10rb / QRIS 1rb). */
 const OUTLIER_THRESHOLD = 100_000;
 
@@ -114,54 +144,6 @@ function formatRelative(iso: string | null, nowMs: number): string {
   return `${diffDay} hari lalu`;
 }
 
-function dayKey(iso: string): string {
-  const d = new Date(iso);
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "short",
-    timeZone: "Asia/Jakarta",
-  }).format(d);
-}
-
-/** Start of calendar day in Asia/Jakarta as UTC Date. */
-function startOfJakartaDay(now = new Date()): Date {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Jakarta",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(now);
-  const y = parts.find((p) => p.type === "year")?.value ?? "1970";
-  const m = parts.find((p) => p.type === "month")?.value ?? "01";
-  const d = parts.find((p) => p.type === "day")?.value ?? "01";
-  return new Date(`${y}-${m}-${d}T00:00:00+07:00`);
-}
-
-function startOfJakartaWeek(now = new Date()): Date {
-  const start = startOfJakartaDay(now);
-  const weekday = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Jakarta",
-    weekday: "short",
-  }).format(now);
-  const map: Record<string, number> = {
-    Mon: 0,
-    Tue: 1,
-    Wed: 2,
-    Thu: 3,
-    Fri: 4,
-    Sat: 5,
-    Sun: 6,
-  };
-  const offset = map[weekday] ?? 0;
-  start.setTime(start.getTime() - offset * 24 * 60 * 60 * 1000);
-  return start;
-}
-
-function paidAtMs(row: InvoiceRow): number {
-  const raw = row.paidAt ?? row.createdAt;
-  return new Date(raw).getTime();
-}
-
 function Copyable({
   value,
   className,
@@ -206,8 +188,15 @@ export const InternalOrdersPage = () => {
   const [keyInput, setKeyInput] = useState(() => localStorage.getItem(STORAGE_KEY) ?? "");
   const [key, setKey] = useState(() => localStorage.getItem(STORAGE_KEY) ?? "");
   const [filter, setFilter] = useState<StatusFilter>("ALL");
+  const [channel, setChannel] = useState<ChannelFilter>("ALL");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [sortBy, setSortBy] = useState<SortBy>("createdAt");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [page, setPage] = useState(1);
   const [rows, setRows] = useState<InvoiceRow[]>([]);
+  const [meta, setMeta] = useState<ListMeta | null>(null);
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [stock, setStock] = useState<StockInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -222,33 +211,58 @@ export const InternalOrdersPage = () => {
   const [devTools, setDevTools] = useState(
     () => localStorage.getItem(DEV_TOOLS_KEY) === "1",
   );
-  const [hideOutliers, setHideOutliers] = useState(true);
 
   const fetchRows = useCallback(
-    async (authKey: string, statusFilter: string, opts?: { silent?: boolean }) => {
+    async (
+      authKey: string,
+      opts: {
+        statusFilter: StatusFilter;
+        channelFilter: ChannelFilter;
+        q: string;
+        sortBy: SortBy;
+        sortDir: SortDir;
+        page: number;
+        silent?: boolean;
+      },
+    ) => {
       if (!authKey) return;
-      const silent = opts?.silent ?? false;
+      const silent = opts.silent ?? false;
       if (!silent) setLoading(true);
       setError(null);
       try {
-        const params = new URLSearchParams({ key: authKey, limit: "200" });
-        if (statusFilter !== "ALL") params.set("status", statusFilter);
+        const params = new URLSearchParams({
+          key: authKey,
+          page: String(opts.page),
+          pageSize: String(PAGE_SIZE),
+          sortBy: opts.sortBy,
+          sortDir: opts.sortDir,
+        });
+        if (opts.statusFilter !== "ALL") params.set("status", opts.statusFilter);
+        if (opts.channelFilter !== "ALL") params.set("channel", opts.channelFilter);
+        if (opts.q.trim()) params.set("q", opts.q.trim());
+
         const res = await fetch(`${API_BASE_URL}/api/internal/invoices?${params}`);
         const body = (await res.json()) as {
           success?: boolean;
           message?: string;
           data?: InvoiceRow[];
           stock?: StockInfo;
+          meta?: ListMeta;
+          summary?: DashboardSummary;
         };
         if (!res.ok || !body.success || !body.data) {
           throw new Error(body.message ?? `HTTP ${res.status}`);
         }
         setRows(body.data);
+        setMeta(body.meta ?? null);
+        setSummary(body.summary ?? null);
         setStock(body.stock ?? null);
         setLastFetchedAt(new Date().toISOString());
       } catch (err) {
         if (!silent) {
           setRows([]);
+          setMeta(null);
+          setSummary(null);
           setStock(null);
         }
         setError(err instanceof Error ? err.message : "Gagal memuat data");
@@ -259,10 +273,30 @@ export const InternalOrdersPage = () => {
     [],
   );
 
+  const queryOpts = useMemo(
+    () => ({
+      statusFilter: filter,
+      channelFilter: channel,
+      q: debouncedSearch,
+      sortBy,
+      sortDir,
+      page,
+    }),
+    [filter, channel, debouncedSearch, sortBy, sortDir, page],
+  );
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(id);
+  }, [search]);
+
   useEffect(() => {
     if (!key) return;
-    void fetchRows(key, filter);
-  }, [key, filter, fetchRows]);
+    void fetchRows(key, queryOpts);
+  }, [key, queryOpts, fetchRows]);
 
   useEffect(() => {
     localStorage.setItem(AUTO_REFRESH_KEY, autoRefresh ? "1" : "0");
@@ -275,10 +309,10 @@ export const InternalOrdersPage = () => {
   useEffect(() => {
     if (!key || !autoRefresh) return;
     const id = window.setInterval(() => {
-      void fetchRows(key, filter, { silent: true });
+      void fetchRows(key, { ...queryOpts, silent: true });
     }, AUTO_REFRESH_MS);
     return () => window.clearInterval(id);
-  }, [key, filter, autoRefresh, fetchRows]);
+  }, [key, autoRefresh, queryOpts, fetchRows]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNowTick(Date.now()), 1000);
@@ -291,87 +325,55 @@ export const InternalOrdersPage = () => {
     return () => window.clearTimeout(id);
   }, [notice]);
 
-  const filteredRows = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter((row) => {
-      const hay = [
-        row.orderId,
-        row.customerName,
-        row.customerEmail,
-        row.customerPhone,
-        row.paymentChannelCode,
-        row.virtualAccountBank,
-        row.virtualAccountNo,
-        row.status,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      return hay.includes(q);
-    });
-  }, [rows, search]);
-
-  const stats = useMemo(() => {
-    const paidAll = rows.filter((r) => r.status === "PAID");
-    const paidForRevenue = hideOutliers
-      ? paidAll.filter((r) => r.grandTotal <= OUTLIER_THRESHOLD)
-      : paidAll;
-    const dayStart = startOfJakartaDay().getTime();
-    const weekStart = startOfJakartaWeek().getTime();
-
-    const sumPaid = (list: InvoiceRow[]) =>
-      list.reduce((sum, r) => sum + r.grandTotal, 0);
-
-    const todayRows = paidForRevenue.filter((r) => paidAtMs(r) >= dayStart);
-    const weekRows = paidForRevenue.filter((r) => paidAtMs(r) >= weekStart);
-    const outlierCount = paidAll.filter((r) => r.grandTotal > OUTLIER_THRESHOLD).length;
-
-    return {
-      total: rows.length,
-      paid: paidAll.length,
-      pending: rows.filter((r) => r.status === "PENDING").length,
-      revenueToday: sumPaid(todayRows),
-      revenueWeek: sumPaid(weekRows),
-      revenueAll: sumPaid(paidForRevenue),
-      outlierCount,
-      revenueAllRaw: sumPaid(paidAll),
-    };
-  }, [rows, hideOutliers]);
+  const stats = useMemo(
+    () => ({
+      total: summary?.total ?? 0,
+      paid: summary?.paid ?? 0,
+      pending: summary?.pending ?? 0,
+      revenueToday: summary?.revenueToday ?? 0,
+      revenueWeek: summary?.revenueWeek ?? 0,
+      revenueAll: summary?.revenueAll ?? 0,
+    }),
+    [summary],
+  );
 
   const pieData = useMemo(() => {
-    const paid = rows.filter((r) => r.status === "PAID").length;
-    const pending = rows.filter((r) => r.status === "PENDING").length;
-    const expired = rows.filter((r) => r.status === "EXPIRED").length;
-    const failed = rows.filter((r) => r.status === "FAILED").length;
-    const other = Math.max(0, rows.length - paid - pending - expired - failed);
+    if (!summary) return [];
     return [
-      { name: "Lunas", value: paid, color: PIE_COLORS.PAID },
-      { name: "Pending", value: pending, color: PIE_COLORS.PENDING },
-      { name: "Kadaluarsa", value: expired, color: "#ea580c" },
-      { name: "Gagal", value: failed, color: "#dc2626" },
-      { name: "Lainnya", value: other, color: PIE_COLORS.OTHER },
+      { name: "Lunas", value: summary.paid, color: PIE_COLORS.PAID },
+      { name: "Pending", value: summary.pending, color: PIE_COLORS.PENDING },
+      { name: "Kadaluarsa", value: summary.expired, color: "#ea580c" },
+      { name: "Gagal", value: summary.failed, color: "#dc2626" },
     ].filter((d) => d.value > 0);
-  }, [rows]);
+  }, [summary]);
 
   const trendData = useMemo(() => {
-    const map = new Map<string, { day: string; count: number; revenue: number; sort: number }>();
-    for (const row of rows) {
-      const d = new Date(row.createdAt);
-      const sort = d.getTime();
-      const label = dayKey(row.createdAt);
-      const current = map.get(label) ?? { day: label, count: 0, revenue: 0, sort };
-      current.count += 1;
-      if (row.status === "PAID") current.revenue += row.grandTotal;
-      current.sort = Math.min(current.sort, sort);
-      map.set(label, current);
-    }
-    return [...map.values()].sort((a, b) => a.sort - b.sort).slice(-10);
-  }, [rows]);
+    if (!summary?.trend?.length) return [];
+    return summary.trend.slice(-14);
+  }, [summary]);
 
   const stockPct = stock
     ? Math.round((stock.quantityRemaining / Math.max(stock.quantityInitial, 1)) * 100)
     : 0;
+
+  const toggleSort = (field: SortBy) => {
+    if (sortBy === field) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(field);
+      setSortDir(field === "createdAt" || field === "paidAt" ? "desc" : "asc");
+    }
+    setPage(1);
+  };
+
+  const SortIcon = ({ field }: { field: SortBy }) => {
+    if (sortBy !== field) return null;
+    return sortDir === "asc" ? (
+      <ArrowUp className="size-3" />
+    ) : (
+      <ArrowDown className="size-3" />
+    );
+  };
 
   const unlock = (event: FormEvent) => {
     event.preventDefault();
@@ -438,7 +440,7 @@ export const InternalOrdersPage = () => {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       setNotice(`Status ${orderId} → ${status}`);
-      await fetchRows(key, filter);
+      await fetchRows(key, queryOpts);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal simulasi status");
     } finally {
@@ -451,11 +453,17 @@ export const InternalOrdersPage = () => {
     setKey("");
     setKeyInput("");
     setRows([]);
+    setMeta(null);
+    setSummary(null);
     setStock(null);
     setLastFetchedAt(null);
   };
 
   const colCount = devTools ? 7 : 6;
+  const totalFiltered = meta?.total ?? 0;
+  const totalPages = meta?.totalPages ?? 1;
+  const rangeFrom = totalFiltered === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const rangeTo = Math.min(page * PAGE_SIZE, totalFiltered);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#e8eef5] text-slate-900">
@@ -503,7 +511,7 @@ export const InternalOrdersPage = () => {
               </button>
               <button
                 type="button"
-                onClick={() => void fetchRows(key, filter)}
+                onClick={() => void fetchRows(key, queryOpts)}
                 className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm backdrop-blur transition hover:bg-white"
               >
                 <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
@@ -597,7 +605,7 @@ export const InternalOrdersPage = () => {
                     {stats.total}
                   </p>
                   <p className="mt-2 text-xs font-semibold text-white/60">
-                    Filter aktif: {filter === "ALL" ? "semua status" : statusLabel(filter)}
+                    Semua invoice (summary global)
                   </p>
                 </motion.div>
 
@@ -656,26 +664,6 @@ export const InternalOrdersPage = () => {
                     All-time: {formatRupiah(stats.revenueAll)}
                   </p>
                 </motion.div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/80 bg-white/70 px-4 py-3 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur">
-                <label className="inline-flex cursor-pointer items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={hideOutliers}
-                    onChange={(e) => setHideOutliers(e.target.checked)}
-                    className="size-3.5 rounded border-slate-300 text-[#1A80C1] focus:ring-[#1A80C1]"
-                  />
-                  Sembunyikan outlier &gt; {formatRupiah(OUTLIER_THRESHOLD)} dari revenue
-                </label>
-                {stats.outlierCount > 0 ? (
-                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-amber-900">
-                    {stats.outlierCount} invoice test besar (raw all-time{" "}
-                    {formatRupiah(stats.revenueAllRaw)})
-                  </span>
-                ) : (
-                  <span className="text-slate-400">Termasuk nominal sampling VA/QRIS.</span>
-                )}
               </div>
 
               <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -844,10 +832,39 @@ export const InternalOrdersPage = () => {
                     <button
                       key={f}
                       type="button"
-                      onClick={() => setFilter(f)}
+                      onClick={() => {
+                        setFilter(f);
+                        setPage(1);
+                      }}
                       className={`rounded-full px-3 py-1.5 transition sm:px-4 ${
                         filter === f
                           ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-1 rounded-full border border-white/80 bg-white/80 p-1 text-sm font-bold shadow-sm backdrop-blur">
+                  {(
+                    [
+                      ["ALL", "Semua channel"],
+                      ["QRIS", "QRIS"],
+                      ["VA", "VA"],
+                    ] as const
+                  ).map(([c, label]) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => {
+                        setChannel(c);
+                        setPage(1);
+                      }}
+                      className={`rounded-full px-3 py-1.5 transition sm:px-4 ${
+                        channel === c
+                          ? "bg-[#1A80C1] text-white"
                           : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
@@ -886,12 +903,48 @@ export const InternalOrdersPage = () => {
                   <table className="min-w-full text-left text-sm">
                     <thead className="border-b border-slate-100 bg-slate-50/80 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
                       <tr>
-                        <th className="px-5 py-4">Waktu</th>
-                        <th className="px-5 py-4">Status</th>
+                        <th className="px-5 py-4">
+                          <button
+                            type="button"
+                            onClick={() => toggleSort("createdAt")}
+                            className="inline-flex items-center gap-1 transition hover:text-slate-700"
+                          >
+                            Waktu
+                            <SortIcon field="createdAt" />
+                          </button>
+                        </th>
+                        <th className="px-5 py-4">
+                          <button
+                            type="button"
+                            onClick={() => toggleSort("status")}
+                            className="inline-flex items-center gap-1 transition hover:text-slate-700"
+                          >
+                            Status
+                            <SortIcon field="status" />
+                          </button>
+                        </th>
                         <th className="px-5 py-4">Customer</th>
                         <th className="px-5 py-4">Channel</th>
-                        <th className="px-5 py-4">Nominal</th>
-                        <th className="px-5 py-4">Order</th>
+                        <th className="px-5 py-4">
+                          <button
+                            type="button"
+                            onClick={() => toggleSort("grandTotal")}
+                            className="inline-flex items-center gap-1 transition hover:text-slate-700"
+                          >
+                            Nominal
+                            <SortIcon field="grandTotal" />
+                          </button>
+                        </th>
+                        <th className="px-5 py-4">
+                          <button
+                            type="button"
+                            onClick={() => toggleSort("orderId")}
+                            className="inline-flex items-center gap-1 transition hover:text-slate-700"
+                          >
+                            Order
+                            <SortIcon field="orderId" />
+                          </button>
+                        </th>
                         {devTools ? <th className="px-5 py-4">QA</th> : null}
                       </tr>
                     </thead>
@@ -903,17 +956,19 @@ export const InternalOrdersPage = () => {
                             Memuat data…
                           </td>
                         </tr>
-                      ) : filteredRows.length === 0 ? (
+                      ) : rows.length === 0 ? (
                         <tr>
                           <td
                             colSpan={colCount}
                             className="px-5 py-14 text-center font-semibold text-slate-400"
                           >
-                            {search.trim() ? "Tidak ada hasil pencarian" : "Belum ada invoice"}
+                            {debouncedSearch.trim() || filter !== "ALL" || channel !== "ALL"
+                              ? "Tidak ada hasil filter"
+                              : "Belum ada invoice"}
                           </td>
                         </tr>
                       ) : (
-                        filteredRows.map((row, index) => {
+                        rows.map((row, index) => {
                           const isOutlier = row.grandTotal > OUTLIER_THRESHOLD;
                           return (
                             <motion.tr
@@ -1034,12 +1089,36 @@ export const InternalOrdersPage = () => {
                     </tbody>
                   </table>
                 </div>
-                {filteredRows.length > 0 ? (
-                  <div className="border-t border-slate-100 px-5 py-3 text-xs font-semibold text-slate-400">
-                    Menampilkan {filteredRows.length}
-                    {search.trim() ? ` dari ${rows.length}` : ""} invoice
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-3 text-xs font-semibold text-slate-500">
+                  <p>
+                    {totalFiltered > 0
+                      ? `Menampilkan ${rangeFrom}–${rangeTo} dari ${totalFiltered} invoice`
+                      : "0 invoice"}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={page <= 1 || loading}
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                    >
+                      <ChevronLeft className="size-3.5" />
+                      Prev
+                    </button>
+                    <span className="min-w-[4.5rem] text-center font-bold text-slate-700">
+                      {page} / {totalPages}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={page >= totalPages || loading}
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                    >
+                      Next
+                      <ChevronRight className="size-3.5" />
+                    </button>
                   </div>
-                ) : null}
+                </div>
               </div>
             </motion.div>
           )}

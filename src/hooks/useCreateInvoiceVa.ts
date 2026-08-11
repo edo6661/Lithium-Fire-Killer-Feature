@@ -142,6 +142,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     setVaData(null);
     setError(null);
     setCheckoutStep("form");
+    setIsCheckoutOpen(true);
   }, []);
 
   const handlePaymentComplete = useCallback(() => {
