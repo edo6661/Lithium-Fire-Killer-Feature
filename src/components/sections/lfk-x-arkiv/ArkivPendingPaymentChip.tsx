@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Clock3, CreditCard, X } from "lucide-react";
@@ -14,19 +15,16 @@ interface ArkivPendingPaymentChipProps {
   onDismiss: () => void;
 }
 
-function stepTone(step: CheckoutStep): {
-  badge: string;
-  ring: string;
-} {
+function stepTone(step: CheckoutStep): string {
   switch (step) {
     case "success":
-      return { badge: "bg-emerald-500", ring: "ring-emerald-200/80" };
+      return "bg-emerald-500 shadow-[0_6px_24px_rgba(16,185,129,0.45)]";
     case "expired":
-      return { badge: "bg-amber-500", ring: "ring-amber-200/80" };
+      return "bg-amber-500 shadow-[0_6px_24px_rgba(245,158,11,0.45)]";
     case "failed":
-      return { badge: "bg-red-500", ring: "ring-red-200/80" };
+      return "bg-red-500 shadow-[0_6px_24px_rgba(239,68,68,0.45)]";
     default:
-      return { badge: "bg-[#1A80C1]", ring: "ring-[#1A80C1]/25" };
+      return "bg-[#1A80C1] shadow-[0_6px_24px_rgba(26,128,193,0.45)]";
   }
 }
 
@@ -53,64 +51,72 @@ export const ArkivPendingPaymentChip = ({
           ? t("payment.pendingChip.statusExpired")
           : t("payment.pendingChip.statusFailed");
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open ? (
         <motion.div
-          initial={{ opacity: 0, y: 24, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 16, scale: 0.96 }}
-          transition={{ duration: 0.28, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="pointer-events-none fixed inset-x-0 bottom-0 z-[90] flex justify-center p-4 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:justify-end"
+          initial={{ opacity: 0, scale: 0.7, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.7, y: 20 }}
+          transition={{ type: "spring", stiffness: 320, damping: 24 }}
+          className="fixed right-5 bottom-[5.75rem] z-[60] flex flex-col items-end gap-2 sm:right-8 sm:bottom-[6.5rem]"
         >
-          <div
-            className={`pointer-events-auto relative flex w-full max-w-sm items-stretch overflow-hidden rounded-2xl border border-white/70 bg-white/95 shadow-[0_20px_50px_rgba(15,23,42,0.18)] ring-1 backdrop-blur-xl ${tone.ring}`}
+          {/* Bubble info — di atas FAB, mirip tooltip WA */}
+          <motion.button
+            type="button"
+            onClick={onResume}
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="relative w-[min(240px,calc(100vw-5.5rem))] rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-left shadow-[0_12px_40px_rgba(15,23,42,0.18)]"
           >
-            <div className={`w-1.5 shrink-0 ${tone.badge}`} />
-            <button
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A80C1]">
+              {t("payment.pendingChip.eyebrow")}
+            </p>
+            <p className="mt-1 text-sm font-black leading-snug tracking-tight text-slate-900">
+              {statusText}
+            </p>
+            <p className="mt-1.5 truncate text-xs font-semibold text-slate-500">
+              {isQris
+                ? t("payment.pendingChip.channelQris")
+                : `${t("payment.pendingChip.channelVa")} · ${vaData.virtualAccountBank || "VA"}`}
+              {" · "}
+              {formatRupiah(vaData.grandTotal)}
+            </p>
+            {step === "paying" && countdown.label ? (
+              <p className="mt-1 font-mono text-xs font-bold tabular-nums text-slate-800">
+                {t("payment.pendingChip.timeLeft")} {countdown.label}
+              </p>
+            ) : null}
+            <p className="mt-2 text-[11px] font-bold text-[#1A80C1]">
+              {t("payment.pendingChip.tapHint")}
+            </p>
+            <div className="absolute -bottom-[5px] right-7 size-2.5 rotate-45 border-r border-b border-slate-200/80 bg-white" />
+          </motion.button>
+
+          <div className="relative">
+            <motion.button
               type="button"
+              aria-label={statusText}
               onClick={onResume}
-              className="min-w-0 flex-1 px-4 py-3.5 text-left transition hover:bg-slate-50/80"
+              whileHover={{ scale: 1.12, y: -3 }}
+              whileTap={{ scale: 0.94 }}
+              transition={{ type: "spring", stiffness: 380, damping: 22 }}
+              className={`relative flex size-14 items-center justify-center rounded-full text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A80C1] focus-visible:ring-offset-2 sm:size-[60px] ${tone}`}
             >
-              <div className="flex items-center gap-2">
+              {step === "paying" ? (
                 <span
-                  className={`inline-flex size-8 items-center justify-center rounded-xl text-white ${tone.badge}`}
-                >
-                  {step === "paying" ? (
-                    <Clock3 className="size-4" />
-                  ) : (
-                    <CreditCard className="size-4" />
-                  )}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1A80C1]">
-                    {t("payment.pendingChip.eyebrow")}
-                  </p>
-                  <p className="truncate text-sm font-black tracking-tight text-slate-900">
-                    {statusText}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-2 truncate text-xs font-semibold text-slate-500">
-                {isQris
-                  ? t("payment.pendingChip.channelQris")
-                  : `${t("payment.pendingChip.channelVa")} · ${vaData.virtualAccountBank || "VA"}`}
-                {" · "}
-                {formatRupiah(vaData.grandTotal)}
-              </p>
-              {step === "paying" && countdown.label ? (
-                <p className="mt-1 font-mono text-xs font-bold tabular-nums text-slate-800">
-                  {t("payment.pendingChip.timeLeft")} {countdown.label}
-                </p>
+                  className="absolute inset-0 rounded-full bg-[#1A80C1] opacity-25 animate-ping"
+                  style={{ animationDuration: "2.5s" }}
+                  aria-hidden
+                />
+              ) : null}
+              {step === "paying" ? (
+                <Clock3 className="relative size-6" strokeWidth={2.25} />
               ) : (
-                <p className="mt-1 truncate font-mono text-[11px] text-slate-400">
-                  {vaData.orderId}
-                </p>
+                <CreditCard className="relative size-6" strokeWidth={2.25} />
               )}
-              <p className="mt-2 text-[11px] font-bold text-[#1A80C1]">
-                {t("payment.pendingChip.tapHint")}
-              </p>
-            </button>
+            </motion.button>
+
             <button
               type="button"
               aria-label={t("payment.pendingChip.dismissAria")}
@@ -118,13 +124,14 @@ export const ArkivPendingPaymentChip = ({
                 e.stopPropagation();
                 onDismiss();
               }}
-              className="absolute top-2 right-2 rounded-full p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-800"
             >
               <X className="size-3.5" />
             </button>
           </div>
         </motion.div>
       ) : null}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };
