@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import {
   ACTIVE_ARKIV_BILLING,
+  ARKIV_QRIS_ENABLED,
   ARKIV_VA_BANKS,
   arkivAmountFor,
   buildArkivOrderId,
@@ -71,7 +72,9 @@ export const ArkivCheckoutModal = ({
   );
   const [copied, setCopied] = useState(false);
 
-  const total = arkivAmountFor(method);
+  const effectiveMethod: ArkivPaymentMethod =
+    ARKIV_QRIS_ENABLED && method === "QRIS" ? "QRIS" : "VA";
+  const total = arkivAmountFor(effectiveMethod);
   const isQrisPayment = vaData?.paymentChannelCode === "QRIS";
 
   const { isPaid, isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
@@ -110,7 +113,7 @@ export const ArkivCheckoutModal = ({
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
 
-    if (method === "QRIS") {
+    if (ARKIV_QRIS_ENABLED && method === "QRIS") {
       await onCreateQris({
         orderId: buildArkivOrderId(),
         grandTotal: arkivAmountFor("QRIS"),
@@ -424,34 +427,40 @@ export const ArkivCheckoutModal = ({
                       <h2 className="text-lg font-black tracking-tight text-slate-900">
                         {t("payment.checkout.methodHeading")}
                       </h2>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                        <button
-                          type="button"
-                          disabled={isLoading || disabled}
-                          onClick={() => setMethod("QRIS")}
-                          className={`rounded-2xl border px-4 py-4 text-left transition ${
-                            method === "QRIS"
-                              ? "border-accent bg-accent/10 ring-2 ring-accent/25"
-                              : "border-slate-200 bg-white hover:border-slate-300"
-                          } disabled:opacity-60`}
-                        >
-                          <span className="flex items-center gap-2 text-sm font-black text-slate-900">
-                            <QrCode className="size-4 text-accent" />
-                            {t("payment.checkout.methodQris")}
-                          </span>
-                          <span className="mt-1 block text-xs font-medium text-slate-500">
-                            {t("payment.checkout.methodQrisHint")}
-                          </span>
-                          <span className="mt-2 block text-sm font-bold text-slate-800">
-                            {formatRupiah(ACTIVE_ARKIV_BILLING.amounts.QRIS)}
-                          </span>
-                        </button>
+                      <div
+                        className={`mt-4 grid gap-3 ${
+                          ARKIV_QRIS_ENABLED ? "sm:grid-cols-2" : "sm:grid-cols-1"
+                        }`}
+                      >
+                        {ARKIV_QRIS_ENABLED ? (
+                          <button
+                            type="button"
+                            disabled={isLoading || disabled}
+                            onClick={() => setMethod("QRIS")}
+                            className={`rounded-2xl border px-4 py-4 text-left transition ${
+                              method === "QRIS"
+                                ? "border-accent bg-accent/10 ring-2 ring-accent/25"
+                                : "border-slate-200 bg-white hover:border-slate-300"
+                            } disabled:opacity-60`}
+                          >
+                            <span className="flex items-center gap-2 text-sm font-black text-slate-900">
+                              <QrCode className="size-4 text-accent" />
+                              {t("payment.checkout.methodQris")}
+                            </span>
+                            <span className="mt-1 block text-xs font-medium text-slate-500">
+                              {t("payment.checkout.methodQrisHint")}
+                            </span>
+                            <span className="mt-2 block text-sm font-bold text-slate-800">
+                              {formatRupiah(ACTIVE_ARKIV_BILLING.amounts.QRIS)}
+                            </span>
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           disabled={isLoading || disabled}
                           onClick={() => setMethod("VA")}
                           className={`rounded-2xl border px-4 py-4 text-left transition ${
-                            method === "VA"
+                            effectiveMethod === "VA"
                               ? "border-accent bg-accent/10 ring-2 ring-accent/25"
                               : "border-slate-200 bg-white hover:border-slate-300"
                           } disabled:opacity-60`}
@@ -469,7 +478,7 @@ export const ArkivCheckoutModal = ({
                         </button>
                       </div>
 
-                      {method === "VA" ? (
+                      {effectiveMethod === "VA" ? (
                         <fieldset className="mt-5">
                           <legend className="mb-3 text-xs font-black uppercase tracking-widest text-slate-500">
                             {t("payment.checkout.bankHeading")}

@@ -23,6 +23,13 @@ export const ARKIV_VA_BANKS = [
 export type ArkivVaBankCode = (typeof ARKIV_VA_BANKS)[number]["code"];
 
 /**
+ * QRIS YUKK limit ~Rp 10.000.000 — produk real Rp 11.900.000 tidak muat.
+ * false = sembunyikan QRIS di checkout (VA saja).
+ * true  = tampilkan lagi (setelah limit dinaikkan / harga ≤ 10jt).
+ */
+export const ARKIV_QRIS_ENABLED = false;
+
+/**
  * Tagihan aktif LFK × Arkiv.
  *
  * REMINDER early go-live:
@@ -34,8 +41,8 @@ export type ArkivVaBankCode = (typeof ARKIV_VA_BANKS)[number]["code"];
  */
 export const ACTIVE_ARKIV_BILLING = {
   /**
-   * Nominal TEST untuk sampling (QRIS & VA sama).
-   * Ganti ke 11_900_000 saat harga real aktif.
+   * Nominal TEST untuk sampling.
+   * Ganti ke 11_900_000 saat harga real aktif (VA saja selama ARKIV_QRIS_ENABLED=false).
    */
   amounts: {
     VA: 10_000,
