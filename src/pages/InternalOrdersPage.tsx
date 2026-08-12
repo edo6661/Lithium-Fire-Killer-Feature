@@ -43,6 +43,7 @@ type InvoiceRow = {
   customerName: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
+  customerAddress: string | null;
   paymentChannelCode: string | null;
   virtualAccountBank: string | null;
   virtualAccountNo: string | null;
@@ -1147,6 +1148,11 @@ export const InternalOrdersPage = () => {
                                 ) : (
                                   <div className="text-xs text-slate-500">—</div>
                                 )}
+                                {row.customerAddress ? (
+                                  <div className="mt-1 max-w-[16rem] whitespace-pre-wrap text-xs leading-snug text-slate-500">
+                                    {row.customerAddress}
+                                  </div>
+                                ) : null}
                               </td>
                               <td className="px-5 py-4 text-xs font-semibold">
                                 {row.paymentChannelCode ?? "—"}

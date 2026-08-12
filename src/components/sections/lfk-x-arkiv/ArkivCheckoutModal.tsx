@@ -92,6 +92,7 @@ export const ArkivCheckoutModal = ({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [method, setMethod] = useState<ArkivPaymentMethod>("VA");
   const [bankCode, setBankCode] = useState<ArkivVaBankCode>(
     ACTIVE_ARKIV_BILLING.defaultBankCode,
@@ -239,6 +240,7 @@ export const ArkivCheckoutModal = ({
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
+    const trimmedAddress = address.trim();
 
     if (ARKIV_QRIS_ENABLED && method === "QRIS") {
       await onCreateQris({
@@ -247,6 +249,7 @@ export const ArkivCheckoutModal = ({
         customerName: trimmedName,
         customerEmail: trimmedEmail,
         customerPhone: trimmedPhone,
+        customerAddress: trimmedAddress,
         notes: ACTIVE_ARKIV_BILLING.productLabel,
       });
       return;
@@ -260,6 +263,7 @@ export const ArkivCheckoutModal = ({
       virtualAccountName: trimmedName,
       virtualAccountEmail: trimmedEmail,
       virtualAccountPhone: trimmedPhone,
+      customerAddress: trimmedAddress,
       notes: ACTIVE_ARKIV_BILLING.productLabel,
     });
   };
@@ -751,6 +755,21 @@ export const ArkivCheckoutModal = ({
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder={t("payment.form.phonePlaceholder")}
                             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="mb-1.5 block text-xs font-bold text-slate-500">
+                            {t("payment.form.addressLabel")}
+                          </span>
+                          <textarea
+                            required
+                            rows={3}
+                            disabled={isLoading || formLocked}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            placeholder={t("payment.form.addressPlaceholder")}
+                            maxLength={500}
+                            className="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
                           />
                         </label>
                       </div>

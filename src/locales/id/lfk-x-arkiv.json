@@ -89,7 +89,7 @@
     "description": "Ini bukan sekadar alat pemadam. Ini karya koleksi LFK × Arkiv dengan proteksi lithium AF31 — setelah 100 unit terjual, tidak akan diproduksi ulang.",
     "points": [
       "Fungsi ganda: seni pajangan + keselamatan nyata",
-      "Formula Hartindo AF31 untuk kebakaran lithium-ion",
+      "LFK Hartindo AF31 untuk kebakaran lithium-ion",
       "Nomor edisi terbatas — bukti kepemilikan eksklusif"
     ],
     "priceLabel": "Harga",
@@ -167,6 +167,8 @@
       "emailPlaceholder": "email@example.com",
       "phoneLabel": "No. WhatsApp / Telepon",
       "phonePlaceholder": "628123456789",
+      "addressLabel": "Alamat pengiriman",
+      "addressPlaceholder": "Jalan, nomor, RT/RW, kelurahan, kecamatan, kota, kode pos",
       "bankLegend": "Pilih Bank Virtual Account",
       "secureNote": "Pembayaran aman melalui YUKK Payment Gateway. Nomor VA unik untuk transaksi ini.",
       "submitBtn": "Buat Virtual Account",
@@ -178,7 +180,7 @@
       "successDescPart2": "sebesar",
       "successDescPart3": "telah kami terima.",
       "finishBtn": "Selesai",
-      "successTip": "Simpan nomor dokumen ini. Screenshot halaman ini atau bukti pembayaran dari e-wallet/bank sebagai arsip. Email konfirmasi akan dikirim ke alamat yang Anda isi (setelah fitur email aktif).",
+      "successTip": "Simpan nomor dokumen ini. Screenshot halaman ini atau bukti pembayaran dari e-wallet/bank sebagai arsip. Email konfirmasi akan dikirim ke alamat yang Anda isi.",
       "instructionBadge": "Instruksi Pembayaran",
       "instructionHeading": "Virtual Account",
       "waitingBadge": "Menunggu Pembayaran",

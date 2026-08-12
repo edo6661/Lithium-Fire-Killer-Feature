@@ -8,6 +8,7 @@ export interface CreateInvoiceVaPayload {
   virtualAccountName: string;
   virtualAccountEmail: string;
   virtualAccountPhone: string;
+  customerAddress: string;
   notes?: string;
 }
 
@@ -17,6 +18,7 @@ export interface CreateInvoiceQrisPayload {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  customerAddress: string;
   notes?: string;
 }
 
