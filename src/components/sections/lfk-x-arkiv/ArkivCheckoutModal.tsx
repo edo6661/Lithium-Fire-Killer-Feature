@@ -649,6 +649,41 @@ export const ArkivCheckoutModal = ({
                               </button>
                             </div>
                           </div>
+
+                          <div className="rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-200">
+                            <p className="flex items-start gap-2 text-sm font-black text-amber-900">
+                              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600" />
+                              {t("payment.modal.vaTransferGuide.title")}
+                            </p>
+                            <p className="mt-2 text-xs font-semibold leading-relaxed text-amber-900/80">
+                              {t("payment.modal.vaTransferGuide.intro")}
+                            </p>
+                            <ul className="mt-3 space-y-3 text-xs leading-relaxed text-slate-700">
+                              <li>
+                                <p className="font-black text-slate-900">
+                                  {t("payment.modal.vaTransferGuide.flexibleTitle")}
+                                </p>
+                                <p className="mt-0.5 font-medium">
+                                  {t("payment.modal.vaTransferGuide.flexibleDesc")}
+                                </p>
+                              </li>
+                              <li>
+                                <p className="font-black text-slate-900">
+                                  {t("payment.modal.vaTransferGuide.sameBankTitle")}
+                                </p>
+                                <p className="mt-0.5 font-medium">
+                                  {t("payment.modal.vaTransferGuide.sameBankDesc")}
+                                </p>
+                                <ul className="mt-1.5 list-disc space-y-0.5 pl-4 font-semibold text-slate-800">
+                                  <li>{t("payment.modal.vaTransferGuide.sameBankMandiri")}</li>
+                                  <li>{t("payment.modal.vaTransferGuide.sameBankBni")}</li>
+                                </ul>
+                              </li>
+                            </ul>
+                            <p className="mt-3 border-t border-amber-200/80 pt-3 text-xs font-semibold leading-relaxed text-amber-900/90">
+                              {t("payment.modal.vaTransferGuide.tip")}
+                            </p>
+                          </div>
                         </>
                       )}
                     </div>

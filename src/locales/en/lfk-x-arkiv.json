@@ -192,6 +192,17 @@
       "countdownUrgent": "Pay now — almost expired",
       "vaLabel": "Virtual Account Number",
       "qrisLabel": "QRIS Code",
+      "vaTransferGuide": {
+        "title": "Virtual Account transfer guide",
+        "intro": "Check your source bank before paying:",
+        "flexibleTitle": "VA BRI, Permata & CIMB",
+        "flexibleDesc": "Can be paid from BCA or other banks via Interbank Transfer. Enter the Virtual Account number as the destination.",
+        "sameBankTitle": "VA Mandiri & BNI",
+        "sameBankDesc": "Payment must be made from the bank that matches the VA.",
+        "sameBankMandiri": "VA Mandiri → use a Mandiri account",
+        "sameBankBni": "VA BNI → use a BNI account",
+        "tip": "Copy the Virtual Account number from this page and make sure your transfer method matches the VA bank."
+      },
       "copyBtn": "Copy",
       "copyAmountBtn": "Copy amount",
       "copiedBtn": "Copied",

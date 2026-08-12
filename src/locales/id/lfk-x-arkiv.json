@@ -192,6 +192,17 @@
       "countdownUrgent": "Segera bayar — hampir habis",
       "vaLabel": "Nomor Virtual Account",
       "qrisLabel": "Kode QRIS",
+      "vaTransferGuide": {
+        "title": "Panduan Transfer Virtual Account",
+        "intro": "Perhatikan bank asal saat melakukan pembayaran:",
+        "flexibleTitle": "VA BRI, Permata & CIMB",
+        "flexibleDesc": "Dapat dibayar dari BCA atau bank lain melalui menu Transfer Antar Bank. Masukkan nomor Virtual Account sebagai nomor tujuan.",
+        "sameBankTitle": "VA Mandiri & BNI",
+        "sameBankDesc": "Pembayaran harus dilakukan dari bank yang sesuai dengan VA.",
+        "sameBankMandiri": "VA Mandiri → gunakan rekening Mandiri",
+        "sameBankBni": "VA BNI → gunakan rekening BNI",
+        "tip": "Salin nomor Virtual Account dari halaman ini dan pastikan metode transfer sudah sesuai dengan bank VA."
+      },
       "copyBtn": "Salin",
       "copyAmountBtn": "Salin nominal",
       "copiedBtn": "Tersalin",
