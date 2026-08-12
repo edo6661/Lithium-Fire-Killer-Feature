@@ -656,7 +656,7 @@ export const ArkivCheckoutModal = ({
                             </ul>
                             <p className="mt-3 border-t border-amber-200/80 pt-3 text-xs font-semibold leading-relaxed text-amber-900/90">
                               {t("payment.modal.vaTransferGuide.tip")}
-                            </p>
+                            </p> 
                           </div>
 
                           <div className="rounded-2xl border-2 border-dashed border-accent/30 bg-accent/5 p-4">
