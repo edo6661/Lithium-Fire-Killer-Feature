@@ -167,7 +167,7 @@
       "emailPlaceholder": "email@example.com",
       "phoneLabel": "No. WhatsApp / Telepon",
       "phonePlaceholder": "628123456789",
-      "addressLabel": "Alamat pengiriman",
+      "addressLabel": "Alamat",
       "addressPlaceholder": "Jalan, nomor, RT/RW, kelurahan, kecamatan, kota, kode pos",
       "bankLegend": "Pilih Bank Virtual Account",
       "secureNote": "Pembayaran aman melalui YUKK Payment Gateway. Nomor VA unik untuk transaksi ini.",

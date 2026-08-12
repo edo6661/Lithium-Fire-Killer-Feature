@@ -167,7 +167,7 @@
       "emailPlaceholder": "email@example.com",
       "phoneLabel": "WhatsApp / Phone No.",
       "phonePlaceholder": "628123456789",
-      "addressLabel": "Shipping address",
+      "addressLabel": "Address",
       "addressPlaceholder": "Street, number, district, city, postal code",
       "bankLegend": "Select Virtual Account Bank",
       "secureNote": "Secure payment via YUKK Payment Gateway. Unique VA number for this transaction.",
