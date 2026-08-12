@@ -95,7 +95,7 @@ export const LfkXArkivPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900 -mt-[72px] pt-[72px]">
+    <div className="relative min-h-screen overflow-x-clip bg-[#eaeff5] text-slate-900 selection:bg-slate-300 selection:text-slate-900 -mt-[72px] pt-[72px]">
       <PageSeo
         title={t("seo.title")}
         description={t("seo.description")}

@@ -51,7 +51,7 @@ export const ArkivAccessGateModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 sm:bg-slate-900/55 sm:backdrop-blur-sm"
           />
           <motion.form
             onSubmit={(e) => void handleSubmit(e)}

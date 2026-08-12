@@ -345,7 +345,7 @@ export const ArkivCheckoutModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 sm:bg-slate-900/55 sm:backdrop-blur-sm"
           />
 
           <motion.div
@@ -480,8 +480,10 @@ export const ArkivCheckoutModal = ({
                   </div>
                 </div>
               ) : step === "paying" && vaData ? (
-                <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-                  <div>
+                <div className="space-y-6">
+                  <div className="xl:hidden">{orderSummary}</div>
+                  <div className="grid items-start gap-8 xl:grid-cols-[1.15fr_0.85fr]">
+                  <div className="min-w-0">
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-accent">
                       {t("payment.modal.instructionBadge")}
                     </p>
@@ -521,7 +523,7 @@ export const ArkivCheckoutModal = ({
                           {t("payment.modal.nominalLabel")}
                         </p>
                         <div className="mt-1 flex items-center gap-3">
-                          <p className="flex-1 text-3xl font-black tracking-tight text-slate-900">
+                          <p className="min-w-0 flex-1 break-words text-3xl font-black tracking-tight text-slate-900">
                             {formatRupiah(vaData.grandTotal)}
                           </p>
                           <button
@@ -622,34 +624,6 @@ export const ArkivCheckoutModal = ({
                               </p>
                             </div>
                           ) : null}
-
-                          <div className="rounded-2xl border-2 border-dashed border-accent/30 bg-accent/5 p-4">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                              {t("payment.modal.vaLabel")}
-                            </p>
-                            <div className="mt-2 flex items-center gap-3">
-                              <p className="flex-1 break-all font-mono text-xl font-black tracking-wider text-slate-900 sm:text-2xl">
-                                {vaData.virtualAccountNo}
-                              </p>
-                              <button
-                                type="button"
-                                onClick={handleCopyVa}
-                                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-800"
-                              >
-                                {copiedField === "va" ? (
-                                  <>
-                                    <Check className="size-4 text-green-400" />{" "}
-                                    {t("payment.modal.copiedBtn")}
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="size-4" /> {t("payment.modal.copyBtn")}
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-
                           <div className="rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-200">
                             <p className="flex items-start gap-2 text-sm font-black text-amber-900">
                               <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600" />
@@ -684,6 +658,35 @@ export const ArkivCheckoutModal = ({
                               {t("payment.modal.vaTransferGuide.tip")}
                             </p>
                           </div>
+
+                          <div className="rounded-2xl border-2 border-dashed border-accent/30 bg-accent/5 p-4">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              {t("payment.modal.vaLabel")}
+                            </p>
+                            <div className="mt-2 flex items-center gap-3">
+                              <p className="min-w-0 flex-1 break-all font-mono text-xl font-black tracking-wider text-slate-900 sm:text-2xl">
+                                {vaData.virtualAccountNo}
+                              </p>
+                              <button
+                                type="button"
+                                onClick={handleCopyVa}
+                                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-800"
+                              >
+                                {copiedField === "va" ? (
+                                  <>
+                                    <Check className="size-4 text-green-400" />{" "}
+                                    {t("payment.modal.copiedBtn")}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="size-4" /> {t("payment.modal.copyBtn")}
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+                          
                         </>
                       )}
                     </div>
@@ -737,14 +740,15 @@ export const ArkivCheckoutModal = ({
                       )}
                     </div>
                   </div>
-                  {orderSummary}
+                  <div className="hidden min-w-0 xl:block">{orderSummary}</div>
+                  </div>
                 </div>
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]"
+                  className="grid items-start gap-8 lg:grid-cols-[1.15fr_0.85fr]"
                 >
-                  <div className="space-y-7">
+                  <div className="min-w-0 space-y-7">
                     <section>
                       <h2 className="text-lg font-black tracking-tight text-slate-900">
                         {t("payment.checkout.contactHeading")}

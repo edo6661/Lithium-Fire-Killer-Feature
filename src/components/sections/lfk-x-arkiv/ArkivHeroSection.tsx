@@ -9,7 +9,7 @@ export const ArkivHeroSection = () => {
     <section className="relative flex min-h-[100vh] flex-col items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-[#1A80C1] via-[#5a9fd4] to-[#eaeff5]">
         <img src="/bg-hero-arkiv.jpeg" alt="" aria-hidden className="hidden h-full w-full object-cover md:block" />
-        <img src="/bg-hero-arkiv.jpeg" alt="" aria-hidden className="absolute inset-0 h-full w-full scale-125 object-cover object-[center_20%] opacity-50 blur-lg md:hidden" />
+        <img src="/bg-hero-arkiv.jpeg" alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover object-[center_20%] opacity-60 md:hidden" />
         {/* Overlay gradient — cukup kelihatan, foto tetap ada */}
         <div
           className="absolute inset-0 bg-gradient-to-b from-[#0d5a8c]/70 via-[#1A80C1]/45 to-[#0b3d5c]/75"
@@ -21,14 +21,14 @@ export const ArkivHeroSection = () => {
         />
       </div>
 
-      <div className="bg-noise pointer-events-none absolute inset-0 z-[1] opacity-[0.04] mix-blend-multiply" />
+      <div className="bg-noise pointer-events-none absolute inset-0 z-[1] hidden opacity-[0.04] mix-blend-multiply sm:block" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/70 px-5 py-2 text-xs font-bold uppercase tracking-widest text-[#1A80C1] backdrop-blur-md shadow-sm sm:mb-8"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/80 px-5 py-2 text-xs font-bold uppercase tracking-widest text-[#1A80C1] shadow-sm sm:mb-8 sm:bg-white/70 sm:backdrop-blur-md"
         >
           <Sparkles className="size-4 text-[#FFCFCF]" />
           {t("hero.badge")}
@@ -42,7 +42,7 @@ export const ArkivHeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.16, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="text-5xl font-black tracking-tighter text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.28),0_1px_3px_rgba(0,0,0,0.2)] sm:text-7xl lg:text-[6.5rem] leading-[1.05]"
+          className="break-words text-4xl font-black leading-[1.08] tracking-tight text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.28),0_1px_3px_rgba(0,0,0,0.2)] sm:text-7xl sm:tracking-tighter lg:text-[6.5rem] lg:leading-[1.05]"
         >
           <span>{t("hero.headlinePart1")}</span><br />
           <span>{t("hero.headlinePart2")}</span>
@@ -52,7 +52,7 @@ export const ArkivHeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.32, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mx-auto mt-8 max-w-2xl rounded-2xl bg-gradient-to-r from-[#FFCFCF]/50 to-[#1A80C1]/50 px-6 py-4 text-lg font-bold leading-relaxed text-white backdrop-blur-md sm:text-xl border border-white/10 mb-12"
+          className="mx-auto mb-12 mt-8 max-w-2xl rounded-2xl border border-white/10 bg-gradient-to-r from-[#FFCFCF]/55 to-[#1A80C1]/55 px-5 py-4 text-base font-bold leading-relaxed text-white sm:bg-gradient-to-r sm:px-6 sm:text-xl sm:backdrop-blur-md"
         >
           {t("hero.subheadline")}
         </motion.p>
