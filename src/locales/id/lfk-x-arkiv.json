@@ -197,6 +197,8 @@
         "intro": "Perhatikan bank asal saat melakukan pembayaran:",
         "flexibleTitle": "VA BRI, Permata & CIMB",
         "flexibleDesc": "Dapat dibayar dari BCA atau bank lain melalui menu Transfer Antar Bank. Masukkan nomor Virtual Account sebagai nomor tujuan.",
+        "bcaTitle": "Bayar dari BCA",
+        "bcaDesc": "Di aplikasi BCA, pilih Transfer ke bank lain / Antar Bank, lalu gunakan Real Time Online (bukan LLG/SKN). Masukkan nomor Virtual Account sebagai rekening tujuan.",
         "sameBankTitle": "VA Mandiri & BNI",
         "sameBankDesc": "Pembayaran harus dilakukan dari bank yang sesuai dengan VA.",
         "sameBankMandiri": "VA Mandiri → gunakan rekening Mandiri",

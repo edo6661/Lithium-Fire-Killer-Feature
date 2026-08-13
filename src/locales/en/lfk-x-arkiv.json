@@ -197,6 +197,8 @@
         "intro": "Check your source bank before paying:",
         "flexibleTitle": "VA BRI, Permata & CIMB",
         "flexibleDesc": "Can be paid from BCA or other banks via Interbank Transfer. Enter the Virtual Account number as the destination.",
+        "bcaTitle": "Paying from BCA",
+        "bcaDesc": "In the BCA app, choose Transfer to another bank / Interbank, then use Real Time Online (not LLG/SKN). Enter the Virtual Account number as the destination account.",
         "sameBankTitle": "VA Mandiri & BNI",
         "sameBankDesc": "Payment must be made from the bank that matches the VA.",
         "sameBankMandiri": "VA Mandiri → use a Mandiri account",

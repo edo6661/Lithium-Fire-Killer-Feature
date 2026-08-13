@@ -58,6 +58,7 @@ type StockInfo = {
   quantityInitial: number;
   quantityRemaining: number;
   sold: number;
+  held?: number;
   updatedAt: string;
 };
 
@@ -215,8 +216,10 @@ export const InternalOrdersPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [resetting, setResetting] = useState(false);
+  const [syncingStock, setSyncingStock] = useState(false);
   const [resettingQuota, setResettingQuota] = useState(false);
+  const [savingQuotaLimit, setSavingQuotaLimit] = useState(false);
+  const [quotaLimitInput, setQuotaLimitInput] = useState("10");
   const [simulatingId, setSimulatingId] = useState<string | null>(null);
   const [lastFetchedAt, setLastFetchedAt] = useState<string | null>(null);
   const [nowTick, setNowTick] = useState(() => Date.now());
@@ -317,6 +320,12 @@ export const InternalOrdersPage = () => {
   }, [key, queryOpts, fetchRows]);
 
   useEffect(() => {
+    if (dailyQuota?.limitPerDay) {
+      setQuotaLimitInput(String(dailyQuota.limitPerDay));
+    }
+  }, [dailyQuota?.limitPerDay]);
+
+  useEffect(() => {
     localStorage.setItem(AUTO_REFRESH_KEY, autoRefresh ? "1" : "0");
   }, [autoRefresh]);
 
@@ -404,22 +413,17 @@ export const InternalOrdersPage = () => {
     setKey(next);
   };
 
-  const resetStock = async () => {
+  const syncStockFromInvoices = async () => {
     if (!key) return;
-    const ok = window.confirm(
-      "Reset stok LFK × Arkiv ke 100 unit?\n\nPakai setelah selesai test supaya edisi terbatas kembali penuh.",
-    );
-    if (!ok) return;
-
-    setResetting(true);
+    setSyncingStock(true);
     setError(null);
     try {
       const res = await fetch(
-        `${API_BASE_URL}/api/internal/stock/reset?key=${encodeURIComponent(key)}`,
+        `${API_BASE_URL}/api/internal/stock/sync?key=${encodeURIComponent(key)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ key, quantity: 100 }),
+          body: JSON.stringify({ key }),
         },
       );
       const body = (await res.json()) as {
@@ -431,30 +435,30 @@ export const InternalOrdersPage = () => {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       setStock(body.stock);
-      setNotice("Stok di-reset ke 100.");
+      setNotice(body.message ?? "Stok disamakan dari invoice.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal reset stok");
+      setError(err instanceof Error ? err.message : "Gagal samakan stok");
     } finally {
-      setResetting(false);
+      setSyncingStock(false);
     }
   };
 
-  const resetDailyQuota = async () => {
+  const saveDailyQuotaLimit = async () => {
     if (!key) return;
-    const ok = window.confirm(
-      "Reset limit lunas hari ini ke 10?\n\nCounter PAID hari ini dikembalikan ke 0.",
-    );
-    if (!ok) return;
-
-    setResettingQuota(true);
+    const parsed = Number(quotaLimitInput);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 100) {
+      setError("Limit harian harus 1–100.");
+      return;
+    }
+    setSavingQuotaLimit(true);
     setError(null);
     try {
       const res = await fetch(
-        `${API_BASE_URL}/api/internal/quota/reset?key=${encodeURIComponent(key)}`,
+        `${API_BASE_URL}/api/internal/quota/limit?key=${encodeURIComponent(key)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ key, limitPerDay: 10 }),
+          body: JSON.stringify({ key, limitPerDay: Math.floor(parsed) }),
         },
       );
       const body = (await res.json()) as {
@@ -466,7 +470,44 @@ export const InternalOrdersPage = () => {
         throw new Error(body.message ?? `HTTP ${res.status}`);
       }
       setDailyQuota(body.dailyQuota);
-      setNotice(body.message ?? "Limit harian di-reset.");
+      setQuotaLimitInput(String(body.dailyQuota.limitPerDay));
+      setNotice(body.message ?? "Limit harian disimpan.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal simpan limit");
+    } finally {
+      setSavingQuotaLimit(false);
+    }
+  };
+
+  const resetDailyQuota = async () => {
+    if (!key) return;
+    const limit = dailyQuota?.limitPerDay ?? 10;
+    const ok = window.confirm(
+      `Kosongkan terpakai kuota hari ini?\n\nLimit tetap ${limit}/hari. Counter used kembali ke 0.`,
+    );
+    if (!ok) return;
+
+    setResettingQuota(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/internal/quota/reset?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ key, limitPerDay: limit }),
+        },
+      );
+      const body = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+        dailyQuota?: DailyQuotaInfo;
+      };
+      if (!res.ok || !body.success || !body.dailyQuota) {
+        throw new Error(body.message ?? `HTTP ${res.status}`);
+      }
+      setDailyQuota(body.dailyQuota);
+      setNotice(body.message ?? "Kuota hari ini di-reset.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal reset limit");
     } finally {
@@ -743,17 +784,23 @@ export const InternalOrdersPage = () => {
                           </span>
                         </p>
                         <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Terjual {stock.sold} · Update {formatWhen(stock.updatedAt)}
+                          Terjual {stock.sold} PAID
+                          {typeof stock.held === "number" ? ` · Hold ${stock.held}` : ""}
+                          {" · "}
+                          Update {formatWhen(stock.updatedAt)}
+                        </p>
+                        <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                          Sisa = edisi − PAID − hold. Tidak bisa diedit; tidak reset harian.
                         </p>
                       </div>
                       <button
                         type="button"
-                        disabled={resetting}
-                        onClick={() => void resetStock()}
+                        disabled={syncingStock}
+                        onClick={() => void syncStockFromInvoices()}
                         className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
                       >
-                        <RotateCcw className={`size-4 ${resetting ? "animate-spin" : ""}`} />
-                        {resetting ? "Resetting…" : "Reset ke 100"}
+                        <RefreshCw className={`size-4 ${syncingStock ? "animate-spin" : ""}`} />
+                        {syncingStock ? "Menyamakan…" : "Samakan dari invoice"}
                       </button>
                     </div>
                     <div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100">
@@ -795,19 +842,40 @@ export const InternalOrdersPage = () => {
                           </span>
                         </p>
                         <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Lunas {dailyQuota.usedCount} · Hari {dailyQuota.dayKey} (WIB)
+                          Terpakai {dailyQuota.usedCount} · Hari {dailyQuota.dayKey} (WIB)
                           {dailyQuota.exhausted ? " · penuh" : ""}
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        disabled={resettingQuota}
-                        onClick={() => void resetDailyQuota()}
-                        className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
-                      >
-                        <RotateCcw className={`size-4 ${resettingQuota ? "animate-spin" : ""}`} />
-                        {resettingQuota ? "Resetting…" : "Reset limit"}
-                      </button>
+                      <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min={1}
+                            max={100}
+                            value={quotaLimitInput}
+                            onChange={(e) => setQuotaLimitInput(e.target.value)}
+                            className="w-20 rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-amber-500"
+                            aria-label="Limit per hari"
+                          />
+                          <button
+                            type="button"
+                            disabled={savingQuotaLimit}
+                            onClick={() => void saveDailyQuotaLimit()}
+                            className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+                          >
+                            {savingQuotaLimit ? "Menyimpan…" : "Simpan limit"}
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={resettingQuota}
+                          onClick={() => void resetDailyQuota()}
+                          className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+                        >
+                          <RotateCcw className={`size-4 ${resettingQuota ? "animate-spin" : ""}`} />
+                          {resettingQuota ? "Resetting…" : "Reset terpakai hari ini"}
+                        </button>
+                      </div>
                     </div>
                     <div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100">
                       <motion.div
