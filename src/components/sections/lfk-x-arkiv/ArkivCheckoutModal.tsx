@@ -11,6 +11,7 @@ import {
   Copy,
   CreditCard,
   Loader2,
+  MapPin,
   PackageX,
   QrCode,
   RefreshCw,
@@ -60,6 +61,7 @@ interface ArkivCheckoutModalProps {
   onMarkFailed: () => void;
   onMarkDailyLimit: () => void;
   onMarkSoldOut: () => void;
+  onMarkOfflineOnly: () => void;
   onRetry: () => void;
   onPaymentComplete: () => void;
   isLoading: boolean;
@@ -80,6 +82,7 @@ export const ArkivCheckoutModal = ({
   onMarkFailed,
   onMarkDailyLimit,
   onMarkSoldOut,
+  onMarkOfflineOnly,
   onRetry,
   onPaymentComplete,
   isLoading,
@@ -124,6 +127,7 @@ export const ArkivCheckoutModal = ({
     onFailed: onMarkFailed,
     onDailyLimit: onMarkDailyLimit,
     onSoldOut: onMarkSoldOut,
+    onOfflineOnly: onMarkOfflineOnly,
   });
 
   const countdown = usePaymentCountdown(
@@ -135,7 +139,9 @@ export const ArkivCheckoutModal = ({
   const showFailed = step === "failed";
   const showDailyLimit = step === "daily_limit";
   const showSoldOut = step === "sold_out";
-  const showTerminalBlock = showExpired || showFailed || showDailyLimit || showSoldOut;
+  const showOfflineOnly = step === "offline_only";
+  const showTerminalBlock =
+    showExpired || showFailed || showDailyLimit || showSoldOut || showOfflineOnly;
   const countdownUrgent =
     countdown.remainingMs != null &&
     countdown.remainingMs > 0 &&
@@ -375,21 +381,25 @@ export const ArkivCheckoutModal = ({
                     {t("payment.modal.finishBtn")}
                   </Button>
                 </div>
-              ) : showTerminalBlock && (vaData || showDailyLimit || showSoldOut) ? (
+              ) : showTerminalBlock && (vaData || showDailyLimit || showSoldOut || showOfflineOnly) ? (
                 <div className="mx-auto flex max-w-md flex-col items-center py-8 text-center">
                   <div
                     className={`mb-6 flex size-20 items-center justify-center rounded-full ring-8 ${
                       showDailyLimit
                         ? "bg-sky-100 ring-sky-50"
-                        : showSoldOut
-                          ? "bg-slate-100 ring-slate-50"
-                          : showExpired
-                            ? "bg-amber-100 ring-amber-50"
-                            : "bg-red-100 ring-red-50"
+                        : showOfflineOnly
+                          ? "bg-accent/10 ring-accent/20"
+                          : showSoldOut
+                            ? "bg-slate-100 ring-slate-50"
+                            : showExpired
+                              ? "bg-amber-100 ring-amber-50"
+                              : "bg-red-100 ring-red-50"
                     }`}
                   >
                     {showDailyLimit ? (
                       <CalendarClock className="size-10 text-sky-700" />
+                    ) : showOfflineOnly ? (
+                      <MapPin className="size-10 text-accent" />
                     ) : showSoldOut ? (
                       <PackageX className="size-10 text-slate-700" />
                     ) : showExpired ? (
@@ -401,26 +411,32 @@ export const ArkivCheckoutModal = ({
                   <h2 className="text-2xl font-black tracking-tight text-slate-900">
                     {showDailyLimit
                       ? t("payment.modal.dailyLimitHeading")
-                      : showSoldOut
-                        ? t("payment.modal.soldOutHeading")
-                        : showExpired
-                          ? t("payment.modal.expiredHeading")
-                          : t("payment.modal.failedHeading")}
+                      : showOfflineOnly
+                        ? t("payment.modal.offlineOnlyHeading")
+                        : showSoldOut
+                          ? t("payment.modal.soldOutHeading")
+                          : showExpired
+                            ? t("payment.modal.expiredHeading")
+                            : t("payment.modal.failedHeading")}
                   </h2>
                   <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600">
                     {showDailyLimit
                       ? t("payment.modal.dailyLimitDesc")
-                      : showSoldOut
-                        ? t("payment.modal.soldOutDesc")
-                        : showExpired
-                          ? t("payment.modal.expiredDesc")
-                          : t("payment.modal.failedDesc")}
+                      : showOfflineOnly
+                        ? t("payment.modal.offlineOnlyDesc")
+                        : showSoldOut
+                          ? t("payment.modal.soldOutDesc")
+                          : showExpired
+                            ? t("payment.modal.expiredDesc")
+                            : t("payment.modal.failedDesc")}
                   </p>
-                  {showDailyLimit || showSoldOut ? (
+                  {showDailyLimit || showSoldOut || showOfflineOnly ? (
                     <p className="mt-4 max-w-sm rounded-2xl bg-slate-50 px-4 py-3 text-left text-xs font-medium leading-relaxed text-slate-600 ring-1 ring-slate-100">
                       {showDailyLimit
                         ? t("payment.modal.dailyLimitTip")
-                        : t("payment.modal.soldOutTip")}
+                        : showOfflineOnly
+                          ? t("payment.modal.offlineOnlyTip")
+                          : t("payment.modal.soldOutTip")}
                     </p>
                   ) : null}
                   {vaData ? (
@@ -429,7 +445,7 @@ export const ArkivCheckoutModal = ({
                     </p>
                   ) : null}
                   <div className="mt-8 flex w-full flex-col gap-3">
-                    {showDailyLimit || showSoldOut ? null : (
+                    {showDailyLimit || showSoldOut || showOfflineOnly ? null : (
                       <Button
                         type="button"
                         className="w-full bg-slate-900 py-4 text-white hover:bg-slate-800"
@@ -442,16 +458,18 @@ export const ArkivCheckoutModal = ({
                       type="button"
                       onClick={onClose}
                       className={`w-full rounded-full py-3 text-sm font-bold transition ${
-                        showDailyLimit || showSoldOut
+                        showDailyLimit || showSoldOut || showOfflineOnly
                           ? "bg-slate-900 py-4 text-white hover:bg-slate-800"
                           : "text-slate-500 hover:text-slate-800"
                       }`}
                     >
                       {showDailyLimit
                         ? t("payment.modal.dailyLimitCloseBtn")
-                        : showSoldOut
-                          ? t("payment.modal.soldOutCloseBtn")
-                          : t("payment.modal.closeFailBtn")}
+                        : showOfflineOnly
+                          ? t("payment.modal.offlineOnlyCloseBtn")
+                          : showSoldOut
+                            ? t("payment.modal.soldOutCloseBtn")
+                            : t("payment.modal.closeFailBtn")}
                     </button>
                   </div>
                 </div>

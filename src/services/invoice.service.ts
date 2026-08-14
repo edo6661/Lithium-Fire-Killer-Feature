@@ -14,7 +14,6 @@ import type {
 } from "../types/invoice";
 import {
   ARKIV_WEB_STOCK_CUTOFF_DATE,
-  isArkivWebSoldOut,
   type ArkivWebPurchaseState,
 } from "../utils/stock-cutoff";
 
@@ -48,6 +47,9 @@ function resolveErrorMessage(
 ): string {
   if (body.code === "SOLD_OUT") {
     return "Stok edisi terbatas sudah habis. Pembelian tidak bisa dilanjutkan.";
+  }
+  if (body.code === "OFFLINE_ONLY") {
+    return "Penjualan via website telah ditutup. Silakan lakukan pembelian secara offline di pameran Galeri ZEN1.";
   }
   if (body.code === "DAILY_LIMIT") {
     return "Kuota pembayaran hari ini sudah penuh. Silakan coba lagi besok.";
@@ -212,9 +214,7 @@ export async function syncInvoicePaymentStatus(
 }
 
 /** Persist EXPIRED ke DB jika deadline sudah lewat (tanpa YUKK). */
-export async function expireInvoiceIfDue(
-  orderId: string,
-): Promise<{
+export async function expireInvoiceIfDue(orderId: string): Promise<{
   orderId: string;
   previousStatus: InvoiceVaStatus;
   newStatus: InvoiceVaStatus;

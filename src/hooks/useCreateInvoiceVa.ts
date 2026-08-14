@@ -49,6 +49,7 @@ export interface UseCreateInvoiceVaResult {
   markPaymentFailed: () => void;
   markPaymentDailyLimit: () => void;
   markPaymentSoldOut: () => void;
+  markPaymentOfflineOnly: () => void;
   retryCheckout: () => void;
   handlePaymentComplete: () => void;
   closeCheckout: () => void;
@@ -123,7 +124,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     setIsCheckoutOpen(false);
     setError(null);
     setCheckoutStep((current) => {
-      if (current === "daily_limit" || current === "sold_out") {
+      if (current === "daily_limit" || current === "sold_out" || current === "offline_only") {
         clearArkivPendingPayment();
         setVaData(null);
         return "form";
@@ -155,6 +156,11 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
   const markPaymentSoldOut = useCallback(() => {
     setVaData((prev) => (prev ? { ...prev, status: "FAILED" } : prev));
     setCheckoutStep("sold_out");
+  }, []);
+
+  const markPaymentOfflineOnly = useCallback(() => {
+    setVaData((prev) => (prev ? { ...prev, status: "FAILED" } : prev));
+    setCheckoutStep("offline_only");
   }, []);
 
   const retryCheckout = useCallback(() => {
@@ -201,6 +207,11 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
       } catch (err) {
         if (err instanceof InvoiceApiError && err.code === "SOLD_OUT") {
           setCheckoutStep("sold_out");
+          setToast({ message: err.message, variant: "error" });
+          return;
+        }
+        if (err instanceof InvoiceApiError && err.code === "OFFLINE_ONLY") {
+          setCheckoutStep("offline_only");
           setToast({ message: err.message, variant: "error" });
           return;
         }
@@ -251,6 +262,11 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
           setToast({ message: err.message, variant: "error" });
           return;
         }
+        if (err instanceof InvoiceApiError && err.code === "OFFLINE_ONLY") {
+          setCheckoutStep("offline_only");
+          setToast({ message: err.message, variant: "error" });
+          return;
+        }
         if (err instanceof InvoiceApiError && err.code === "DAILY_LIMIT") {
           setCheckoutStep("daily_limit");
           setToast({ message: err.message, variant: "error" });
@@ -294,6 +310,7 @@ export function useCreateInvoiceVa(): UseCreateInvoiceVaResult {
     markPaymentFailed,
     markPaymentDailyLimit,
     markPaymentSoldOut,
+    markPaymentOfflineOnly,
     retryCheckout,
     handlePaymentComplete,
     closeCheckout,

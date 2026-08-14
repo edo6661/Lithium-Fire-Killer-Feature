@@ -137,6 +137,7 @@
       "statusFailed": "Pembayaran gagal",
       "statusDailyLimit": "Kuota hari ini penuh",
       "statusSoldOut": "Stok edisi habis",
+      "statusOfflineOnly": "Beli di Galeri ZEN1",
       "channelQris": "QRIS",
       "channelVa": "Virtual Account",
       "timeLeft": "Sisa",
@@ -237,6 +238,10 @@
       "soldOutDesc": "Unit LFK × Arkiv sudah terjual habis. Pembayaran untuk tagihan ini tidak bisa dilanjutkan.",
       "soldOutTip": "Jangan transfer ke nomor VA/QR ini. Terima kasih sudah berminat.",
       "soldOutCloseBtn": "Tutup",
+      "offlineOnlyHeading": "Pembelian Web Resmi Ditutup",
+      "offlineOnlyDesc": "Pembelian secara online via website telah ditutup. Stok edisi terbatas LFK × Arkiv — SARU Edition masih tersedia dan dapat dibeli secara langsung (offline) di pameran Galeri ZEN1.",
+      "offlineOnlyTip": "Jangan transfer ke nomor VA/QR ini. Silakan lakukan pembelian secara offline di pameran Galeri ZEN1.",
+      "offlineOnlyCloseBtn": "Mengerti",
       "retryBtn": "Coba lagi",
       "closeFailBtn": "Tutup"
     }

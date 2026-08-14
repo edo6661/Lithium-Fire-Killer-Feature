@@ -24,6 +24,8 @@ function stepTone(step: CheckoutStep): string {
       return "bg-amber-500 shadow-[0_6px_24px_rgba(245,158,11,0.45)]";
     case "daily_limit":
       return "bg-sky-600 shadow-[0_6px_24px_rgba(2,132,199,0.45)]";
+    case "offline_only":
+      return "bg-accent shadow-[0_6px_24px_rgba(56,152,212,0.45)]";
     case "sold_out":
     case "failed":
       return "bg-red-500 shadow-[0_6px_24px_rgba(239,68,68,0.45)]";
@@ -56,9 +58,11 @@ export const ArkivPendingPaymentChip = ({
           ? t("payment.pendingChip.statusExpired")
           : step === "daily_limit"
             ? t("payment.pendingChip.statusDailyLimit")
-            : step === "sold_out"
-              ? t("payment.pendingChip.statusSoldOut")
-              : t("payment.pendingChip.statusFailed");
+            : step === "offline_only"
+              ? t("payment.pendingChip.statusOfflineOnly")
+              : step === "sold_out"
+                ? t("payment.pendingChip.statusSoldOut")
+                : t("payment.pendingChip.statusFailed");
 
   return createPortal(
     <AnimatePresence>

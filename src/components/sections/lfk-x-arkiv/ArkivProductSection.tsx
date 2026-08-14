@@ -52,9 +52,8 @@ export const ArkivProductSection = ({
             <div className="mt-8 flex flex-col items-start gap-3">
               <Button
                 type="button"
-                disabled={isSoldOut}
                 onClick={onCheckout}
-                className="bg-slate-900 px-8 py-4 text-white hover:bg-slate-800 disabled:opacity-50"
+                className="bg-slate-900 px-8 py-4 text-white hover:bg-slate-800"
               >
                 {buttonLabel}
               </Button>

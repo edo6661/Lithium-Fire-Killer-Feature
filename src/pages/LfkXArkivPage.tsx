@@ -45,6 +45,7 @@ export const LfkXArkivPage = () => {
     markPaymentFailed,
     markPaymentDailyLimit,
     markPaymentSoldOut,
+    markPaymentOfflineOnly,
     retryCheckout,
     handlePaymentComplete,
     closeCheckout,
@@ -169,6 +170,7 @@ export const LfkXArkivPage = () => {
         onMarkFailed={markPaymentFailed}
         onMarkDailyLimit={onMarkDailyLimit}
         onMarkSoldOut={onMarkSoldOut}
+        onMarkOfflineOnly={markPaymentOfflineOnly}
         onRetry={retryCheckout}
         onPaymentComplete={onPaymentComplete}
         isLoading={isLoading}

@@ -137,6 +137,7 @@
       "statusFailed": "Payment failed",
       "statusDailyLimit": "Today's quota is full",
       "statusSoldOut": "Edition sold out",
+      "statusOfflineOnly": "Buy at Galeri ZEN1",
       "channelQris": "QRIS",
       "channelVa": "Virtual Account",
       "timeLeft": "Left",
@@ -237,6 +238,10 @@
       "soldOutDesc": "All LFK × Arkiv units are gone. This invoice can no longer be paid.",
       "soldOutTip": "Please don't transfer to this VA/QR. Thank you for your interest.",
       "soldOutCloseBtn": "Close",
+      "offlineOnlyHeading": "Official Web Sales Closed",
+      "offlineOnlyDesc": "Online web purchases have closed. LFK × Arkiv — SARU Edition limited stock is still available for direct offline purchase at Galeri ZEN1 exhibition.",
+      "offlineOnlyTip": "Do not transfer to this VA/QR. Please visit the Galeri ZEN1 exhibition to make a purchase.",
+      "offlineOnlyCloseBtn": "Got it",
       "retryBtn": "Try again",
       "closeFailBtn": "Close"
     }

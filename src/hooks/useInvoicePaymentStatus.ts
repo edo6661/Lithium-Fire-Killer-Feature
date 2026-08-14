@@ -34,6 +34,7 @@ export interface UseInvoicePaymentStatusOptions {
   onFailed?: () => void;
   onDailyLimit?: () => void;
   onSoldOut?: () => void;
+  onOfflineOnly?: () => void;
 }
 
 export interface UseInvoicePaymentStatusResult {
@@ -56,6 +57,7 @@ export function useInvoicePaymentStatus({
   onFailed,
   onDailyLimit,
   onSoldOut,
+  onOfflineOnly,
 }: UseInvoicePaymentStatusOptions): UseInvoicePaymentStatusResult {
   const [status, setStatus] = useState<InvoiceVaStatus | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -65,6 +67,7 @@ export function useInvoicePaymentStatus({
   const onFailedRef = useRef(onFailed);
   const onDailyLimitRef = useRef(onDailyLimit);
   const onSoldOutRef = useRef(onSoldOut);
+  const onOfflineOnlyRef = useRef(onOfflineOnly);
   const localExpiredFiredRef = useRef(false);
   const softTerminalSinceRef = useRef<number | null>(null);
   const [, setGraceTick] = useState(0);
@@ -89,6 +92,10 @@ export function useInvoicePaymentStatus({
     onSoldOutRef.current = onSoldOut;
   }, [onSoldOut]);
 
+  useEffect(() => {
+    onOfflineOnlyRef.current = onOfflineOnly;
+  }, [onOfflineOnly]);
+
   const isPaid = status === "PAID";
   const isExpired = status === "EXPIRED";
   const isFailed = status === "FAILED";
@@ -97,13 +104,18 @@ export function useInvoicePaymentStatus({
   const applyStatus = useCallback(
     (
       next: InvoiceVaStatus,
-      blockReason?: "SOLD_OUT" | "DAILY_LIMIT" | null,
+      blockReason?: "SOLD_OUT" | "DAILY_LIMIT" | "OFFLINE_ONLY" | null,
     ) => {
       setStatus(next);
       // Late-PAID ditolak: BE bisa kirim EXPIRED + blockReason — prioritaskan alasan bisnis.
       if (blockReason === "SOLD_OUT") {
         softTerminalSinceRef.current = null;
         onSoldOutRef.current?.();
+        return;
+      }
+      if (blockReason === "OFFLINE_ONLY") {
+        softTerminalSinceRef.current = null;
+        onOfflineOnlyRef.current?.();
         return;
       }
       if (blockReason === "DAILY_LIMIT") {
@@ -190,7 +202,13 @@ export function useInvoicePaymentStatus({
 
   /** Saat deadline lewat: sync → expire → sync lagi (tangkap late PAID). */
   useEffect(() => {
-    if (!enabled || !orderId || !expiredDate || isTerminal || localExpiredFiredRef.current) {
+    if (
+      !enabled ||
+      !orderId ||
+      !expiredDate ||
+      isTerminal ||
+      localExpiredFiredRef.current
+    ) {
       return;
     }
 

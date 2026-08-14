@@ -9,7 +9,8 @@ export type ArkivCheckoutStep =
   | "expired"
   | "failed"
   | "daily_limit"
-  | "sold_out";
+  | "sold_out"
+  | "offline_only";
 
 export type ArkivPendingPaymentSession = {
   vaData: InvoiceVaData;
@@ -59,6 +60,7 @@ export function isResumableCheckoutStep(step: ArkivCheckoutStep): boolean {
     step === "expired" ||
     step === "failed" ||
     step === "daily_limit" ||
-    step === "sold_out"
+    step === "sold_out" ||
+    step === "offline_only"
   );
 }

@@ -96,12 +96,11 @@ export const ArkivBuyCtaSection = ({
 
               <button
                 type="button"
-                disabled={isSoldOut}
                 onClick={onCheckout}
-                className="mt-8 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent px-7 py-5 text-base font-black tracking-wide text-white shadow-[0_8px_28px_rgba(56,152,212,0.45)] transition hover:bg-[#2d85bf] hover:shadow-[0_10px_32px_rgba(56,152,212,0.55)] disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/50 disabled:shadow-none sm:text-lg"
+                className="mt-8 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent px-7 py-5 text-base font-black tracking-wide text-white shadow-[0_8px_28px_rgba(56,152,212,0.45)] transition hover:bg-[#2d85bf] hover:shadow-[0_10px_32px_rgba(56,152,212,0.55)] sm:text-lg"
               >
                 {buttonLabel}
-                {!isSoldOut ? <ArrowRight className="size-5" /> : null}
+                <ArrowRight className="size-5" />
               </button>
 
               <p className="mt-4 text-center text-[11px] font-bold uppercase tracking-wider text-white/45">
