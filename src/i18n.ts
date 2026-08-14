@@ -11,8 +11,10 @@ import lfsID from "./locales/id/lithium-fire-safety.json";
 import lfsEN from "./locales/en/lithium-fire-safety.json";
 import contactID from "./locales/id/contact.json";
 import contactEN from "./locales/en/contact.json";
-import arkivID from "./locales/id/lfk-x-arkiv.json"; // <-- Tambahkan ini
-import arkivEN from "./locales/en/lfk-x-arkiv.json"; // <-- Tambahkan ini
+import arkivID from "./locales/id/lfk-x-arkiv.json";
+import arkivEN from "./locales/en/lfk-x-arkiv.json";
+import notFoundID from "./locales/id/not-found.json";
+import notFoundEN from "./locales/en/not-found.json";
 
 const savedLanguage = localStorage.getItem("app-language") || "id";
 
@@ -23,7 +25,8 @@ const resources = {
     about: aboutID,
     "lithium-fire-safety": lfsID,
     contact: contactID,
-    "lfk-x-arkiv": arkivID, // <-- Tambahkan ini
+    "lfk-x-arkiv": arkivID,
+    "not-found": notFoundID,
   },
   en: {
     global: globalEN,
@@ -31,7 +34,8 @@ const resources = {
     about: aboutEN,
     "lithium-fire-safety": lfsEN,
     contact: contactEN,
-    "lfk-x-arkiv": arkivEN, // <-- Tambahkan ini
+    "lfk-x-arkiv": arkivEN,
+    "not-found": notFoundEN,
   },
 };
 
@@ -39,7 +43,7 @@ i18n.use(initReactI18next).init({
   resources,
   lng: savedLanguage,
   fallbackLng: "id",
-  ns: ["global", "home", "about", "lithium-fire-safety", "contact", "lfk-x-arkiv"], // <-- Tambahkan ini
+  ns: ["global", "home", "about", "lithium-fire-safety", "contact", "lfk-x-arkiv", "not-found"],
   defaultNS: "global",
   interpolation: { escapeValue: false },
 });

@@ -6,6 +6,7 @@ import { ContactPage } from "../pages/ContactPage";
 import { LithiumFireSafetyPage } from "../pages/LithiumFireSafetyPage";
 import { LfkXArkivPage } from "../pages/LfkXArkivPage";
 import { InternalOrdersPage } from "../pages/InternalOrdersPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
 
 export const AppRoutes = () => {
   return (
@@ -29,6 +30,9 @@ export const AppRoutes = () => {
           path="kontak"
           element={<Navigate to="/contact" replace />}
         />
+
+        {/* Catch-all 404 route */}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

@@ -1,0 +1,32 @@
+{
+  "seo": {
+    "title": "404 — Halaman Tidak Ditemukan | FAST Lithium Fire Killer",
+    "description": "Halaman yang Anda cari tidak dapat ditemukan. Kembali ke beranda Lithium Fire Killer FAST untuk mendapatkan informasi proteksi kebakaran lithium terbaik."
+  },
+  "badge": "ERROR 404 • SIGNAL LOST",
+  "title": "Halaman Tidak Ditemukan",
+  "subtitle": "Halaman yang Anda cari mungkin telah dipindahkan, dihapus, atau alamat URL yang dimasukkan kurang tepat. Sistem proteksi Lithium Fire Killer siap mengarahkan Anda kembali.",
+  "quickLinksHeading": "Pintasan Solusi Proteksi",
+  "links": {
+    "home": {
+      "title": "Beranda Utama",
+      "description": "Kembali ke pusat informasi utama FAST & APAR Hartindo AF31."
+    },
+    "arkiv": {
+      "title": "LFK × Arkiv Limited",
+      "description": "Edisi kolektor kolaborasi eksklusif seni avant-garde & fire safety."
+    },
+    "safety": {
+      "title": "Lithium Fire Safety",
+      "description": "Pelajari bahaya Thermal Runaway & solusi proteksi menyeluruh."
+    },
+    "contact": {
+      "title": "Hubungi Tim FAST",
+      "description": "Konsultasi langsung dengan spesialis proteksi kebakaran kami."
+    }
+  },
+  "actions": {
+    "backHome": "Kembali ke Beranda",
+    "goBack": "Halaman Sebelumnya"
+  }
+}

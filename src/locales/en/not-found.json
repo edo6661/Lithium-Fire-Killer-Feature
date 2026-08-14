@@ -1,0 +1,32 @@
+{
+  "seo": {
+    "title": "404 — Page Not Found | FAST Lithium Fire Killer",
+    "description": "The page you are looking for could not be found. Return to the Lithium Fire Killer FAST homepage for industry-leading lithium fire protection solutions."
+  },
+  "badge": "ERROR 404 • SIGNAL LOST",
+  "title": "Page Not Found",
+  "subtitle": "The page you are searching for might have been moved, deleted, or the URL address is invalid. Our Lithium Fire Protection System is ready to guide you back.",
+  "quickLinksHeading": "Protection Solution Shortcuts",
+  "links": {
+    "home": {
+      "title": "Main Homepage",
+      "description": "Return to FAST main portal & Hartindo AF31 overview."
+    },
+    "arkiv": {
+      "title": "LFK × Arkiv Limited",
+      "description": "Exclusive collector's edition colliding avant-garde art with fire safety."
+    },
+    "safety": {
+      "title": "Lithium Fire Safety",
+      "description": "Learn about Thermal Runaway hazards and comprehensive protection."
+    },
+    "contact": {
+      "title": "Contact FAST Team",
+      "description": "Consult directly with our fire protection specialists."
+    }
+  },
+  "actions": {
+    "backHome": "Back to Homepage",
+    "goBack": "Go Back"
+  }
+}

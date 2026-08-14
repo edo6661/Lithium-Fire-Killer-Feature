@@ -47,4 +47,10 @@ export const PAGE_SEO = {
     description:
       "Lithium Fire Killer × Arkiv: A limited-edition collision of avant-garde art and revolutionary fire safety.",
   },
+  notFound: {
+    path: "/404",
+    title: `404 — Halaman Tidak Ditemukan | ${SITE.shortName}`,
+    description:
+      "Halaman yang Anda cari tidak ditemukan. Kembali ke beranda Lithium Fire Killer FAST.",
+  },
 } as const;
