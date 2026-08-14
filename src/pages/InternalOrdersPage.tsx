@@ -13,6 +13,7 @@ import {
   FlaskConical,
   Gauge,
   KeyRound,
+  Loader2,
   LogOut,
   Minus,
   Package,
@@ -21,7 +22,9 @@ import {
   RotateCcw,
   Search,
   Shield,
+  ShoppingBag,
   Wallet,
+  X,
 } from "lucide-react";
 import {
   Area,
@@ -76,7 +79,7 @@ type DailyQuotaInfo = {
 };
 
 type StatusFilter = "ALL" | "PAID" | "PENDING" | "EXPIRED" | "FAILED";
-type ChannelFilter = "ALL" | "QRIS" | "VA";
+type ChannelFilter = "ALL" | "QRIS" | "VA" | "MANUAL" | "EDC" | "RESELLER";
 type SortBy = "createdAt" | "paidAt" | "grandTotal" | "status" | "orderId";
 type SortDir = "asc" | "desc";
 
@@ -186,9 +189,8 @@ function Copyable({
       type="button"
       title="Salin"
       onClick={() => void onCopy()}
-      className={`group inline-flex max-w-full items-center gap-1.5 rounded-md text-left transition hover:text-[#1A80C1] ${
-        mono ? "font-mono" : ""
-      } ${className ?? ""}`}
+      className={`group inline-flex max-w-full items-center gap-1.5 rounded-md text-left transition hover:text-[#1A80C1] ${mono ? "font-mono" : ""
+        } ${className ?? ""}`}
     >
       <span className="truncate">{value}</span>
       {copied ? (
@@ -234,6 +236,16 @@ export const InternalOrdersPage = () => {
   const [devTools, setDevTools] = useState(
     () => localStorage.getItem(DEV_TOOLS_KEY) === "1",
   );
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [manualOrderId, setManualOrderId] = useState("");
+  const [manualCustomerName, setManualCustomerName] = useState("");
+  const [manualCustomerEmail, setManualCustomerEmail] = useState("");
+  const [manualCustomerPhone, setManualCustomerPhone] = useState("");
+  const [manualCustomerAddress, setManualCustomerAddress] = useState("");
+  const [manualGrandTotal, setManualGrandTotal] = useState("11.900.000");
+  const [manualChannel, setManualChannel] = useState<"EDC" | "RESELLER">("EDC");
+  const [creatingManual, setCreatingManual] = useState(false);
+  const [manualError, setManualError] = useState<string | null>(null);
 
   const fetchRows = useCallback(
     async (
@@ -629,6 +641,69 @@ export const InternalOrdersPage = () => {
     }
   };
 
+  const handleCreateManualSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!key) return;
+    setCreatingManual(true);
+    setManualError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/internal/invoices/manual?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            key,
+            orderId: manualOrderId.trim(),
+            customerName: manualCustomerName.trim(),
+            customerEmail: manualCustomerEmail.trim(),
+            customerPhone: manualCustomerPhone.trim(),
+            customerAddress: manualCustomerAddress.trim(),
+            paymentChannelCode: manualChannel,
+            grandTotal: Number(manualGrandTotal.replace(/\D/g, "")) || 11900000,
+          }),
+        },
+      );
+      const body = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+        stock?: StockInfo;
+      };
+      if (!res.ok || !body.success) {
+        throw new Error(body.message ?? `HTTP ${res.status}`);
+      }
+      setNotice(body.message ?? "Invoice manual berhasil dibuat!");
+      if (body.stock) setStock(body.stock);
+      setShowCreateModal(false);
+      setManualOrderId("");
+      setManualCustomerName("");
+      setManualCustomerEmail("");
+      setManualCustomerPhone("");
+      setManualCustomerAddress("");
+      setManualGrandTotal("11.900.000");
+      setManualChannel("EDC");
+      await fetchRows(key, queryOpts);
+    } catch (err) {
+      setManualError(err instanceof Error ? err.message : "Gagal membuat invoice manual");
+    } finally {
+      setCreatingManual(false);
+    }
+  };
+
+  const openManualModal = () => {
+    const dateStr = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    setManualOrderId(`MAN-${dateStr}-${randomSuffix}`);
+    setManualCustomerName("");
+    setManualCustomerEmail("");
+    setManualCustomerPhone("");
+    setManualCustomerAddress("");
+    setManualGrandTotal("11.900.000");
+    setManualChannel("EDC");
+    setManualError(null);
+    setShowCreateModal(true);
+  };
+
   const logout = () => {
     localStorage.removeItem(STORAGE_KEY);
     setKey("");
@@ -681,12 +756,19 @@ export const InternalOrdersPage = () => {
               ) : null}
               <button
                 type="button"
+                onClick={openManualModal}
+                className="inline-flex items-center gap-2 rounded-full bg-[#1A80C1] px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-[#1A80C1]/20 transition hover:bg-[#1672ad]"
+              >
+                <Plus className="size-4" />
+                Input Order Manual
+              </button>
+              <button
+                type="button"
                 onClick={() => setAutoRefresh((v) => !v)}
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition ${
-                  autoRefresh
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition ${autoRefresh
                     ? "bg-[#1A80C1] text-white shadow-sm"
                     : "border border-white/70 bg-white/80 text-slate-700 shadow-sm backdrop-blur hover:bg-white"
-                }`}
+                  }`}
               >
                 <RefreshCw className={`size-4 ${autoRefresh ? "animate-spin" : ""}`} />
                 Auto
@@ -963,11 +1045,10 @@ export const InternalOrdersPage = () => {
                         initial={{ width: 0 }}
                         animate={{ width: `${stockPct}%` }}
                         transition={{ duration: 0.7, ease: "easeOut" }}
-                        className={`h-full rounded-full ${
-                          stockPct <= 10
+                        className={`h-full rounded-full ${stockPct <= 10
                             ? "bg-gradient-to-r from-red-500 to-orange-400"
                             : "bg-gradient-to-r from-[#1A80C1] to-[#5eb3e8]"
-                        }`}
+                          }`}
                       />
                     </div>
                     <p className="mt-2 text-right text-xs font-bold text-slate-500">
@@ -1037,11 +1118,10 @@ export const InternalOrdersPage = () => {
                         initial={{ width: 0 }}
                         animate={{ width: `${quotaPct}%` }}
                         transition={{ duration: 0.7, ease: "easeOut" }}
-                        className={`h-full rounded-full ${
-                          quotaPct <= 20
+                        className={`h-full rounded-full ${quotaPct <= 20
                             ? "bg-gradient-to-r from-red-500 to-orange-400"
                             : "bg-gradient-to-r from-amber-500 to-amber-300"
-                        }`}
+                          }`}
                       />
                     </div>
                     <p className="mt-2 text-right text-xs font-bold text-slate-500">
@@ -1056,101 +1136,101 @@ export const InternalOrdersPage = () => {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur">
-                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
-                      Status mix
-                    </p>
-                    <div className="mt-2 h-44">
-                      {pieData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={pieData}
-                              dataKey="value"
-                              nameKey="name"
-                              innerRadius={48}
-                              outerRadius={72}
-                              paddingAngle={3}
-                            >
-                              {pieData.map((entry) => (
-                                <Cell key={entry.name} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip
-                              formatter={(value) => [`${value as number} invoice`, ""]}
-                              contentStyle={{
-                                borderRadius: 12,
-                                border: "1px solid #e2e8f0",
-                                fontSize: 12,
-                                fontWeight: 700,
-                              }}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">
-                          Belum ada data
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-3 text-[11px] font-bold">
-                      {pieData.map((d) => (
-                        <span key={d.name} className="inline-flex items-center gap-1.5 text-slate-600">
-                          <span
-                            className="size-2.5 rounded-full"
-                            style={{ backgroundColor: d.color }}
+                <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                    Status mix
+                  </p>
+                  <div className="mt-2 h-44">
+                    {pieData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={pieData}
+                            dataKey="value"
+                            nameKey="name"
+                            innerRadius={48}
+                            outerRadius={72}
+                            paddingAngle={3}
+                          >
+                            {pieData.map((entry) => (
+                              <Cell key={entry.name} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(value) => [`${value as number} invoice`, ""]}
+                            contentStyle={{
+                              borderRadius: 12,
+                              border: "1px solid #e2e8f0",
+                              fontSize: 12,
+                              fontWeight: 700,
+                            }}
                           />
-                          {d.name} {d.value}
-                        </span>
-                      ))}
-                    </div>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">
+                        Belum ada data
+                      </div>
+                    )}
                   </div>
+                  <div className="mt-1 flex flex-wrap gap-3 text-[11px] font-bold">
+                    {pieData.map((d) => (
+                      <span key={d.name} className="inline-flex items-center gap-1.5 text-slate-600">
+                        <span
+                          className="size-2.5 rounded-full"
+                          style={{ backgroundColor: d.color }}
+                        />
+                        {d.name} {d.value}
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
-                  <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur">
-                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
-                      Tren order
-                    </p>
-                    <div className="mt-2 h-44">
-                      {trendData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={trendData}>
-                            <defs>
-                              <linearGradient id="orderFill" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor={ACCENT} stopOpacity={0.35} />
-                                <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
-                              </linearGradient>
-                            </defs>
-                            <XAxis
-                              dataKey="day"
-                              tick={{ fontSize: 10, fill: "#94a3b8" }}
-                              axisLine={false}
-                              tickLine={false}
-                            />
-                            <YAxis hide />
-                            <Tooltip
-                              contentStyle={{
-                                borderRadius: 12,
-                                border: "1px solid #e2e8f0",
-                                fontSize: 12,
-                                fontWeight: 700,
-                              }}
-                            />
-                            <Area
-                              type="monotone"
-                              dataKey="count"
-                              stroke={ACCENT}
-                              fill="url(#orderFill)"
-                              strokeWidth={2.5}
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">
-                          Belum ada data
-                        </div>
-                      )}
-                    </div>
+                <div className="rounded-[1.75rem] border border-white/80 bg-white/85 p-5 shadow-sm backdrop-blur">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                    Tren order
+                  </p>
+                  <div className="mt-2 h-44">
+                    {trendData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={trendData}>
+                          <defs>
+                            <linearGradient id="orderFill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor={ACCENT} stopOpacity={0.35} />
+                              <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
+                            </linearGradient>
+                          </defs>
+                          <XAxis
+                            dataKey="day"
+                            tick={{ fontSize: 10, fill: "#94a3b8" }}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <YAxis hide />
+                          <Tooltip
+                            contentStyle={{
+                              borderRadius: 12,
+                              border: "1px solid #e2e8f0",
+                              fontSize: 12,
+                              fontWeight: 700,
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="count"
+                            stroke={ACCENT}
+                            fill="url(#orderFill)"
+                            strokeWidth={2.5}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm font-semibold text-slate-400">
+                        Belum ada data
+                      </div>
+                    )}
                   </div>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -1171,11 +1251,10 @@ export const InternalOrdersPage = () => {
                         setFilter(f);
                         setPage(1);
                       }}
-                      className={`rounded-full px-3 py-1.5 transition sm:px-4 ${
-                        filter === f
+                      className={`rounded-full px-3 py-1.5 transition sm:px-4 ${filter === f
                           ? "bg-slate-900 text-white"
                           : "text-slate-600 hover:text-slate-900"
-                      }`}
+                        }`}
                     >
                       {label}
                     </button>
@@ -1188,6 +1267,9 @@ export const InternalOrdersPage = () => {
                       ["ALL", "Semua channel"],
                       ["QRIS", "QRIS"],
                       ["VA", "VA"],
+                      ["MANUAL", "Manual (EDC/Reseller)"],
+                      ["EDC", "EDC"],
+                      ["RESELLER", "Reseller"],
                     ] as const
                   ).map(([c, label]) => (
                     <button
@@ -1197,11 +1279,10 @@ export const InternalOrdersPage = () => {
                         setChannel(c);
                         setPage(1);
                       }}
-                      className={`rounded-full px-3 py-1.5 transition sm:px-4 ${
-                        channel === c
+                      className={`rounded-full px-3 py-1.5 transition sm:px-4 ${channel === c
                           ? "bg-[#1A80C1] text-white"
                           : "text-slate-600 hover:text-slate-900"
-                      }`}
+                        }`}
                     >
                       {label}
                     </button>
@@ -1222,11 +1303,10 @@ export const InternalOrdersPage = () => {
                 <button
                   type="button"
                   onClick={() => setDevTools((v) => !v)}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition ${
-                    devTools
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition ${devTools
                       ? "bg-orange-500 text-white shadow-sm"
                       : "border border-white/70 bg-white/80 text-slate-600 shadow-sm backdrop-blur hover:bg-white"
-                  }`}
+                    }`}
                 >
                   <FlaskConical className="size-4" />
                   Dev tools
@@ -1331,8 +1411,7 @@ export const InternalOrdersPage = () => {
                               </td>
                               <td className="px-5 py-4">
                                 <span
-                                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${
-                                    row.status === "PAID"
+                                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${row.status === "PAID"
                                       ? "bg-emerald-100 text-emerald-800"
                                       : row.status === "PENDING"
                                         ? "bg-amber-100 text-amber-900"
@@ -1341,7 +1420,7 @@ export const InternalOrdersPage = () => {
                                           : row.status === "FAILED"
                                             ? "bg-red-100 text-red-800"
                                             : "bg-slate-100 text-slate-700"
-                                  }`}
+                                    }`}
                                 >
                                   {statusLabel(row.status)}
                                 </span>
@@ -1378,17 +1457,43 @@ export const InternalOrdersPage = () => {
                                 ) : null}
                               </td>
                               <td className="px-5 py-4 text-xs font-semibold">
-                                {row.paymentChannelCode ?? "—"}
-                                {row.virtualAccountBank ? (
-                                  <div className="text-slate-500">{row.virtualAccountBank}</div>
-                                ) : null}
-                                {row.virtualAccountNo ? (
-                                  <Copyable
-                                    value={row.virtualAccountNo}
-                                    mono
-                                    className="text-slate-500"
-                                  />
-                                ) : null}
+                                {row.paymentChannelCode === "EDC" ||
+                                  row.paymentChannelCode === "RESELLER" ? (
+                                  <div>
+                                    <span
+                                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide ${row.paymentChannelCode === "EDC"
+                                          ? "bg-purple-100 text-purple-900 ring-1 ring-purple-200"
+                                          : "bg-indigo-100 text-indigo-900 ring-1 ring-indigo-200"
+                                        }`}
+                                    >
+                                      <span
+                                        className={`size-1.5 rounded-full ${row.paymentChannelCode === "EDC"
+                                            ? "bg-purple-600"
+                                            : "bg-indigo-600"
+                                          }`}
+                                      />
+                                      {row.paymentChannelCode} (Manual)
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <div className="font-bold text-slate-800">
+                                      {row.paymentChannelCode ?? "—"}
+                                    </div>
+                                    {row.virtualAccountBank ? (
+                                      <div className="text-slate-500">
+                                        {row.virtualAccountBank}
+                                      </div>
+                                    ) : null}
+                                    {row.virtualAccountNo ? (
+                                      <Copyable
+                                        value={row.virtualAccountNo}
+                                        mono
+                                        className="text-slate-500"
+                                      />
+                                    ) : null}
+                                  </div>
+                                )}
                               </td>
                               <td className="px-5 py-4 font-black whitespace-nowrap text-slate-900">
                                 {formatRupiah(row.grandTotal)}
@@ -1462,6 +1567,224 @@ export const InternalOrdersPage = () => {
               </div>
             </motion.div>
           )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showCreateModal ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <motion.button
+                type="button"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowCreateModal(false)}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[2rem] border border-white/80 bg-white p-7 shadow-2xl"
+              >
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-[#1A80C1]/10 text-[#1A80C1]">
+                      <ShoppingBag className="size-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black tracking-tight text-slate-900">
+                        Input Order Manual
+                      </h3>
+                      <p className="text-xs font-semibold text-slate-500">
+                        Tambah pesanan offline (EDC / Reseller) — Otomatis LUNAS
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                  >
+                    <X className="size-5" />
+                  </button>
+                </div>
+
+                {manualError ? (
+                  <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
+                    <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                    <span>{manualError}</span>
+                  </div>
+                ) : null}
+
+                <form onSubmit={handleCreateManualSubmit} className="mt-5 space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                      Order ID <span className="text-red-500">*</span>
+                    </label>
+                    <div className="mt-1.5 flex gap-2">
+                      <input
+                        type="text"
+                        required
+                        value={manualOrderId}
+                        onChange={(e) => setManualOrderId(e.target.value)}
+                        placeholder="mis. MAN-20260814-1001"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 outline-none focus:border-[#1A80C1] focus:bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setManualOrderId(
+                            `MAN-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${Math.floor(
+                              1000 + Math.random() * 9000,
+                            )}`,
+                          )
+                        }
+                        className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                      >
+                        Auto ID
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Nama Pembeli <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={manualCustomerName}
+                        onChange={(e) => setManualCustomerName(e.target.value)}
+                        placeholder="Nama lengkap"
+                        className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-[#1A80C1]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Email Pembeli <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={manualCustomerEmail}
+                        onChange={(e) => setManualCustomerEmail(e.target.value)}
+                        placeholder="nama@email.com"
+                        className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-[#1A80C1]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Nomor Telepon
+                      </label>
+                      <input
+                        type="tel"
+                        value={manualCustomerPhone}
+                        onChange={(e) => setManualCustomerPhone(e.target.value)}
+                        placeholder="08123456789"
+                        className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-[#1A80C1]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Nominal
+                      </label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        required
+                        value={manualGrandTotal}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "");
+                          setManualGrandTotal(
+                            digits ? Number(digits).toLocaleString("id-ID") : "",
+                          );
+                        }}
+                        placeholder="11.900.000"
+                        className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold text-slate-900 outline-none focus:border-[#1A80C1]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                      Alamat Pengiriman
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={manualCustomerAddress}
+                      onChange={(e) => setManualCustomerAddress(e.target.value)}
+                      placeholder="Alamat lengkap pembeli…"
+                      className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-[#1A80C1]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                      Tipe Transaksi (Channel) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="mt-2 grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setManualChannel("EDC")}
+                        className={`flex items-center justify-center gap-2 rounded-xl p-3 text-sm font-extrabold transition border ${manualChannel === "EDC"
+                            ? "border-purple-500 bg-purple-50 text-purple-900 ring-2 ring-purple-400/20"
+                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                          }`}
+                      >
+                        <span className="size-2 rounded-full bg-purple-600" />
+                        BY EDC
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setManualChannel("RESELLER")}
+                        className={`flex items-center justify-center gap-2 rounded-xl p-3 text-sm font-extrabold transition border ${manualChannel === "RESELLER"
+                            ? "border-indigo-500 bg-indigo-50 text-indigo-900 ring-2 ring-indigo-400/20"
+                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                          }`}
+                      >
+                        <span className="size-2 rounded-full bg-indigo-600" />
+                        BY RESELLER
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+                    <button
+                      type="button"
+                      disabled={creatingManual}
+                      onClick={() => setShowCreateModal(false)}
+                      className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={creatingManual}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#1A80C1] px-6 py-2.5 text-sm font-black text-white shadow-lg shadow-[#1A80C1]/25 hover:bg-[#1672ad] disabled:opacity-60"
+                    >
+                      {creatingManual ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" />
+                          Menyimpan…
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="size-4" />
+                          Simpan Order
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          ) : null}
         </AnimatePresence>
       </div>
     </div>

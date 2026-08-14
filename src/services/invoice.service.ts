@@ -12,7 +12,11 @@ import type {
   SyncInvoiceStatusData,
   YukkHealthReport,
 } from "../types/invoice";
-import { isArkivWebSoldOut } from "../utils/stock-cutoff";
+import {
+  ARKIV_WEB_STOCK_CUTOFF_DATE,
+  isArkivWebSoldOut,
+  type ArkivWebPurchaseState,
+} from "../utils/stock-cutoff";
 
 export class InvoiceApiError extends Error {
   readonly statusCode: number;
@@ -289,13 +293,6 @@ export async function fetchInvoiceStatus(
 
   return body.data;
 }
-
-
-import {
-  ARKIV_WEB_STOCK_CUTOFF_DATE,
-  isArkivWebSoldOut,
-  type ArkivWebPurchaseState,
-} from "../utils/stock-cutoff";
 
 export type ArkivStockData = {
   id: string;
