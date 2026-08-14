@@ -5,9 +5,8 @@ export const OG_IMAGE = `${SITE_URL}/logo/transparent-color.png`;
 export const OG_IMAGE_WIDTH = "612";
 export const OG_IMAGE_HEIGHT = "408";
 
-
 export const HOME_SEO_TITLE =
-  "Lithium Fire Killer Hartindo AF31 — Distributor Resmi FAST Indonesia";
+  "Lithium Fire Killer Hartindo AF31 — Indonesia’s most advanced Lithium Fire Protection";
 
 export const HOME_SEO_DESCRIPTION =
   "PT. Famindo Alfa Spektrum Teknologi (FAST) — distributor eksklusif APAR Lithium Fire Killer Hartindo AF31 dan solusi proteksi kebakaran baterai lithium di Indonesia.";
