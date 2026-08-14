@@ -1,9 +1,10 @@
 import { PageSeo } from "../components/seo/PageSeo";
 import {
+  ArkivCollaborationSection,
   EducationSection,
   HeroSection,
   ProblemSection,
-  ProductSection, // <-- Import dari sini
+  ProductSection,
   RegulationSection,
   ServicesSection,
   ThermalRunawaySection,
@@ -22,6 +23,7 @@ export const HomePage = () => {
       />
 
       <HeroSection />
+      <ArkivCollaborationSection />
       <ProblemSection />
 
       <ProductSection />

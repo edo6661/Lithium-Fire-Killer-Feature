@@ -18,6 +18,33 @@
         "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
         }
     },
+    "arkivCollab": {
+        "badge": "Special Collaboration Edition",
+        "badgeTag": "Collector's Item",
+        "headlinePart1": "LFK × Arkiv Vilmansa",
+        "headlinePart2": "High Art Meets Lithium Battery Fire Protection",
+        "description": "An exclusive collaboration fusing the reliability of HARTINDO AF31 Lithium Fire Killer with contemporary fine art by world-renowned artist Arkiv Vilmansa. Featuring the limited collector SARU Edition.",
+        "ctaPrimary": "Explore LFK × Arkiv Edition",
+        "ctaSecondary": "View SARU Edition Details",
+        "saruEdition": "SARU Edition",
+        "collectorsChoice": "Collector's Choice",
+        "hartindoFormula": "HARTINDO AF31",
+        "lithiumFireKiller": "Lithium Fire Killer",
+        "features": [
+        {
+            "title": "SARU Character Design",
+            "desc": "Signature futuristic artwork by artist Arkiv Vilmansa."
+        },
+        {
+            "title": "Hartindo AF31 Patented",
+            "desc": "World's #1 lithium fire extinguisher formula that is safe & non-toxic."
+        },
+        {
+            "title": "Limited Collector's Item",
+            "desc": "Exclusively produced in limited quantities for art & tech collectors."
+        }
+        ]
+    },
     "problem": {
         "badge": "Awareness & Education",
         "headline": "No Fire, No Fear",

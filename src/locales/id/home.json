@@ -18,6 +18,33 @@
       "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
     }
   },
+  "arkivCollab": {
+    "badge": "Edisi Kolaborasi Spesial",
+    "badgeTag": "Barang Kolektor",
+    "headlinePart1": "LFK × Arkiv Vilmansa",
+    "headlinePart2": "Sentuhan Seni Tinggi pada Proteksi Baterai Lithium",
+    "description": "Kolaborasi eksklusif memadukan keandalan Alat Pemadam Api Lithium HARTINDO AF31 dengan estetika seni kontemporer karya seniman ternama Arkiv Vilmansa. Hadir dalam edisi kolektor terbatas SARU Edition.",
+    "ctaPrimary": "Jelajahi Edisi LFK × Arkiv",
+    "ctaSecondary": "Lihat Detail SARU Edition",
+    "saruEdition": "SARU Edition",
+    "collectorsChoice": "Pilihan Kolektor",
+    "hartindoFormula": "HARTINDO AF31",
+    "lithiumFireKiller": "Lithium Fire Killer",
+    "features": [
+      {
+        "title": "Desain Karakter SARU",
+        "desc": "Karya visual khas seniman Arkiv Vilmansa bernilai seni tinggi."
+      },
+      {
+        "title": "Paten Hartindo AF31",
+        "desc": "Formula pemadam api lithium #1 di dunia yang aman & non-toksik."
+      },
+      {
+        "title": "Barang Kolektor Terbatas",
+        "desc": "Diproduksi secara terbatas untuk kolektor seni & inovasi."
+      }
+    ]
+  },
   "problem": {
     "badge": "Kesadaran & Edukasi",
     "headline": "No Fire, No Fear",

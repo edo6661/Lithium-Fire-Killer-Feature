@@ -10,7 +10,6 @@ import {
   ArkivCheckoutModal,
   ArkivBuyCtaSection,
 } from "../components/sections/lfk-x-arkiv";
-import { ArkivAccessGateModal, useArkivAccessGate } from "../components/sections/lfk-x-arkiv/ArkivAccessGateModal";
 import { ArkivOfflineExhibitionModal } from "../components/sections/lfk-x-arkiv/ArkivOfflineExhibitionModal";
 import { ArkivPendingPaymentChip } from "../components/sections/lfk-x-arkiv/ArkivPendingPaymentChip";
 import { FloatingBlobs } from "../components/sections/lfk-x-arkiv/FloatingBlobs";
@@ -52,13 +51,6 @@ export const LfkXArkivPage = () => {
     clearToast,
   } = useCreateInvoiceVa();
 
-  const {
-    gateOpen,
-    requestAccess,
-    closeGate,
-    handleUnlocked,
-  } = useArkivAccessGate(openCheckout);
-
   const purchaseState = resolveArkivWebPurchaseState(stock);
 
   const handleCheckoutClick = () => {
@@ -66,7 +58,7 @@ export const LfkXArkivPage = () => {
       setOfflineModalOpen(true);
       return;
     }
-    void requestAccess();
+    openCheckout();
   };
 
   const onPaymentComplete = () => {
@@ -147,11 +139,6 @@ export const LfkXArkivPage = () => {
         <ArkivBuyCtaSection onCheckout={handleCheckoutClick} stock={stock} />
       </div>
 
-      <ArkivAccessGateModal
-        open={gateOpen}
-        onClose={closeGate}
-        onUnlocked={handleUnlocked}
-      />
 
       <ArkivOfflineExhibitionModal
         open={offlineModalOpen}
