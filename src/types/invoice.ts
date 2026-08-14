@@ -1,4 +1,10 @@
-export type InvoiceVaStatus = "PENDING" | "PAID" | "UNPAID" | "EXPIRED" | "FAILED";
+export type InvoiceVaStatus =
+  | "PENDING"
+  | "PAID"
+  | "UNPAID"
+  | "EXPIRED"
+  | "FAILED"
+  | "CANCELLED";
 
 export interface CreateInvoiceVaPayload {
   orderId: string;

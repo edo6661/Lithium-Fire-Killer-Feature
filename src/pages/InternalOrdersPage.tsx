@@ -78,7 +78,7 @@ type DailyQuotaInfo = {
   updatedAt: string;
 };
 
-type StatusFilter = "ALL" | "PAID" | "PENDING" | "EXPIRED" | "FAILED";
+type StatusFilter = "ALL" | "PAID" | "PENDING" | "EXPIRED" | "FAILED" | "CANCELLED";
 type ChannelFilter = "ALL" | "QRIS" | "VA" | "MANUAL" | "EDC" | "RESELLER";
 type SortBy = "createdAt" | "paidAt" | "grandTotal" | "status" | "orderId";
 type SortDir = "asc" | "desc";
@@ -98,6 +98,7 @@ type DashboardSummary = {
   pending: number;
   expired: number;
   failed: number;
+  cancelled?: number;
   revenueToday: number;
   revenueWeek: number;
   revenueAll: number;
@@ -130,6 +131,8 @@ function statusLabel(status: string): string {
       return "Belum bayar";
     case "EXPIRED":
       return "Kadaluarsa";
+    case "CANCELLED":
+      return "Batal";
     case "FAILED":
       return "Gagal";
     default:
@@ -392,6 +395,7 @@ export const InternalOrdersPage = () => {
     return [
       { name: "Lunas", value: summary.paid, color: PIE_COLORS.PAID },
       { name: "Pending", value: summary.pending, color: PIE_COLORS.PENDING },
+      { name: "Batal", value: summary.cancelled ?? 0, color: "#f43f5e" },
       { name: "Kadaluarsa", value: summary.expired, color: "#ea580c" },
       { name: "Gagal", value: summary.failed, color: "#dc2626" },
     ].filter((d) => d.value > 0);
@@ -1240,6 +1244,7 @@ export const InternalOrdersPage = () => {
                       ["ALL", "Semua"],
                       ["PAID", "Lunas"],
                       ["PENDING", "Pending"],
+                      ["CANCELLED", "Batal"],
                       ["EXPIRED", "Kadaluarsa"],
                       ["FAILED", "Gagal"],
                     ] as const
@@ -1415,11 +1420,13 @@ export const InternalOrdersPage = () => {
                                       ? "bg-emerald-100 text-emerald-800"
                                       : row.status === "PENDING"
                                         ? "bg-amber-100 text-amber-900"
-                                        : row.status === "EXPIRED"
-                                          ? "bg-orange-100 text-orange-900"
-                                          : row.status === "FAILED"
-                                            ? "bg-red-100 text-red-800"
-                                            : "bg-slate-100 text-slate-700"
+                                        : row.status === "CANCELLED"
+                                          ? "bg-rose-100 text-rose-800"
+                                          : row.status === "EXPIRED"
+                                            ? "bg-orange-100 text-orange-900"
+                                            : row.status === "FAILED"
+                                              ? "bg-red-100 text-red-800"
+                                              : "bg-slate-100 text-slate-700"
                                     }`}
                                 >
                                   {statusLabel(row.status)}

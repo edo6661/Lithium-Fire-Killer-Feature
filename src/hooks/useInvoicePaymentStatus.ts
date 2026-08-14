@@ -15,6 +15,7 @@ const TERMINAL_STATUSES: ReadonlySet<InvoiceVaStatus> = new Set([
   "PAID",
   "EXPIRED",
   "FAILED",
+  "CANCELLED",
 ]);
 
 export function isTerminalInvoiceStatus(

@@ -215,11 +215,13 @@ export const ArkivCheckoutModal = ({
           }
           if (
             synced.newStatus === "EXPIRED" ||
-            synced.newStatus === "FAILED"
+            synced.newStatus === "FAILED" ||
+            synced.newStatus === "CANCELLED"
           ) {
             if (synced.blockReason === "SOLD_OUT") onMarkSoldOut();
             else if (synced.blockReason === "DAILY_LIMIT") onMarkDailyLimit();
             else if (synced.newStatus === "EXPIRED") onMarkExpired();
+            else if (synced.newStatus === "CANCELLED") onRetry();
             else onMarkFailed();
             return;
           }
