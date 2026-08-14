@@ -6,8 +6,7 @@
  * Jika stok di web sudah 0, muncul informasi stok telah habis.
  */
 export const ARKIV_WEB_STOCK_CUTOFF_DATE = new Date(
-  "2026-08-13T23:59:00+07:00",
-  // "2026-09-11T23:59:00+07:00",
+  "2026-09-11T23:59:00+07:00",
 );
 
 export type ArkivWebPurchaseState = "AVAILABLE" | "OFFLINE_ONLY" | "SOLD_OUT";
