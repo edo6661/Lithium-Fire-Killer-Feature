@@ -200,9 +200,7 @@
         "bcaTitle": "Bayar dari BCA",
         "bcaDesc": "Di aplikasi BCA, pilih Transfer ke bank lain / Antar Bank, lalu gunakan Real Time Online (bukan LLG/SKN). Masukkan nomor Virtual Account sebagai rekening tujuan.",
         "sameBankTitle": "VA Mandiri & BNI",
-        "sameBankDesc": "Pembayaran harus dilakukan dari bank yang sesuai dengan VA.",
-        "sameBankMandiri": "VA Mandiri → gunakan rekening Mandiri",
-        "sameBankBni": "VA BNI → gunakan rekening BNI",
+        "sameBankDesc": "Pembayaran wajib dilakukan langsung dari bank yang sama. VA Mandiri & BNI tidak dapat dibayar melalui BCA maupun bank digital.",
         "tip": "Salin nomor Virtual Account dari halaman ini dan pastikan metode transfer sudah sesuai dengan bank VA."
       },
       "copyBtn": "Salin",

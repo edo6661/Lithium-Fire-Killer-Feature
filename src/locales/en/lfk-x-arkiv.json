@@ -200,9 +200,7 @@
         "bcaTitle": "Paying from BCA",
         "bcaDesc": "In the BCA app, choose Transfer to another bank / Interbank, then use Real Time Online (not LLG/SKN). Enter the Virtual Account number as the destination account.",
         "sameBankTitle": "VA Mandiri & BNI",
-        "sameBankDesc": "Payment must be made from the bank that matches the VA.",
-        "sameBankMandiri": "VA Mandiri → use a Mandiri account",
-        "sameBankBni": "VA BNI → use a BNI account",
+        "sameBankDesc": "Payment must be made directly from the matching bank. Mandiri & BNI VAs cannot be paid via BCA or digital banks.",
         "tip": "Copy the Virtual Account number from this page and make sure your transfer method matches the VA bank."
       },
       "copyBtn": "Copy",

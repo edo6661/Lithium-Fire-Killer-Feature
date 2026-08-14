@@ -684,10 +684,6 @@ export const ArkivCheckoutModal = ({
                                 <p className="mt-0.5 font-medium">
                                   {t("payment.modal.vaTransferGuide.sameBankDesc")}
                                 </p>
-                                <ul className="mt-1.5 list-disc space-y-0.5 pl-4 font-semibold text-slate-800">
-                                  <li>{t("payment.modal.vaTransferGuide.sameBankMandiri")}</li>
-                                  <li>{t("payment.modal.vaTransferGuide.sameBankBni")}</li>
-                                </ul>
                               </li>
                             </ul>
                             <p className="mt-3 border-t border-amber-200/80 pt-3 text-xs font-semibold leading-relaxed text-amber-900/90">
@@ -944,10 +940,6 @@ export const ArkivCheckoutModal = ({
                           <p className="mt-0.5 font-medium">
                             {t("payment.modal.vaTransferGuide.sameBankDesc")}
                           </p>
-                          <ul className="mt-1.5 list-disc space-y-0.5 pl-4 font-semibold text-slate-800">
-                            <li>{t("payment.modal.vaTransferGuide.sameBankMandiri")}</li>
-                            <li>{t("payment.modal.vaTransferGuide.sameBankBni")}</li>
-                          </ul>
                         </li>
                       </ul>
                       <p className="mt-3 border-t border-amber-200/80 pt-3 text-xs font-semibold leading-relaxed text-amber-900/90">
