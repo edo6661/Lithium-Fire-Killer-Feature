@@ -129,6 +129,12 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/lfk-x-arkiv" className="group inline-flex items-center gap-2 text-sm font-medium text-white/50 transition-all duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
+                  <span className="h-px w-0 bg-gradient-to-r from-accent to-blue-400 transition-all duration-300 ease-out group-hover:w-4" aria-hidden />
+                  {t("header.nav.lfkXArkiv", "LFK × Arkiv")}
+                </Link>
+              </li>
+              <li>
                 <Link to="/contact" className="group inline-flex items-center gap-2 text-sm font-medium text-white/50 transition-all duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md">
                   <span className="h-px w-0 bg-gradient-to-r from-accent to-blue-400 transition-all duration-300 ease-out group-hover:w-4" aria-hidden />
                   {t("header.nav.contact")}

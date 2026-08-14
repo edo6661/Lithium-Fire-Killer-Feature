@@ -18,13 +18,14 @@ export const Header = () => {
   const isArkivPage = location.pathname === "/lfk-x-arkiv";
 
   // Helper untuk translasikan label navigasi
-  const getNavLabel = (href: string) => {
+  const getNavLabel = (href: string, defaultLabel: string) => {
     switch (href) {
-      case "/": return t("header.nav.home");
-      case "/about": return t("header.nav.about");
-      case "/lithium-fire-safety": return t("header.nav.lithiumFireSafety");
-      case "/contact": return t("header.nav.contact");
-      default: return "";
+      case "/": return t("header.nav.home", defaultLabel);
+      case "/about": return t("header.nav.about", defaultLabel);
+      case "/lithium-fire-safety": return t("header.nav.lithiumFireSafety", defaultLabel);
+      case "/lfk-x-arkiv": return t("header.nav.lfkXArkiv", defaultLabel);
+      case "/contact": return t("header.nav.contact", defaultLabel);
+      default: return defaultLabel;
     }
   };
 
@@ -105,7 +106,7 @@ export const Header = () => {
               >
                 {({ isActive }) => (
                   <>
-                    {getNavLabel(link.href)}
+                    {getNavLabel(link.href, link.label)}
                     <span
                       className={`absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-300 ease-out ${isActive ? "w-full" : "w-0 group-hover:w-full"
                         } ${isArkivPage ? "bg-slate-900" : "bg-accent"}`}
@@ -209,7 +210,7 @@ export const Header = () => {
                       {() => (
                         <>
                          
-                          {getNavLabel(link.href)}
+                          {getNavLabel(link.href, link.label)}
                         </>
                       )}
                     </NavLink>
