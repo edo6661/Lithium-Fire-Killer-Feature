@@ -217,6 +217,8 @@ export const InternalOrdersPage = () => {
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [syncingStock, setSyncingStock] = useState(false);
+  const [resettingStock, setResettingStock] = useState(false);
+  const [stockInitialInput, setStockInitialInput] = useState("100");
   const [resettingQuota, setResettingQuota] = useState(false);
   const [savingQuotaLimit, setSavingQuotaLimit] = useState(false);
   const [quotaLimitInput, setQuotaLimitInput] = useState("10");
@@ -320,6 +322,12 @@ export const InternalOrdersPage = () => {
   }, [key, queryOpts, fetchRows]);
 
   useEffect(() => {
+    if (stock?.quantityInitial) {
+      setStockInitialInput(String(stock.quantityInitial));
+    }
+  }, [stock?.quantityInitial]);
+
+  useEffect(() => {
     if (dailyQuota?.limitPerDay) {
       setQuotaLimitInput(String(dailyQuota.limitPerDay));
     }
@@ -411,6 +419,47 @@ export const InternalOrdersPage = () => {
     const next = keyInput.trim();
     localStorage.setItem(STORAGE_KEY, next);
     setKey(next);
+  };
+
+  const resetStock = async () => {
+    if (!key) return;
+    const parsed = Number(stockInitialInput);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 10000) {
+      setError("Stok awal harus 1–10.000.");
+      return;
+    }
+    const ok = window.confirm(
+      `Reset stok awal edisi menjadi ${parsed} unit?\n\nSisa stok akan terhitung dari ${parsed} dikurangi invoice PAID dan PENDING.`,
+    );
+    if (!ok) return;
+
+    setResettingStock(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/internal/stock/reset?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ key, quantityInitial: Math.floor(parsed) }),
+        },
+      );
+      const body = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+        stock?: StockInfo;
+      };
+      if (!res.ok || !body.success || !body.stock) {
+        throw new Error(body.message ?? `HTTP ${res.status}`);
+      }
+      setStock(body.stock);
+      setStockInitialInput(String(body.stock.quantityInitial));
+      setNotice(body.message ?? "Stok edisi di-reset.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal reset stok");
+    } finally {
+      setResettingStock(false);
+    }
   };
 
   const syncStockFromInvoices = async () => {
@@ -790,18 +839,40 @@ export const InternalOrdersPage = () => {
                           Update {formatWhen(stock.updatedAt)}
                         </p>
                         <p className="mt-1 text-[11px] font-semibold text-slate-400">
-                          Sisa = edisi − PAID − hold. Tidak bisa diedit; tidak reset harian.
+                          Sisa = edisi − PAID − hold. Bisa di-reset atau disamakan dari invoice.
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        disabled={syncingStock}
-                        onClick={() => void syncStockFromInvoices()}
-                        className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
-                      >
-                        <RefreshCw className={`size-4 ${syncingStock ? "animate-spin" : ""}`} />
-                        {syncingStock ? "Menyamakan…" : "Samakan dari invoice"}
-                      </button>
+                      <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min={1}
+                            max={10000}
+                            value={stockInitialInput}
+                            onChange={(e) => setStockInitialInput(e.target.value)}
+                            className="w-20 rounded-full border border-slate-200 px-3 py-2 text-sm font-bold text-slate-900 outline-none focus:border-[#1A80C1]"
+                            aria-label="Stok awal edisi"
+                          />
+                          <button
+                            type="button"
+                            disabled={resettingStock}
+                            onClick={() => void resetStock()}
+                            className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+                          >
+                            <RotateCcw className={`size-4 ${resettingStock ? "animate-spin" : ""}`} />
+                            {resettingStock ? "Resetting…" : "Reset stok"}
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={syncingStock}
+                          onClick={() => void syncStockFromInvoices()}
+                          className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                        >
+                          <RefreshCw className={`size-3.5 ${syncingStock ? "animate-spin" : ""}`} />
+                          {syncingStock ? "Menyamakan…" : "Samakan dari invoice"}
+                        </button>
+                      </div>
                     </div>
                     <div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100">
                       <motion.div
