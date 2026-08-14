@@ -14,7 +14,9 @@ import {
   Gauge,
   KeyRound,
   LogOut,
+  Minus,
   Package,
+  Plus,
   RefreshCw,
   RotateCcw,
   Search,
@@ -218,6 +220,7 @@ export const InternalOrdersPage = () => {
   const [loading, setLoading] = useState(false);
   const [syncingStock, setSyncingStock] = useState(false);
   const [resettingStock, setResettingStock] = useState(false);
+  const [adjustingStock, setAdjustingStock] = useState(false);
   const [stockInitialInput, setStockInitialInput] = useState("100");
   const [resettingQuota, setResettingQuota] = useState(false);
   const [savingQuotaLimit, setSavingQuotaLimit] = useState(false);
@@ -489,6 +492,37 @@ export const InternalOrdersPage = () => {
       setError(err instanceof Error ? err.message : "Gagal samakan stok");
     } finally {
       setSyncingStock(false);
+    }
+  };
+
+  const adjustStock = async (delta: number) => {
+    if (!key) return;
+    setAdjustingStock(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/internal/stock/adjust?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ key, delta }),
+        },
+      );
+      const body = (await res.json()) as {
+        success?: boolean;
+        message?: string;
+        stock?: StockInfo;
+      };
+      if (!res.ok || !body.success || !body.stock) {
+        throw new Error(body.message ?? `HTTP ${res.status}`);
+      }
+      setStock(body.stock);
+      setStockInitialInput(String(body.stock.quantityInitial));
+      setNotice(body.message ?? `Stok diubah ${delta > 0 ? `+${delta}` : delta}.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal ubah stok");
+    } finally {
+      setAdjustingStock(false);
     }
   };
 
@@ -829,20 +863,53 @@ export const InternalOrdersPage = () => {
                           {stock.quantityRemaining}
                           <span className="text-xl font-bold text-slate-400">
                             {" "}
-                            / {stock.quantityInitial}
+                            / {stock.quantityInitial} initial
                           </span>
                         </p>
-                        <p className="mt-2 text-xs font-semibold text-slate-500">
-                          Terjual {stock.sold} PAID
-                          {typeof stock.held === "number" ? ` · Hold ${stock.held}` : ""}
-                          {" · "}
+                        <p className="mt-1.5 text-xs font-semibold text-slate-500">
                           Update {formatWhen(stock.updatedAt)}
-                        </p>
-                        <p className="mt-1 text-[11px] font-semibold text-slate-400">
-                          Sisa = edisi − PAID − hold. Bisa di-reset atau disamakan dari invoice.
                         </p>
                       </div>
                       <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="mr-1 text-xs font-bold text-slate-500">Adjust:</span>
+                          <button
+                            type="button"
+                            disabled={adjustingStock || resettingStock}
+                            onClick={() => void adjustStock(-10)}
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+                            title="Kurangi 10 stok"
+                          >
+                            -10
+                          </button>
+                          <button
+                            type="button"
+                            disabled={adjustingStock || resettingStock}
+                            onClick={() => void adjustStock(-1)}
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+                            title="Kurangi 1 stok"
+                          >
+                            <Minus className="size-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={adjustingStock || resettingStock}
+                            onClick={() => void adjustStock(1)}
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+                            title="Tambah 1 stok"
+                          >
+                            <Plus className="size-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={adjustingStock || resettingStock}
+                            onClick={() => void adjustStock(10)}
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+                            title="Tambah 10 stok"
+                          >
+                            +10
+                          </button>
+                        </div>
                         <div className="flex items-center gap-2">
                           <input
                             type="number"
@@ -855,17 +922,17 @@ export const InternalOrdersPage = () => {
                           />
                           <button
                             type="button"
-                            disabled={resettingStock}
+                            disabled={resettingStock || adjustingStock}
                             onClick={() => void resetStock()}
                             className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60"
                           >
                             <RotateCcw className={`size-4 ${resettingStock ? "animate-spin" : ""}`} />
-                            {resettingStock ? "Resetting…" : "Reset stok"}
+                            {resettingStock ? "Resetting…" : "Set stok"}
                           </button>
                         </div>
                         <button
                           type="button"
-                          disabled={syncingStock}
+                          disabled={syncingStock || adjustingStock}
                           onClick={() => void syncStockFromInvoices()}
                           className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
                         >
@@ -874,7 +941,24 @@ export const InternalOrdersPage = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="mt-6 h-3 overflow-hidden rounded-full bg-slate-100">
+
+                    <div className="mt-4 rounded-2xl border border-emerald-200/80 bg-emerald-50/70 p-3.5 text-xs text-emerald-900">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
+                          <span>Ter-Transaksi (PG & Input Manual)</span>
+                        </div>
+                        <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-black text-white">
+                          {stock.sold} Unit Lunas
+                        </span>
+                      </div>
+                      <p className="mt-1.5 text-[11px] font-medium leading-relaxed text-emerald-800">
+                        Transaksi sah melalui Payment Gateway maupun input manual tercatat sah ({stock.sold} PAID
+                        {typeof stock.held === "number" ? `, ${stock.held} hold pending` : ""}) dan tidak akan terpengaruh penyesuaian stok (+/-).
+                      </p>
+                    </div>
+
+                    <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${stockPct}%` }}
@@ -887,7 +971,7 @@ export const InternalOrdersPage = () => {
                       />
                     </div>
                     <p className="mt-2 text-right text-xs font-bold text-slate-500">
-                      {stockPct}% tersisa
+                      {stockPct}% tersisa ({stock.quantityRemaining} unit)
                     </p>
                   </div>
                 ) : (
