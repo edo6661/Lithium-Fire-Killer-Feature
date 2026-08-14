@@ -305,10 +305,10 @@ export type ArkivStockData = {
   };
 };
 
-/** Tidak bisa mulai checkout baru: stok habis atau limit lunas harian penuh. */
+/** Tidak bisa mulai checkout baru: stok edisi terbatas habis. */
 export function isArkivPurchaseUnavailable(stock: ArkivStockData | null | undefined): boolean {
   if (!stock) return false;
-  return stock.soldOut || stock.dailyQuota?.exhausted === true;
+  return stock.soldOut;
 }
 
 export async function cancelInvoiceVa(

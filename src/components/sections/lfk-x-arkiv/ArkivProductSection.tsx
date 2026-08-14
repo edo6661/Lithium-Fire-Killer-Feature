@@ -27,12 +27,7 @@ export const ArkivProductSection = ({
   const tags = (t("product.tags", { returnObjects: true }) || []) as string[];
   const specs = (t("product.specs", { returnObjects: true }) || []) as Array<any>;
   const unavailable = isArkivPurchaseUnavailable(stock);
-  const dailyFull = !stock?.soldOut && stock?.dailyQuota?.exhausted === true;
-  const unavailableLabel = stock?.soldOut
-    ? t("product.soldOut")
-    : dailyFull
-      ? t("product.dailyLimitReached")
-      : t("product.soldOut");
+  const unavailableLabel = t("product.soldOut");
 
   return (
     <section className="relative z-10 mx-auto max-w-7xl overflow-x-clip px-4 py-8 sm:px-6 lg:px-8">
@@ -60,10 +55,6 @@ export const ArkivProductSection = ({
                     remaining: stock.quantityRemaining,
                     initial: stock.quantityInitial,
                   })}
-                </p>
-              ) : stock && dailyFull ? (
-                <p className="text-sm font-bold text-slate-600">
-                  {t("product.dailyLimitHint")}
                 </p>
               ) : null}
             </div>

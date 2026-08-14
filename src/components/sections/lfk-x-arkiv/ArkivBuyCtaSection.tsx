@@ -21,17 +21,8 @@ export const ArkivBuyCtaSection = ({
   const { t } = useTranslation("lfk-x-arkiv");
   const price = arkivAmountFor("VA");
   const unavailable = isArkivPurchaseUnavailable(stock);
-  const dailyFull = !stock?.soldOut && stock?.dailyQuota?.exhausted === true;
-  const unavailableLabel = stock?.soldOut
-    ? t("buyCta.soldOut")
-    : dailyFull
-      ? t("buyCta.dailyLimitReached")
-      : t("buyCta.unavailable");
-  const unavailableHint = stock?.soldOut
-    ? t("buyCta.soldOut")
-    : dailyFull
-      ? t("buyCta.dailyLimitHint")
-      : t("buyCta.unavailable");
+  const unavailableLabel = t("buyCta.soldOut");
+  const unavailableHint = t("buyCta.soldOut");
 
   return (
     <section className="relative z-10 mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">

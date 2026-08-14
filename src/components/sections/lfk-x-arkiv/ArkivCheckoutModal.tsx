@@ -109,7 +109,6 @@ export const ArkivCheckoutModal = ({
     getArkivVaBank(vaData?.virtualAccountBank) ??
     getArkivVaBank(vaData?.paymentChannelCode);
   const purchaseUnavailable = isArkivPurchaseUnavailable(stock);
-  const dailyFull = !stock?.soldOut && stock?.dailyQuota?.exhausted === true;
   const formLocked = disabled || purchaseUnavailable;
 
   const { isChecking, checkError, checkStatus } = useInvoicePaymentStatus({
@@ -284,9 +283,7 @@ export const ArkivCheckoutModal = ({
           >
             {stock.soldOut
               ? t("product.soldOut")
-              : dailyFull
-                ? t("product.dailyLimitReached")
-                : `${stock.quantityRemaining}/${stock.quantityInitial}`}
+              : `${stock.quantityRemaining}/${stock.quantityInitial}`}
           </p>
         ) : null}
       </div>
@@ -297,10 +294,6 @@ export const ArkivCheckoutModal = ({
             remaining: stock.quantityRemaining,
             initial: stock.quantityInitial,
           })}
-        </p>
-      ) : stock && dailyFull ? (
-        <p className="-mt-2 text-xs font-semibold text-red-600">
-          {t("product.dailyLimitHint")}
         </p>
       ) : null}
       <div className="flex gap-4">
