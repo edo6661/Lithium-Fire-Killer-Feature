@@ -61,15 +61,15 @@ export const ACTIVE_ARKIV_BILLING = {
   defaultBankCode: "BRI" as ArkivVaBankCode,
   customerNo: "10011212",
   productLabel: "LFK x Arkiv - SARU Edition",
-  productImage: "/products/arkiv/front.png",
+  productImage: "/products/arkiv/depan.avif",
 } as const;
 
 /** Sudut produk — file di public/products/arkiv */
 export const ARKIV_PRODUCT_VIEWS = {
-  front: "/products/arkiv/front.png",
-  back: "/products/arkiv/back.png",
-  left: "/products/arkiv/left.png",
-  right: "/products/arkiv/right.png",
+  front: "/products/arkiv/depan.avif",
+  back: "/products/arkiv/belakang.avif",
+  left: "/products/arkiv/kiri.avif",
+  right: "/products/arkiv/kanan.avif",
 } as const;
 
 export type ArkivProductView = keyof typeof ARKIV_PRODUCT_VIEWS;
