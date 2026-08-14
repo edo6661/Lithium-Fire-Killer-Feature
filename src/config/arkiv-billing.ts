@@ -33,7 +33,7 @@ export function getArkivVaBank(code: string | null | undefined) {
  * false = sembunyikan QRIS di checkout (VA saja).
  * true  = tampilkan lagi (setelah limit dinaikkan / harga ≤ 10jt).
  */
-export const ARKIV_QRIS_ENABLED = true;
+export const ARKIV_QRIS_ENABLED = false;
 
 /** Hold VA/QRIS: stok + kuota dipotong saat generate, dikembalikan jika expire/cancel. */
 export const ARKIV_CHECKOUT_HOLD_MINUTES = 10;
@@ -53,8 +53,8 @@ export const ACTIVE_ARKIV_BILLING = {
    * Ganti ke 11_900_000 saat harga real aktif (VA saja selama ARKIV_QRIS_ENABLED=false).
    */
   amounts: {
-    VA: 11_000,
-    QRIS: 1_000,
+    VA: 11_900_000,
+    QRIS: 11_900_000,
   } as const satisfies Record<ArkivPaymentMethod, number>,
   /** Harga jual final — aktifkan dengan mengganti `amounts` di atas. */
   realAmount: 11_900_000,
