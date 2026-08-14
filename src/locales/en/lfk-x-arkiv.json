@@ -23,6 +23,7 @@
   },
   "product": {
     "checkoutBtn": "Buy Now",
+    "offlineExhibitionBtn": "Buy Offline at Galeri ZEN1",
     "stockHint": "{{remaining}} / {{initial}} units left",
     "soldOut": "Sold out",
     "dailyLimitReached": "Daily quota full",
@@ -100,8 +101,19 @@
     "dailyLimitReached": "Daily quota full",
     "dailyLimitHint": "Today's paid checkout limit has been reached. Please try again tomorrow.",
     "button": "Buy Now",
+    "offlineExhibitionBtn": "Buy Offline at Galeri ZEN1",
+    "offlineExhibitionHint": "Online purchases are closed. Please purchase offline at Galeri ZEN1 exhibition.",
     "secureNote": "Secure checkout · Virtual Account",
     "unavailable": "Checkout unavailable — please refresh"
+  },
+  "offlineModal": {
+    "heading": "Galeri ZEN1 Offline Purchase",
+    "description": "Online purchases via website are now closed. Limited edition LFK × Arkiv — SARU Edition is still available for purchase offline at Galeri ZEN1 exhibition.",
+    "soldOutHeading": "Sold Out",
+    "soldOutDescription": "All LFK × Arkiv — SARU Edition pieces are completely sold out. Thank you for your interest.",
+    "locationLabel": "Exhibition Location",
+    "locationValue": "Galeri ZEN1 Exhibition",
+    "closeBtn": "Got it"
   },
   "orderComplete": {
     "heading": "Order received",

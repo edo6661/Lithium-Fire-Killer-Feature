@@ -9,7 +9,7 @@ import {
   type ArkivProductView,
 } from "../../../config/arkiv-billing";
 import type { ArkivStockData } from "../../../services/invoice.service";
-import { isArkivPurchaseUnavailable } from "../../../services/invoice.service";
+import { resolveArkivWebPurchaseState } from "../../../services/invoice.service";
 
 interface ArkivProductSectionProps {
   onCheckout?: () => void;
@@ -26,8 +26,17 @@ export const ArkivProductSection = ({
   const [activeView, setActiveView] = useState<ArkivProductView>("front");
   const tags = (t("product.tags", { returnObjects: true }) || []) as string[];
   const specs = (t("product.specs", { returnObjects: true }) || []) as Array<any>;
-  const unavailable = isArkivPurchaseUnavailable(stock);
-  const unavailableLabel = t("product.soldOut");
+  
+  const purchaseState = resolveArkivWebPurchaseState(stock);
+  const isAvailable = purchaseState === "AVAILABLE";
+  const isOfflineOnly = purchaseState === "OFFLINE_ONLY";
+  const isSoldOut = purchaseState === "SOLD_OUT";
+
+  const buttonLabel = isAvailable
+    ? t("product.checkoutBtn")
+    : isOfflineOnly
+      ? t("product.offlineExhibitionBtn")
+      : t("product.soldOut");
 
   return (
     <section className="relative z-10 mx-auto max-w-7xl overflow-x-clip px-4 py-8 sm:px-6 lg:px-8">
@@ -43,11 +52,11 @@ export const ArkivProductSection = ({
             <div className="mt-8 flex flex-col items-start gap-3">
               <Button
                 type="button"
-                disabled={unavailable}
+                disabled={isSoldOut}
                 onClick={onCheckout}
                 className="bg-slate-900 px-8 py-4 text-white hover:bg-slate-800 disabled:opacity-50"
               >
-                {unavailable ? unavailableLabel : t("product.checkoutBtn")}
+                {buttonLabel}
               </Button>
 
             </div>

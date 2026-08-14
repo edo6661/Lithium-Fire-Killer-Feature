@@ -26,6 +26,7 @@
   },
   "product": {
     "checkoutBtn": "Beli Sekarang",
+    "offlineExhibitionBtn": "Beli Sekarang",
     "stockHint": "{{remaining}} / {{initial}} unit tersisa",
     "soldOut": "Sold out",
     "dailyLimitReached": "Kuota hari ini penuh",
@@ -100,8 +101,19 @@
     "dailyLimitReached": "Kuota hari ini penuh",
     "dailyLimitHint": "Batas pembayaran lunas hari ini sudah tercapai. Coba lagi besok.",
     "button": "Beli Sekarang",
+    "offlineExhibitionBtn": "Beli Sekarang",
+    "offlineExhibitionHint": "Pembelian online via website telah ditutup. Silakan lakukan pembelian secara offline di pameran Galeri ZEN1.",
     "secureNote": "Checkout aman · Virtual Account",
     "unavailable": "Pembayaran sedang tidak tersedia — coba refresh"
+  },
+  "offlineModal": {
+    "heading": "Pembelian Offline Galeri ZEN1",
+    "description": "Pembelian secara online via website telah ditutup. Stok edisi terbatas LFK × Arkiv — SARU Edition masih tersedia dan dapat dibeli secara langsung (offline) di pameran Galeri ZEN1.",
+    "soldOutHeading": "Stok Telah Habis",
+    "soldOutDescription": "Stok edisi terbatas LFK × Arkiv — SARU Edition telah habis terjual. Terima kasih atas antusiasme Anda.",
+    "locationLabel": "Lokasi Pameran",
+    "locationValue": "Pameran Galeri ZEN1",
+    "closeBtn": "Mengerti"
   },
   "orderComplete": {
     "heading": "Pesanan diterima",

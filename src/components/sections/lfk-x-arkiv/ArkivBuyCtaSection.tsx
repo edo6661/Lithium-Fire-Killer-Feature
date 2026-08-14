@@ -6,7 +6,7 @@ import {
   arkivAmountFor,
 } from "../../../config/arkiv-billing";
 import type { ArkivStockData } from "../../../services/invoice.service";
-import { isArkivPurchaseUnavailable } from "../../../services/invoice.service";
+import { resolveArkivWebPurchaseState } from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
 
 interface ArkivBuyCtaSectionProps {
@@ -20,9 +20,17 @@ export const ArkivBuyCtaSection = ({
 }: ArkivBuyCtaSectionProps) => {
   const { t } = useTranslation("lfk-x-arkiv");
   const price = arkivAmountFor("VA");
-  const unavailable = isArkivPurchaseUnavailable(stock);
-  const unavailableLabel = t("buyCta.soldOut");
-  const unavailableHint = t("buyCta.soldOut");
+
+  const purchaseState = resolveArkivWebPurchaseState(stock);
+  const isAvailable = purchaseState === "AVAILABLE";
+  const isOfflineOnly = purchaseState === "OFFLINE_ONLY";
+  const isSoldOut = purchaseState === "SOLD_OUT";
+
+  const buttonLabel = isAvailable
+    ? t("buyCta.button")
+    : isOfflineOnly
+      ? t("buyCta.offlineExhibitionBtn")
+      : t("buyCta.soldOut");
 
   return (
     <section className="relative z-10 mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 lg:px-8">
@@ -69,25 +77,31 @@ export const ArkivBuyCtaSection = ({
                 {ACTIVE_ARKIV_BILLING.productLabel}
               </p>
 
-              {stock && unavailable ? (
+              {stock && isOfflineOnly ? (
+                <div className="mt-5 rounded-2xl bg-amber-500/15 px-4 py-3 ring-1 ring-amber-400/30">
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/70">
+                    {t("buyCta.offlineExhibitionBtn")}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-white/80">
+                    {t("buyCta.offlineExhibitionHint")}
+                  </p>
+                </div>
+              ) : stock && isSoldOut ? (
                 <div className="mt-5 rounded-2xl bg-red-500/15 px-4 py-3 ring-1 ring-red-400/30">
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/45">
-                    {unavailableLabel}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-white/55">
-                    {unavailableHint}
+                    {t("buyCta.soldOut")}
                   </p>
                 </div>
               ) : null}
 
               <button
                 type="button"
-                disabled={unavailable}
+                disabled={isSoldOut}
                 onClick={onCheckout}
                 className="mt-8 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-accent px-7 py-5 text-base font-black tracking-wide text-white shadow-[0_8px_28px_rgba(56,152,212,0.45)] transition hover:bg-[#2d85bf] hover:shadow-[0_10px_32px_rgba(56,152,212,0.55)] disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/50 disabled:shadow-none sm:text-lg"
               >
-                {unavailable ? unavailableLabel : t("buyCta.button")}
-                {!unavailable ? <ArrowRight className="size-5" /> : null}
+                {buttonLabel}
+                {!isSoldOut ? <ArrowRight className="size-5" /> : null}
               </button>
 
               <p className="mt-4 text-center text-[11px] font-bold uppercase tracking-wider text-white/45">

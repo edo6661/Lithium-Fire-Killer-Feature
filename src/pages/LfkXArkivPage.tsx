@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
 import { PageSeo } from "../components/seo/PageSeo";
@@ -10,16 +11,19 @@ import {
   ArkivBuyCtaSection,
 } from "../components/sections/lfk-x-arkiv";
 import { ArkivAccessGateModal, useArkivAccessGate } from "../components/sections/lfk-x-arkiv/ArkivAccessGateModal";
+import { ArkivOfflineExhibitionModal } from "../components/sections/lfk-x-arkiv/ArkivOfflineExhibitionModal";
 import { ArkivPendingPaymentChip } from "../components/sections/lfk-x-arkiv/ArkivPendingPaymentChip";
 import { FloatingBlobs } from "../components/sections/lfk-x-arkiv/FloatingBlobs";
 import { Toast } from "../components/ui/Toast";
 import { useCreateInvoiceVa } from "../hooks/useCreateInvoiceVa";
 import { useArkivStock } from "../hooks/useArkivStock";
+import { resolveArkivWebPurchaseState } from "../services/invoice.service";
 import { formatRupiah } from "../utils/format-currency";
 
 export const LfkXArkivPage = () => {
   const { t } = useTranslation("lfk-x-arkiv");
   const { stock, refresh: refreshStock } = useArkivStock();
+  const [offlineModalOpen, setOfflineModalOpen] = useState(false);
   const {
     error,
     isLoading,
@@ -53,6 +57,16 @@ export const LfkXArkivPage = () => {
     closeGate,
     handleUnlocked,
   } = useArkivAccessGate(openCheckout);
+
+  const purchaseState = resolveArkivWebPurchaseState(stock);
+
+  const handleCheckoutClick = () => {
+    if (purchaseState !== "AVAILABLE") {
+      setOfflineModalOpen(true);
+      return;
+    }
+    void requestAccess();
+  };
 
   const onPaymentComplete = () => {
     handlePaymentComplete();
@@ -107,7 +121,7 @@ export const LfkXArkivPage = () => {
       <div className="relative z-10">
         <ArkivHeroSection />
         <ArkivVisionarySection />
-        <ArkivProductSection onCheckout={() => void requestAccess()} stock={stock} />
+        <ArkivProductSection onCheckout={handleCheckoutClick} stock={stock} />
 
         {isPaymentComplete && lastPaidOrderId ? (
           <div className="relative z-10 mx-auto max-w-5xl px-4 pb-4 sm:px-6 lg:px-8">
@@ -129,13 +143,19 @@ export const LfkXArkivPage = () => {
           </div>
         ) : null}
 
-        <ArkivBuyCtaSection onCheckout={() => void requestAccess()} stock={stock} />
+        <ArkivBuyCtaSection onCheckout={handleCheckoutClick} stock={stock} />
       </div>
 
       <ArkivAccessGateModal
         open={gateOpen}
         onClose={closeGate}
         onUnlocked={handleUnlocked}
+      />
+
+      <ArkivOfflineExhibitionModal
+        open={offlineModalOpen}
+        onClose={() => setOfflineModalOpen(false)}
+        state={purchaseState}
       />
 
       <ArkivCheckoutModal

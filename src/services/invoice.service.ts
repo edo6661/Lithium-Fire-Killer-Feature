@@ -12,6 +12,7 @@ import type {
   SyncInvoiceStatusData,
   YukkHealthReport,
 } from "../types/invoice";
+import { isArkivWebSoldOut } from "../utils/stock-cutoff";
 
 export class InvoiceApiError extends Error {
   readonly statusCode: number;
@@ -289,6 +290,13 @@ export async function fetchInvoiceStatus(
   return body.data;
 }
 
+
+import {
+  ARKIV_WEB_STOCK_CUTOFF_DATE,
+  isArkivWebSoldOut,
+  type ArkivWebPurchaseState,
+} from "../utils/stock-cutoff";
+
 export type ArkivStockData = {
   id: string;
   label: string;
@@ -305,10 +313,25 @@ export type ArkivStockData = {
   };
 };
 
-/** Tidak bisa mulai checkout baru: stok edisi terbatas habis. */
-export function isArkivPurchaseUnavailable(stock: ArkivStockData | null | undefined): boolean {
-  if (!stock) return false;
-  return stock.soldOut;
+export function resolveArkivWebPurchaseState(
+  stock: ArkivStockData | null | undefined,
+  now: Date = new Date(),
+): ArkivWebPurchaseState {
+  if (!stock) {
+    if (now >= ARKIV_WEB_STOCK_CUTOFF_DATE) return "OFFLINE_ONLY";
+    return "AVAILABLE";
+  }
+  if (stock.quantityRemaining <= 0 || stock.soldOut) return "SOLD_OUT";
+  if (now >= ARKIV_WEB_STOCK_CUTOFF_DATE) return "OFFLINE_ONLY";
+  return "AVAILABLE";
+}
+
+/** Tidak bisa mulai checkout baru di web: stok habis atau penjualan web sudah ditutup. */
+export function isArkivPurchaseUnavailable(
+  stock: ArkivStockData | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  return resolveArkivWebPurchaseState(stock, now) !== "AVAILABLE";
 }
 
 export async function cancelInvoiceVa(
