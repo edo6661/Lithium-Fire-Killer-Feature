@@ -17,7 +17,7 @@ export const MainLayout = () => {
   const opacity = useTransform(scrollY, [0, 300], [0.8, 0.3]);
 
   return (
-    <div className="relative min-h-screen bg-background selection:bg-accent/30 selection:text-white">
+    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-background selection:bg-accent/30 selection:text-white">
 
       {/* Scroll Progress Bar Global */}
       <ScrollProgress />
@@ -51,7 +51,7 @@ export const MainLayout = () => {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, y: -16, filter: "blur(8px)" }}
           transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="relative z-10 min-h-[70vh] w-full pt-[72px]"
+          className="relative z-10 min-h-[70vh] w-full max-w-full overflow-x-hidden pt-[72px]"
         >
           <Outlet />
         </motion.main>

@@ -160,7 +160,7 @@ export const ArkivCollaborationSection = () => {
                   </motion.div>
 
                   {/* Floating Badge Overlay 1 - Top Left */}
-                  <div className="absolute -left-2 top-6 z-20 flex items-center gap-2 rounded-2xl border border-white/20 bg-slate-950/80 px-3.5 py-2 shadow-2xl backdrop-blur-md sm:left-0">
+                  <div className="absolute left-0 top-6 z-20 flex items-center gap-2 rounded-2xl border border-white/20 bg-slate-950/80 px-3.5 py-2 shadow-2xl backdrop-blur-md sm:-left-2">
                     <div className="flex size-7 items-center justify-center rounded-full bg-accent/20 text-accent">
                       <Sparkles className="size-3.5" />
                     </div>
@@ -175,7 +175,7 @@ export const ArkivCollaborationSection = () => {
                   </div>
 
                   {/* Floating Badge Overlay 2 - Bottom Right */}
-                  <div className="absolute -right-2 bottom-6 z-20 flex items-center gap-2 rounded-2xl border border-white/20 bg-slate-950/80 px-3.5 py-2 shadow-2xl backdrop-blur-md sm:right-0">
+                  <div className="absolute right-0 bottom-6 z-20 flex items-center gap-2 rounded-2xl border border-white/20 bg-slate-950/80 px-3.5 py-2 shadow-2xl backdrop-blur-md sm:-right-2">
                     <div className="flex size-7 items-center justify-center rounded-full bg-blue-500/20 text-blue-400">
                       <ShieldCheck className="size-3.5" />
                     </div>

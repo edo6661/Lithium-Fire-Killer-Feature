@@ -38,9 +38,9 @@ export const ProblemSection = () => {
               {tags.map((tag, i) => {
                 const { Icon, color } = DANGER_ICONS[i];
                 const positions = [
-                  "absolute -top-2 right-4",
-                  "absolute bottom-8 -left-8",
-                  "absolute -bottom-2 right-4",
+                  "absolute -top-2 right-2 sm:right-4",
+                  "absolute bottom-8 left-0 sm:-left-8",
+                  "absolute -bottom-2 right-2 sm:right-4",
                 ];
                 return (
                   <motion.div
