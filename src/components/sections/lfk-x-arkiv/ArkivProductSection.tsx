@@ -49,14 +49,7 @@ export const ArkivProductSection = ({
               >
                 {unavailable ? unavailableLabel : t("product.checkoutBtn")}
               </Button>
-              {stock && !unavailable ? (
-                <p className="text-sm font-bold text-slate-600">
-                  {t("product.stockHint", {
-                    remaining: stock.quantityRemaining,
-                    initial: stock.quantityInitial,
-                  })}
-                </p>
-              ) : null}
+
             </div>
           ) : null}
         </AnimateIn>

@@ -273,29 +273,12 @@ export const ArkivCheckoutModal = ({
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
           {t("payment.checkout.summaryHeading")}
         </p>
-        {stock ? (
-          <p
-            className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider ${
-              purchaseUnavailable
-                ? "bg-red-100 text-red-700"
-                : "bg-accent/15 text-accent"
-            }`}
-          >
-            {stock.soldOut
-              ? t("product.soldOut")
-              : `${stock.quantityRemaining}/${stock.quantityInitial}`}
+        {stock && purchaseUnavailable ? (
+          <p className="shrink-0 rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-red-700">
+            {t("product.soldOut")}
           </p>
         ) : null}
       </div>
-      {stock && !purchaseUnavailable ? (
-        <p className="-mt-2 text-xs font-semibold text-slate-500">
-          {t("payment.checkout.stockLabel")}:{" "}
-          {t("product.stockHint", {
-            remaining: stock.quantityRemaining,
-            initial: stock.quantityInitial,
-          })}
-        </p>
-      ) : null}
       <div className="flex gap-4">
         <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-white ring-1 ring-slate-200">
           <img

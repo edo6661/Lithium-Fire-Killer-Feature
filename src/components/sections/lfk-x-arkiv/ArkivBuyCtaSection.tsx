@@ -69,33 +69,13 @@ export const ArkivBuyCtaSection = ({
                 {ACTIVE_ARKIV_BILLING.productLabel}
               </p>
 
-              {stock ? (
-                <div
-                  className={`mt-5 rounded-2xl px-4 py-3 ${
-                    unavailable
-                      ? "bg-red-500/15 ring-1 ring-red-400/30"
-                      : "bg-white/8 ring-1 ring-white/10"
-                  }`}
-                >
+              {stock && unavailable ? (
+                <div className="mt-5 rounded-2xl bg-red-500/15 px-4 py-3 ring-1 ring-red-400/30">
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-white/45">
-                    {unavailable ? unavailableLabel : t("buyCta.stockLabel")}
+                    {unavailableLabel}
                   </p>
-                  {!unavailable ? (
-                    <p className="mt-1 text-2xl font-black tracking-tight">
-                      {stock.quantityRemaining}
-                      <span className="text-base font-bold text-white/45">
-                        {" "}
-                        {t("buyCta.stockOf")} {stock.quantityInitial}
-                      </span>
-                    </p>
-                  ) : null}
                   <p className="mt-1 text-xs font-semibold text-white/55">
-                    {unavailable
-                      ? unavailableHint
-                      : t("buyCta.stockHint", {
-                          remaining: stock.quantityRemaining,
-                          initial: stock.quantityInitial,
-                        })}
+                    {unavailableHint}
                   </p>
                 </div>
               ) : null}
