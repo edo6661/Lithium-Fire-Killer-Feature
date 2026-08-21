@@ -15,6 +15,7 @@ export interface CreateInvoiceVaPayload {
   virtualAccountEmail: string;
   virtualAccountPhone: string;
   customerAddress: string;
+  customerNotes?: string;
   notes?: string;
 }
 
@@ -25,6 +26,7 @@ export interface CreateInvoiceQrisPayload {
   customerEmail: string;
   customerPhone: string;
   customerAddress: string;
+  customerNotes?: string;
   notes?: string;
 }
 

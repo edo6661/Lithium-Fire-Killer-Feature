@@ -96,6 +96,7 @@ export const ArkivCheckoutModal = ({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
   const [method, setMethod] = useState<ArkivPaymentMethod>("VA");
   const [bankCode, setBankCode] = useState<ArkivVaBankCode>(
     ACTIVE_ARKIV_BILLING.defaultBankCode,
@@ -248,6 +249,7 @@ export const ArkivCheckoutModal = ({
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
     const trimmedAddress = address.trim();
+    const trimmedNotes = notes.trim().slice(0, 1000);
 
     if (ARKIV_QRIS_ENABLED && method === "QRIS") {
       await onCreateQris({
@@ -257,6 +259,7 @@ export const ArkivCheckoutModal = ({
         customerEmail: trimmedEmail,
         customerPhone: trimmedPhone,
         customerAddress: trimmedAddress,
+        ...(trimmedNotes ? { customerNotes: trimmedNotes } : {}),
         notes: ACTIVE_ARKIV_BILLING.productLabel,
       });
       return;
@@ -271,6 +274,7 @@ export const ArkivCheckoutModal = ({
       virtualAccountEmail: trimmedEmail,
       virtualAccountPhone: trimmedPhone,
       customerAddress: trimmedAddress,
+      ...(trimmedNotes ? { customerNotes: trimmedNotes } : {}),
       notes: ACTIVE_ARKIV_BILLING.productLabel,
     });
   };
@@ -807,6 +811,23 @@ export const ArkivCheckoutModal = ({
                             onChange={(e) => setAddress(e.target.value)}
                             placeholder={t("payment.form.addressPlaceholder")}
                             maxLength={500}
+                            className="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="mb-1.5 block text-xs font-bold text-slate-500">
+                            {t("payment.form.notesLabel")}
+                            <span className="ml-1 font-semibold text-slate-400">
+                              ({t("payment.form.notesOptional")})
+                            </span>
+                          </span>
+                          <textarea
+                            rows={2}
+                            disabled={isLoading || formLocked}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder={t("payment.form.notesPlaceholder")}
+                            maxLength={1000}
                             className="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
                           />
                         </label>

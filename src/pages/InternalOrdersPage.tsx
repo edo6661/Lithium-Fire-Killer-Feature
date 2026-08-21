@@ -49,6 +49,7 @@ type InvoiceRow = {
   customerEmail: string | null;
   customerPhone: string | null;
   customerAddress: string | null;
+  customerNotes?: string | null;
   paymentChannelCode: string | null;
   virtualAccountBank: string | null;
   virtualAccountNo: string | null;
@@ -1300,7 +1301,7 @@ export const InternalOrdersPage = () => {
                     type="search"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Cari nama, email, phone, order, VA…"
+                    placeholder="Cari nama, email, phone, alamat, catatan, order, VA…"
                     className="w-full rounded-full border border-white/80 bg-white/90 py-2.5 pr-4 pl-10 text-sm font-semibold text-slate-800 shadow-sm outline-none transition focus:border-[#1A80C1] focus:ring-4 focus:ring-[#1A80C1]/15"
                   />
                 </div>
@@ -1460,6 +1461,12 @@ export const InternalOrdersPage = () => {
                                 {row.customerAddress ? (
                                   <div className="mt-1 max-w-[16rem] whitespace-pre-wrap text-xs leading-snug text-slate-500">
                                     {row.customerAddress}
+                                  </div>
+                                ) : null}
+                                {row.customerNotes ? (
+                                  <div className="mt-1.5 max-w-[16rem] rounded-lg bg-slate-50 px-2 py-1.5 text-xs leading-snug text-slate-600 ring-1 ring-slate-100">
+                                    <span className="font-bold text-slate-500">Catatan: </span>
+                                    <span className="whitespace-pre-wrap">{row.customerNotes}</span>
                                   </div>
                                 ) : null}
                               </td>
