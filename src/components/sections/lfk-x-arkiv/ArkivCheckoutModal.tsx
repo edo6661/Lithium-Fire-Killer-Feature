@@ -47,6 +47,10 @@ import {
 } from "../../../services/invoice.service";
 import { formatRupiah } from "../../../utils/format-currency";
 import { formatVaExpiredDate } from "../../../utils/format-va-expired-date";
+import {
+  normalizeAndValidateIdPhone,
+  normalizeIdPhone,
+} from "../../../utils/phone-id";
 import { Button } from "../../ui/Button";
 import { QrisQrImage } from "../../ui/QrisQrImage";
 
@@ -95,6 +99,7 @@ export const ArkivCheckoutModal = ({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [method, setMethod] = useState<ArkivPaymentMethod>("VA");
@@ -104,6 +109,17 @@ export const ArkivCheckoutModal = ({
   const [copiedField, setCopiedField] = useState<"va" | "amount" | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+
+  const phoneCheck = normalizeAndValidateIdPhone(phone);
+  const phoneErrorMessage =
+    !phoneTouched && !phone.trim()
+      ? null
+      : phoneCheck.ok
+        ? null
+        : phoneCheck.reason === "empty"
+          ? t("payment.form.phoneErrorEmpty")
+          : t("payment.form.phoneErrorInvalid");
+  const phoneIsValid = phoneCheck.ok;
 
   const effectiveMethod: ArkivPaymentMethod =
     ARKIV_QRIS_ENABLED && method === "QRIS" ? "QRIS" : "VA";
@@ -245,9 +261,15 @@ export const ArkivCheckoutModal = ({
     event.preventDefault();
     if (isLoading || formLocked) return;
 
+    setPhoneTouched(true);
+    const phoneResult = normalizeAndValidateIdPhone(phone);
+    if (!phoneResult.ok) return;
+
+    setPhone(phoneResult.phone);
+
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
-    const trimmedPhone = phone.trim();
+    const trimmedPhone = phoneResult.phone;
     const trimmedAddress = address.trim();
     const trimmedNotes = notes.trim().slice(0, 1000);
 
@@ -791,13 +813,60 @@ export const ArkivCheckoutModal = ({
                           </span>
                           <input
                             type="tel"
+                            inputMode="tel"
+                            autoComplete="tel"
                             required
                             disabled={isLoading || formLocked}
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            aria-invalid={phoneErrorMessage ? true : undefined}
+                            aria-describedby={
+                              phoneErrorMessage
+                                ? "arkiv-phone-hint arkiv-phone-error"
+                                : "arkiv-phone-hint"
+                            }
+                            onChange={(e) => {
+                              setPhone(e.target.value);
+                            }}
+                            onBlur={() => {
+                              setPhoneTouched(true);
+                              const result = normalizeAndValidateIdPhone(phone);
+                              if (result.ok) {
+                                setPhone(result.phone);
+                                return;
+                              }
+                              const preview = normalizeIdPhone(phone);
+                              if (preview) setPhone(preview);
+                            }}
                             placeholder={t("payment.form.phonePlaceholder")}
-                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
+                            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:ring-2 disabled:opacity-60 ${
+                              phoneErrorMessage
+                                ? "border-red-300 focus:border-red-400 focus:ring-red-200/60"
+                                : phoneIsValid
+                                  ? "border-emerald-300 focus:border-accent focus:ring-accent/20"
+                                  : "border-slate-200 focus:border-accent focus:ring-accent/20"
+                            }`}
                           />
+                          <p
+                            id="arkiv-phone-hint"
+                            className="mt-1.5 text-[11px] font-semibold leading-snug text-slate-400"
+                          >
+                            {t("payment.form.phoneHint")}
+                          </p>
+                          {phoneErrorMessage ? (
+                            <p
+                              id="arkiv-phone-error"
+                              role="alert"
+                              className="mt-1.5 text-[11px] font-bold leading-snug text-red-600"
+                            >
+                              {phoneErrorMessage}
+                            </p>
+                          ) : phoneIsValid ? (
+                            <p className="mt-1.5 text-[11px] font-bold leading-snug text-emerald-600">
+                              {t("payment.form.phoneNormalized", {
+                                phone: phoneCheck.ok ? phoneCheck.phone : phone,
+                              })}
+                            </p>
+                          ) : null}
                         </label>
                         <label className="block">
                           <span className="mb-1.5 block text-xs font-bold text-slate-500">
@@ -980,7 +1049,7 @@ export const ArkivCheckoutModal = ({
 
                     <Button
                       type="submit"
-                      disabled={isLoading || formLocked}
+                      disabled={isLoading || formLocked || !phoneIsValid}
                       className="w-full bg-slate-900 py-4 text-base text-white hover:bg-slate-800"
                     >
                       {isLoading ? (
