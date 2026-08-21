@@ -51,6 +51,11 @@ import {
   normalizeAndValidateIdPhone,
   normalizeIdPhone,
 } from "../../../utils/phone-id";
+import {
+  isTwinSerialNotes,
+  normalizeSerialNotes,
+  validateSerialNotes,
+} from "../../../utils/serial-notes";
 import { Button } from "../../ui/Button";
 import { QrisQrImage } from "../../ui/QrisQrImage";
 
@@ -102,6 +107,8 @@ export const ArkivCheckoutModal = ({
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
+  const [notesTouched, setNotesTouched] = useState(false);
+  const [notesTwinBlocked, setNotesTwinBlocked] = useState(false);
   const [method, setMethod] = useState<ArkivPaymentMethod>("VA");
   const [bankCode, setBankCode] = useState<ArkivVaBankCode>(
     ACTIVE_ARKIV_BILLING.defaultBankCode,
@@ -120,6 +127,18 @@ export const ArkivCheckoutModal = ({
           ? t("payment.form.phoneErrorEmpty")
           : t("payment.form.phoneErrorInvalid");
   const phoneIsValid = phoneCheck.ok;
+
+  const notesCheck = validateSerialNotes(notes);
+  const notesErrorMessage = notesTwinBlocked
+    ? t("payment.form.notesErrorTwin")
+    : !notesTouched && !notes
+      ? null
+      : notesCheck.ok
+        ? null
+        : notesCheck.reason === "twin"
+          ? t("payment.form.notesErrorTwin")
+          : t("payment.form.notesErrorIncomplete");
+  const notesIsValid = notesCheck.ok && !notesTwinBlocked;
 
   const effectiveMethod: ArkivPaymentMethod =
     ARKIV_QRIS_ENABLED && method === "QRIS" ? "QRIS" : "VA";
@@ -176,6 +195,11 @@ export const ArkivCheckoutModal = ({
       document.body.style.overflow = previousOverflow;
     };
   }, [open]);
+
+  // Kosong = opsional valid; jangan biarkan flag twin nempel.
+  useEffect(() => {
+    if (!notes) setNotesTwinBlocked(false);
+  }, [notes]);
 
   const handleCopyVa = async () => {
     if (!vaData?.virtualAccountNo) return;
@@ -262,16 +286,22 @@ export const ArkivCheckoutModal = ({
     if (isLoading || formLocked) return;
 
     setPhoneTouched(true);
+    setNotesTouched(true);
     const phoneResult = normalizeAndValidateIdPhone(phone);
     if (!phoneResult.ok) return;
 
+    const notesResult = validateSerialNotes(notes);
+    if (!notesResult.ok || notesTwinBlocked) return;
+
+    setNotesTwinBlocked(false);
     setPhone(phoneResult.phone);
+    if (notesResult.value) setNotes(notesResult.value);
 
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phoneResult.phone;
     const trimmedAddress = address.trim();
-    const trimmedNotes = notes.trim().slice(0, 1000);
+    const trimmedNotes = notesResult.value;
 
     if (ARKIV_QRIS_ENABLED && method === "QRIS") {
       await onCreateQris({
@@ -890,15 +920,64 @@ export const ArkivCheckoutModal = ({
                               ({t("payment.form.notesOptional")})
                             </span>
                           </span>
-                          <textarea
-                            rows={2}
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            autoComplete="off"
                             disabled={isLoading || formLocked}
                             value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
+                            maxLength={2}
+                            aria-invalid={notesErrorMessage ? true : undefined}
+                            aria-describedby={
+                              notesErrorMessage
+                                ? "arkiv-notes-hint arkiv-notes-error"
+                                : "arkiv-notes-hint"
+                            }
+                            onChange={(e) => {
+                              const next = normalizeSerialNotes(e.target.value);
+                              if (isTwinSerialNotes(next)) {
+                                setNotesTouched(true);
+                                setNotesTwinBlocked(true);
+                                // Tolak digit kembar: tetap di digit pertama.
+                                setNotes(next[0] ?? "");
+                                return;
+                              }
+                              setNotesTwinBlocked(false);
+                              setNotes(next);
+                            }}
+                            onBlur={() => {
+                              setNotesTouched(true);
+                              // Setelah blur, kalau nilai tersisa bukan twin, lepas flag
+                              // agar error akurat (incomplete / kosong).
+                              if (!isTwinSerialNotes(normalizeSerialNotes(notes))) {
+                                setNotesTwinBlocked(false);
+                              }
+                            }}
                             placeholder={t("payment.form.notesPlaceholder")}
-                            maxLength={1000}
-                            className="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-60"
+                            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm font-semibold tracking-[0.2em] text-slate-900 outline-none transition focus:ring-2 disabled:opacity-60 ${
+                              notesErrorMessage
+                                ? "border-red-300 focus:border-red-400 focus:ring-red-200/60"
+                                : notesIsValid && notes.length === 2
+                                  ? "border-emerald-300 focus:border-accent focus:ring-accent/20"
+                                  : "border-slate-200 focus:border-accent focus:ring-accent/20"
+                            }`}
                           />
+                          <p
+                            id="arkiv-notes-hint"
+                            className="mt-1.5 text-[11px] font-semibold leading-snug text-slate-400"
+                          >
+                            {t("payment.form.notesHint")}
+                          </p>
+                          {notesErrorMessage ? (
+                            <p
+                              id="arkiv-notes-error"
+                              role="alert"
+                              className="mt-1.5 text-[11px] font-bold leading-snug text-red-600"
+                            >
+                              {notesErrorMessage}
+                            </p>
+                          ) : null}
                         </label>
                       </div>
                     </section>
@@ -1049,7 +1128,9 @@ export const ArkivCheckoutModal = ({
 
                     <Button
                       type="submit"
-                      disabled={isLoading || formLocked || !phoneIsValid}
+                      disabled={
+                        isLoading || formLocked || !phoneIsValid || !notesIsValid
+                      }
                       className="w-full bg-slate-900 py-4 text-base text-white hover:bg-slate-800"
                     >
                       {isLoading ? (
