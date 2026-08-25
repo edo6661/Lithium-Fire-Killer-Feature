@@ -54,6 +54,12 @@ function resolveErrorMessage(
   if (body.code === "DAILY_LIMIT") {
     return "Kuota pembayaran hari ini sudah penuh. Silakan coba lagi besok.";
   }
+  if (body.code === "SERIAL_NOTES_TAKEN") {
+    return (
+      body.message ??
+      "Nomor seri itu sudah terpakai atau sedang dipesan. Silakan pilih nomor 2 digit lain."
+    );
+  }
 
   if (body.message && body.hint) {
     return `${body.message} ${body.hint}`;
@@ -398,6 +404,52 @@ export async function fetchArkivStock(): Promise<ArkivStockData> {
     throw new InvoiceApiError(
       body.message ?? "Gagal memuat stok produk.",
       response.status,
+    );
+  }
+
+  return body.data;
+}
+
+export type SerialNotesAvailability = {
+  serial: string;
+  available: boolean;
+  taken: boolean;
+};
+
+export async function checkSerialNotesAvailable(
+  serial: string,
+): Promise<SerialNotesAvailability> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/invoices/serial-notes/${encodeURIComponent(serial)}/available`,
+    {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(8_000),
+    },
+  );
+
+  let body: {
+    success?: boolean;
+    message?: string;
+    code?: string;
+    data?: SerialNotesAvailability;
+  };
+
+  try {
+    body = (await response.json()) as typeof body;
+  } catch {
+    throw new InvoiceApiError(
+      "Respons server tidak valid. Pastikan backend berjalan.",
+      response.status,
+    );
+  }
+
+  if (!response.ok || !body.success || !body.data) {
+    throw new InvoiceApiError(
+      body.message ?? "Gagal memeriksa nomor seri.",
+      response.status,
+      undefined,
+      undefined,
+      body.code,
     );
   }
 

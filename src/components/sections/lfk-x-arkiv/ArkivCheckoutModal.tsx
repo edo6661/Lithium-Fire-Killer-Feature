@@ -40,6 +40,7 @@ import type {
 } from "../../../types/invoice";
 import {
   cancelInvoiceVa,
+  checkSerialNotesAvailable,
   InvoiceApiError,
   isArkivPurchaseUnavailable,
   syncInvoicePaymentStatus,
@@ -109,6 +110,9 @@ export const ArkivCheckoutModal = ({
   const [notes, setNotes] = useState("");
   const [notesTouched, setNotesTouched] = useState(false);
   const [notesTwinBlocked, setNotesTwinBlocked] = useState(false);
+  const [notesTaken, setNotesTaken] = useState(false);
+  const [notesAvailabilityChecking, setNotesAvailabilityChecking] =
+    useState(false);
   const [method, setMethod] = useState<ArkivPaymentMethod>("VA");
   const [bankCode, setBankCode] = useState<ArkivVaBankCode>(
     ACTIVE_ARKIV_BILLING.defaultBankCode,
@@ -129,16 +133,24 @@ export const ArkivCheckoutModal = ({
   const phoneIsValid = phoneCheck.ok;
 
   const notesCheck = validateSerialNotes(notes);
+  const notesSerial =
+    notesCheck.ok && notesCheck.value ? notesCheck.value : null;
   const notesErrorMessage = notesTwinBlocked
     ? t("payment.form.notesErrorTwin")
-    : !notesTouched && !notes
-      ? null
-      : notesCheck.ok
+    : notesTaken && notesSerial
+      ? t("payment.form.notesErrorTaken", { serial: notesSerial })
+      : !notesTouched && !notes
         ? null
-        : notesCheck.reason === "twin"
-          ? t("payment.form.notesErrorTwin")
-          : t("payment.form.notesErrorIncomplete");
-  const notesIsValid = notesCheck.ok && !notesTwinBlocked;
+        : notesCheck.ok
+          ? null
+          : notesCheck.reason === "twin"
+            ? t("payment.form.notesErrorTwin")
+            : t("payment.form.notesErrorIncomplete");
+  const notesIsValid =
+    notesCheck.ok &&
+    !notesTwinBlocked &&
+    !notesTaken &&
+    !notesAvailabilityChecking;
 
   const effectiveMethod: ArkivPaymentMethod =
     ARKIV_QRIS_ENABLED && method === "QRIS" ? "QRIS" : "VA";
@@ -200,6 +212,38 @@ export const ArkivCheckoutModal = ({
   useEffect(() => {
     if (!notes) setNotesTwinBlocked(false);
   }, [notes]);
+
+  // Cek ketersediaan nomor seri vs invoice PAID/PENDING (debounce).
+  useEffect(() => {
+    if (!notesSerial) {
+      setNotesTaken(false);
+      setNotesAvailabilityChecking(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setNotesAvailabilityChecking(true);
+      void checkSerialNotesAvailable(notesSerial)
+        .then((result) => {
+          if (cancelled) return;
+          setNotesTaken(result.taken);
+        })
+        .catch(() => {
+          // Gagal cek → jangan blokir total; backend tetap menolak saat submit.
+          if (cancelled) return;
+          setNotesTaken(false);
+        })
+        .finally(() => {
+          if (!cancelled) setNotesAvailabilityChecking(false);
+        });
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [notesSerial]);
 
   const handleCopyVa = async () => {
     if (!vaData?.virtualAccountNo) return;
@@ -291,7 +335,9 @@ export const ArkivCheckoutModal = ({
     if (!phoneResult.ok) return;
 
     const notesResult = validateSerialNotes(notes);
-    if (!notesResult.ok || notesTwinBlocked) return;
+    if (!notesResult.ok || notesTwinBlocked || notesTaken || notesAvailabilityChecking) {
+      return;
+    }
 
     setNotesTwinBlocked(false);
     setPhone(phoneResult.phone);
@@ -976,6 +1022,16 @@ export const ArkivCheckoutModal = ({
                               className="mt-1.5 text-[11px] font-bold leading-snug text-red-600"
                             >
                               {notesErrorMessage}
+                            </p>
+                          ) : notesAvailabilityChecking && notesSerial ? (
+                            <p className="mt-1.5 text-[11px] font-semibold leading-snug text-slate-400">
+                              {t("payment.form.notesChecking")}
+                            </p>
+                          ) : notesSerial && !notesTaken ? (
+                            <p className="mt-1.5 text-[11px] font-bold leading-snug text-emerald-600">
+                              {t("payment.form.notesAvailable", {
+                                serial: notesSerial,
+                              })}
                             </p>
                           ) : null}
                         </label>
