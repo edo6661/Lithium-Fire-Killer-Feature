@@ -38,8 +38,14 @@ import {
   YAxis,
 } from "recharts";
 import { API_BASE_URL } from "../config/api";
+import { checkSerialNotesAvailable } from "../services/invoice.service";
 import { formatRupiah } from "../utils/format-currency";
 import { ARKIV_ACCESS_KEY_STORAGE } from "../utils/arkiv-access";
+import {
+  isTwinSerialNotes,
+  normalizeSerialNotes,
+  validateSerialNotes,
+} from "../utils/serial-notes";
 
 type InvoiceRow = {
   orderId: string;
@@ -246,10 +252,38 @@ export const InternalOrdersPage = () => {
   const [manualCustomerEmail, setManualCustomerEmail] = useState("");
   const [manualCustomerPhone, setManualCustomerPhone] = useState("");
   const [manualCustomerAddress, setManualCustomerAddress] = useState("");
+  const [manualCustomerNotes, setManualCustomerNotes] = useState("");
+  const [manualNotesTouched, setManualNotesTouched] = useState(false);
+  const [manualNotesTwinBlocked, setManualNotesTwinBlocked] = useState(false);
+  const [manualNotesTaken, setManualNotesTaken] = useState(false);
+  const [manualNotesAvailabilityChecking, setManualNotesAvailabilityChecking] =
+    useState(false);
   const [manualGrandTotal, setManualGrandTotal] = useState("11.900.000");
   const [manualChannel, setManualChannel] = useState<"EDC" | "RESELLER">("EDC");
   const [creatingManual, setCreatingManual] = useState(false);
   const [manualError, setManualError] = useState<string | null>(null);
+
+  const manualNotesCheck = validateSerialNotes(manualCustomerNotes);
+  const manualNotesSerial =
+    manualNotesCheck.ok && manualNotesCheck.value
+      ? manualNotesCheck.value
+      : null;
+  const manualNotesErrorMessage = manualNotesTwinBlocked
+    ? "Nomor kembar tidak diperbolehkan (contoh: 88, 99)."
+    : manualNotesTaken && manualNotesSerial
+      ? `Nomor seri ${manualNotesSerial} sudah terpakai atau sedang dipesan. Pilih nomor lain.`
+      : !manualNotesTouched && !manualCustomerNotes
+        ? null
+        : manualNotesCheck.ok
+          ? null
+          : manualNotesCheck.reason === "twin"
+            ? "Nomor kembar tidak diperbolehkan (contoh: 88, 99)."
+            : "Isi 2 digit, atau kosongkan field ini.";
+  const manualNotesIsValid =
+    manualNotesCheck.ok &&
+    !manualNotesTwinBlocked &&
+    !manualNotesTaken &&
+    !manualNotesAvailabilityChecking;
 
   const fetchRows = useCallback(
     async (
@@ -334,6 +368,40 @@ export const InternalOrdersPage = () => {
     }, SEARCH_DEBOUNCE_MS);
     return () => window.clearTimeout(id);
   }, [search]);
+
+  useEffect(() => {
+    if (!manualCustomerNotes) setManualNotesTwinBlocked(false);
+  }, [manualCustomerNotes]);
+
+  useEffect(() => {
+    if (!manualNotesSerial) {
+      setManualNotesTaken(false);
+      setManualNotesAvailabilityChecking(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setManualNotesAvailabilityChecking(true);
+      void checkSerialNotesAvailable(manualNotesSerial)
+        .then((result) => {
+          if (cancelled) return;
+          setManualNotesTaken(result.taken);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setManualNotesTaken(false);
+        })
+        .finally(() => {
+          if (!cancelled) setManualNotesAvailabilityChecking(false);
+        });
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [manualNotesSerial]);
 
   useEffect(() => {
     if (!key) return;
@@ -649,6 +717,14 @@ export const InternalOrdersPage = () => {
   const handleCreateManualSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!key) return;
+    setManualNotesTouched(true);
+    if (!manualNotesIsValid) {
+      setManualError(
+        manualNotesErrorMessage ??
+          "Nomor seri tidak valid. Isi 2 digit berbeda, atau kosongkan.",
+      );
+      return;
+    }
     setCreatingManual(true);
     setManualError(null);
     try {
@@ -664,6 +740,7 @@ export const InternalOrdersPage = () => {
             customerEmail: manualCustomerEmail.trim(),
             customerPhone: manualCustomerPhone.trim(),
             customerAddress: manualCustomerAddress.trim(),
+            ...(manualNotesSerial ? { customerNotes: manualNotesSerial } : {}),
             paymentChannelCode: manualChannel,
             grandTotal: Number(manualGrandTotal.replace(/\D/g, "")) || 11900000,
           }),
@@ -685,6 +762,10 @@ export const InternalOrdersPage = () => {
       setManualCustomerEmail("");
       setManualCustomerPhone("");
       setManualCustomerAddress("");
+      setManualCustomerNotes("");
+      setManualNotesTouched(false);
+      setManualNotesTwinBlocked(false);
+      setManualNotesTaken(false);
       setManualGrandTotal("11.900.000");
       setManualChannel("EDC");
       await fetchRows(key, queryOpts);
@@ -703,6 +784,10 @@ export const InternalOrdersPage = () => {
     setManualCustomerEmail("");
     setManualCustomerPhone("");
     setManualCustomerAddress("");
+    setManualCustomerNotes("");
+    setManualNotesTouched(false);
+    setManualNotesTwinBlocked(false);
+    setManualNotesTaken(false);
     setManualGrandTotal("11.900.000");
     setManualChannel("EDC");
     setManualError(null);
@@ -1465,8 +1550,8 @@ export const InternalOrdersPage = () => {
                                 ) : null}
                                 {row.customerNotes ? (
                                   <div className="mt-1.5 max-w-[16rem] rounded-lg bg-slate-50 px-2 py-1.5 text-xs leading-snug text-slate-600 ring-1 ring-slate-100">
-                                    <span className="font-bold text-slate-500">Catatan: </span>
-                                    <span className="whitespace-pre-wrap">{row.customerNotes}</span>
+                                    <span className="font-bold text-slate-500">Nomor Seri: </span>
+                                    <span className="font-mono tracking-wider">{row.customerNotes}</span>
                                   </div>
                                 ) : null}
                               </td>
@@ -1739,6 +1824,74 @@ export const InternalOrdersPage = () => {
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                      Nomor Seri{" "}
+                      <span className="font-semibold normal-case tracking-normal text-slate-400">
+                        (opsional)
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoComplete="off"
+                      disabled={creatingManual}
+                      value={manualCustomerNotes}
+                      maxLength={2}
+                      aria-invalid={manualNotesErrorMessage ? true : undefined}
+                      onChange={(e) => {
+                        const next = normalizeSerialNotes(e.target.value);
+                        if (isTwinSerialNotes(next)) {
+                          setManualNotesTouched(true);
+                          setManualNotesTwinBlocked(true);
+                          setManualCustomerNotes(next[0] ?? "");
+                          return;
+                        }
+                        setManualNotesTwinBlocked(false);
+                        setManualCustomerNotes(next);
+                      }}
+                      onBlur={() => {
+                        setManualNotesTouched(true);
+                        if (
+                          !isTwinSerialNotes(
+                            normalizeSerialNotes(manualCustomerNotes),
+                          )
+                        ) {
+                          setManualNotesTwinBlocked(false);
+                        }
+                      }}
+                      placeholder="Contoh: 89 (2 digit, tidak kembar)"
+                      className={`mt-1.5 w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm font-semibold tracking-[0.2em] text-slate-900 outline-none focus:border-[#1A80C1] disabled:opacity-60 ${
+                        manualNotesErrorMessage
+                          ? "border-red-300"
+                          : manualNotesIsValid && manualCustomerNotes.length === 2
+                            ? "border-emerald-300"
+                            : "border-slate-200"
+                      }`}
+                    />
+                    <p className="mt-1.5 text-[11px] font-semibold leading-snug text-slate-400">
+                      Hanya angka, tepat 2 digit, berbeda, dan belum dipakai/dipesan
+                      orang lain (89 boleh, 88 tidak).
+                    </p>
+                    {manualNotesErrorMessage ? (
+                      <p
+                        role="alert"
+                        className="mt-1.5 text-[11px] font-bold leading-snug text-red-600"
+                      >
+                        {manualNotesErrorMessage}
+                      </p>
+                    ) : manualNotesAvailabilityChecking && manualNotesSerial ? (
+                      <p className="mt-1.5 text-[11px] font-semibold leading-snug text-slate-400">
+                        Memeriksa ketersediaan…
+                      </p>
+                    ) : manualNotesSerial && !manualNotesTaken ? (
+                      <p className="mt-1.5 text-[11px] font-bold leading-snug text-emerald-600">
+                        Nomor seri {manualNotesSerial} tersedia.
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
                       Tipe Transaksi (Channel) <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-2 grid grid-cols-2 gap-3">
@@ -1779,7 +1932,7 @@ export const InternalOrdersPage = () => {
                     </button>
                     <button
                       type="submit"
-                      disabled={creatingManual}
+                      disabled={creatingManual || !manualNotesIsValid}
                       className="inline-flex items-center gap-2 rounded-full bg-[#1A80C1] px-6 py-2.5 text-sm font-black text-white shadow-lg shadow-[#1A80C1]/25 hover:bg-[#1672ad] disabled:opacity-60"
                     >
                       {creatingManual ? (
