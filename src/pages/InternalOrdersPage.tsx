@@ -42,7 +42,6 @@ import { checkSerialNotesAvailable } from "../services/invoice.service";
 import { formatRupiah } from "../utils/format-currency";
 import { ARKIV_ACCESS_KEY_STORAGE } from "../utils/arkiv-access";
 import {
-  isTwinSerialNotes,
   normalizeSerialNotes,
   validateSerialNotes,
 } from "../utils/serial-notes";
@@ -254,7 +253,6 @@ export const InternalOrdersPage = () => {
   const [manualCustomerAddress, setManualCustomerAddress] = useState("");
   const [manualCustomerNotes, setManualCustomerNotes] = useState("");
   const [manualNotesTouched, setManualNotesTouched] = useState(false);
-  const [manualNotesTwinBlocked, setManualNotesTwinBlocked] = useState(false);
   const [manualNotesTaken, setManualNotesTaken] = useState(false);
   const [manualNotesAvailabilityChecking, setManualNotesAvailabilityChecking] =
     useState(false);
@@ -263,25 +261,24 @@ export const InternalOrdersPage = () => {
   const [creatingManual, setCreatingManual] = useState(false);
   const [manualError, setManualError] = useState<string | null>(null);
 
-  const manualNotesCheck = validateSerialNotes(manualCustomerNotes);
+  // Internal manual: twin digits (88, 99) allowed — unlike public checkout.
+  const manualNotesCheck = validateSerialNotes(manualCustomerNotes, {
+    allowTwin: true,
+  });
   const manualNotesSerial =
     manualNotesCheck.ok && manualNotesCheck.value
       ? manualNotesCheck.value
       : null;
-  const manualNotesErrorMessage = manualNotesTwinBlocked
-    ? "Nomor kembar tidak diperbolehkan (contoh: 88, 99)."
-    : manualNotesTaken && manualNotesSerial
+  const manualNotesErrorMessage =
+    manualNotesTaken && manualNotesSerial
       ? `Nomor seri ${manualNotesSerial} sudah terpakai atau sedang dipesan. Pilih nomor lain.`
       : !manualNotesTouched && !manualCustomerNotes
         ? null
         : manualNotesCheck.ok
           ? null
-          : manualNotesCheck.reason === "twin"
-            ? "Nomor kembar tidak diperbolehkan (contoh: 88, 99)."
-            : "Isi 2 digit, atau kosongkan field ini.";
+          : "Isi 2 digit, atau kosongkan field ini.";
   const manualNotesIsValid =
     manualNotesCheck.ok &&
-    !manualNotesTwinBlocked &&
     !manualNotesTaken &&
     !manualNotesAvailabilityChecking;
 
@@ -368,10 +365,6 @@ export const InternalOrdersPage = () => {
     }, SEARCH_DEBOUNCE_MS);
     return () => window.clearTimeout(id);
   }, [search]);
-
-  useEffect(() => {
-    if (!manualCustomerNotes) setManualNotesTwinBlocked(false);
-  }, [manualCustomerNotes]);
 
   useEffect(() => {
     if (!manualNotesSerial) {
@@ -721,7 +714,7 @@ export const InternalOrdersPage = () => {
     if (!manualNotesIsValid) {
       setManualError(
         manualNotesErrorMessage ??
-          "Nomor seri tidak valid. Isi 2 digit berbeda, atau kosongkan.",
+          "Nomor seri tidak valid. Isi 2 digit, atau kosongkan.",
       );
       return;
     }
@@ -764,7 +757,6 @@ export const InternalOrdersPage = () => {
       setManualCustomerAddress("");
       setManualCustomerNotes("");
       setManualNotesTouched(false);
-      setManualNotesTwinBlocked(false);
       setManualNotesTaken(false);
       setManualGrandTotal("11.900.000");
       setManualChannel("EDC");
@@ -786,7 +778,6 @@ export const InternalOrdersPage = () => {
     setManualCustomerAddress("");
     setManualCustomerNotes("");
     setManualNotesTouched(false);
-    setManualNotesTwinBlocked(false);
     setManualNotesTaken(false);
     setManualGrandTotal("11.900.000");
     setManualChannel("EDC");
@@ -1839,27 +1830,12 @@ export const InternalOrdersPage = () => {
                       maxLength={2}
                       aria-invalid={manualNotesErrorMessage ? true : undefined}
                       onChange={(e) => {
-                        const next = normalizeSerialNotes(e.target.value);
-                        if (isTwinSerialNotes(next)) {
-                          setManualNotesTouched(true);
-                          setManualNotesTwinBlocked(true);
-                          setManualCustomerNotes(next[0] ?? "");
-                          return;
-                        }
-                        setManualNotesTwinBlocked(false);
-                        setManualCustomerNotes(next);
+                        setManualCustomerNotes(
+                          normalizeSerialNotes(e.target.value),
+                        );
                       }}
-                      onBlur={() => {
-                        setManualNotesTouched(true);
-                        if (
-                          !isTwinSerialNotes(
-                            normalizeSerialNotes(manualCustomerNotes),
-                          )
-                        ) {
-                          setManualNotesTwinBlocked(false);
-                        }
-                      }}
-                      placeholder="Contoh: 89 (2 digit, tidak kembar)"
+                      onBlur={() => setManualNotesTouched(true)}
+                      placeholder="Contoh: 88 atau 89 (2 digit)"
                       className={`mt-1.5 w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm font-semibold tracking-[0.2em] text-slate-900 outline-none focus:border-[#1A80C1] disabled:opacity-60 ${
                         manualNotesErrorMessage
                           ? "border-red-300"
@@ -1869,8 +1845,8 @@ export const InternalOrdersPage = () => {
                       }`}
                     />
                     <p className="mt-1.5 text-[11px] font-semibold leading-snug text-slate-400">
-                      Hanya angka, tepat 2 digit, berbeda, dan belum dipakai/dipesan
-                      orang lain (89 boleh, 88 tidak).
+                      Hanya angka, tepat 2 digit, dan belum dipakai/dipesan orang
+                      lain. Nomor kembar (88, 99) diperbolehkan untuk input manual.
                     </p>
                     {manualNotesErrorMessage ? (
                       <p

@@ -12,7 +12,7 @@
         { "value": "#1", "label": "World's First Lithium Extinguisher", "sublabel": "Leading & Trusted" },
         { "value": "LFK-AF31", "label": "Hartindo Patented Formula", "sublabel": "Exclusive Innovation" },
         { "value": "Eco-Friendly", "label": "Non-Toxic", "sublabel": "Safe for the Environment" }
-        ],
+        ],    
         "badges": {
         "ecoFriendly": { "title": "ECO-FRIENDLY", "subtitle": "Environmentally safe formula" },
         "labTested": { "title": "LAB TESTED & CERTIFIED", "subtitle": "Hartindo Formula" }
@@ -71,7 +71,7 @@
     "locationTitle": "Locations Available",
     "title": "Lithium Fire Killer HARTINDO AF31",
     "tagline": "The First Lithium Fire Extinguisher In The World",
-    "description": "A multi-function, non-toxic, and eco-friendly extinguisher that is capable of handling multiple emergencies. From common paper fires to high-stake lithium battery blazes. Protect your home, fleet, also your life and your loved ones with this specialized fire safety solution.",
+    "description": "Lithium Fire Killer is a multi-function, non-toxic, and eco-friendly extinguisher that is capable of handling multiple emergencies. From common paper fires to high-stake lithium battery blazes. Protect your home, fleet, also your life and your loved ones with this specialized fire safety solution.",
     "features": [
       "SNI Certified (Indonesian National Standard)",
       "Fire Classes: A, B, D, F/K, & L (Lithium)",
